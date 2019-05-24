@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<Workspace>
+  <ConfigDictionary>
+    
+  <CurrentConfigs><Project>SPI_Flash/Debug</Project></CurrentConfigs></ConfigDictionary>
+  <Desktop>
+    <Static>
+      <Workspace>
+        <ColumnWidths>
+          
+          
+          
+          
+        <Column0>190</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
+      </Workspace>
+      <Build>
+        
+        
+        
+        
+      <ColumnWidth0>20</ColumnWidth0><ColumnWidth1>1035</ColumnWidth1><ColumnWidth2>276</ColumnWidth2><ColumnWidth3>69</ColumnWidth3></Build>
+    <TerminalIO/><Debug-Log><ColumnWidth0>24</ColumnWidth0><ColumnWidth1>1377</ColumnWidth1></Debug-Log></Static>
+    <Windows>
+      
+      
+    <Wnd0>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-19064-24018</Identity>
+            <TabName>Workspace</TabName>
+            <Factory>Workspace</Factory>
+            <Session>
+              
+            <NodeDict><ExpandedNode>SPI_Flash</ExpandedNode><ExpandedNode>SPI_Flash/FWlib</ExpandedNode><ExpandedNode>SPI_Flash/USER</ExpandedNode></NodeDict></Session>
+          </Tab>
+        </Tabs>
+        
+      <SelectedTab>0</SelectedTab></Wnd0><Wnd1>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-3444-24720</Identity>
+            <TabName>Build</TabName>
+            <Factory>Build</Factory>
+            <Session/>
+          </Tab>
+        <Tab><Identity>TabID-7578-8720</Identity><TabName>Debug Log</TabName><Factory>Debug-Log</Factory><Session/></Tab></Tabs>
+        
+      <SelectedTab>0</SelectedTab></Wnd1></Windows>
+    <Editor>
+      
+      
+      
+      
+    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\FWlib\inc\stm8s.h</Filename><XPos>0</XPos><YPos>212</YPos><SelStart>1169</SelStart><SelEnd>1169</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\USER\main.c</Filename><XPos>0</XPos><YPos>41</YPos><SelStart>1417</SelStart><SelEnd>1417</SelEnd></Tab><ActiveTab>1</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\USER\stm8s_conf.h</Filename><XPos>0</XPos><YPos>51</YPos><SelStart>2674</SelStart><SelEnd>2674</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\USER\spi_flash.h</Filename><XPos>0</XPos><YPos>38</YPos><SelStart>1596</SelStart><SelEnd>1596</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\USER\spi_flash.c</Filename><XPos>0</XPos><YPos>441</YPos><SelStart>15595</SelStart><SelEnd>15595</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\FWlib\src\stm8s_spi.c</Filename><XPos>0</XPos><YPos>289</YPos><SelStart>5188</SelStart><SelEnd>5188</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\FWlib\inc\stm8s_spi.h</Filename><XPos>0</XPos><YPos>138</YPos><SelStart>5988</SelStart><SelEnd>5988</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\USER\sysclock.c</Filename><XPos>0</XPos><YPos>66</YPos><SelStart>2448</SelStart><SelEnd>2448</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\USER\sysclock.h</Filename><XPos>0</XPos><YPos>23</YPos><SelStart>809</SelStart><SelEnd>818</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\USER\stm8s_it.c</Filename><XPos>0</XPos><YPos>18</YPos><SelStart>1275</SelStart><SelEnd>1275</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\USER\uart1.c</Filename><XPos>0</XPos><YPos>26</YPos><SelStart>845</SelStart><SelEnd>845</SelEnd></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
+    <Positions>
+      
+      
+      
+      
+      
+    <Top><Row0><Sizes><Toolbar-01378170><key>iaridepm.enu1</key></Toolbar-01378170></Sizes></Row0></Top><Left><Row0><Sizes><Wnd0><Rect><Top>-2</Top><Left>-2</Left><Bottom>650</Bottom><Right>264</Right><x>-2</x><y>-2</y><xscreen>185</xscreen><yscreen>133</yscreen><sizeHorzCX>128472</sizeHorzCX><sizeHorzCY>161017</sizeHorzCY><sizeVertCX>184722</sizeVertCX><sizeVertCY>789346</sizeVertCY></Rect></Wnd0></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>131</Bottom><Right>1442</Right><x>-2</x><y>-2</y><xscreen>1444</xscreen><yscreen>133</yscreen><sizeHorzCX>1002778</sizeHorzCX><sizeHorzCY>161017</sizeHorzCY><sizeVertCX>128472</sizeVertCX><sizeVertCY>161017</sizeVertCY></Rect></Wnd1></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
+  </Desktop>
+</Workspace>
+
+

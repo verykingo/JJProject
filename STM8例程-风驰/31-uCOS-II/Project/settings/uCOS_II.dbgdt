@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<Project>
+  <Desktop>
+    <Static>
+      <Debug-Log>
+        
+        
+      <ColumnWidth0>20</ColumnWidth0><ColumnWidth1>1287</ColumnWidth1></Debug-Log>
+      <Build>
+        <ColumnWidth0>20</ColumnWidth0>
+        <ColumnWidth1>965</ColumnWidth1>
+        <ColumnWidth2>257</ColumnWidth2>
+        <ColumnWidth3>64</ColumnWidth3>
+      </Build>
+      <Workspace>
+        <ColumnWidths>
+          
+          
+          
+          
+        <Column0>124</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
+      </Workspace>
+      <Disassembly>
+        <col-names>
+          
+          
+        <item>Disassembly</item><item>_I0</item></col-names>
+        <col-widths>
+          
+          
+        <item>500</item><item>20</item></col-widths>
+        <DisasmHistory/>
+        
+        
+      <ShowCodeCoverage>0</ShowCodeCoverage><ShowInstrProfiling>0</ShowInstrProfiling></Disassembly>
+    </Static>
+    <Windows>
+      
+      
+      
+    <Wnd3>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-10933-9506</Identity>
+            <TabName>Debug Log</TabName>
+            <Factory>Debug-Log</Factory>
+            <Session/>
+          </Tab>
+          <Tab>
+            <Identity>TabID-10410-9516</Identity>
+            <TabName>Build</TabName>
+            <Factory>Build</Factory>
+            <Session/>
+          </Tab>
+        </Tabs>
+        
+      <SelectedTab>0</SelectedTab></Wnd3><Wnd4>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-21681-9509</Identity>
+            <TabName>Workspace</TabName>
+            <Factory>Workspace</Factory>
+            <Session>
+              
+            <NodeDict><ExpandedNode>uCOS_II</ExpandedNode></NodeDict></Session>
+          </Tab>
+        </Tabs>
+        
+      <SelectedTab>0</SelectedTab></Wnd4><Wnd5>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-32429-9513</Identity>
+            <TabName>Disassembly</TabName>
+            <Factory>Disassembly</Factory>
+            <Session/>
+          </Tab>
+        </Tabs>
+        
+      <SelectedTab>0</SelectedTab></Wnd5></Windows>
+    <Editor>
+      
+      
+      
+      
+    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\USER\main.c</Filename><XPos>0</XPos><YPos>63</YPos><SelStart>1720</SelStart><SelEnd>1720</SelEnd></Tab><ActiveTab>0</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\USER\stm8s_conf.h</Filename><XPos>0</XPos><YPos>24</YPos><SelStart>2127</SelStart><SelEnd>2127</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\uCOS-II\Source\ucos_ii.h</Filename><XPos>0</XPos><YPos>33</YPos><SelStart>1832</SelStart><SelEnd>1832</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\uCOS-II\Ports\os_cpu_c.c</Filename><XPos>0</XPos><YPos>200</YPos><SelStart>8459</SelStart><SelEnd>8459</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\uCOS-II\Ports\app_cfg.h</Filename><XPos>0</XPos><YPos>27</YPos><SelStart>1916</SelStart><SelEnd>1916</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\USER\includes.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>548</SelStart><SelEnd>548</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\uCOS-II\Source\os_cfg.h</Filename><XPos>0</XPos><YPos>111</YPos><SelStart>9656</SelStart><SelEnd>9656</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\uCOS-II\Ports\os_cpu_a.s</Filename><XPos>0</XPos><YPos>231</YPos><SelStart>622</SelStart><SelEnd>622</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\uCOS-II\Source\os_core.c</Filename><XPos>0</XPos><YPos>872</YPos><SelStart>38651</SelStart><SelEnd>38651</SelEnd></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
+    <Positions>
+      
+      
+      
+      
+      
+    <Top><Row0><Sizes><Toolbar-013700a8><key>iaridepm.enu1</key></Toolbar-013700a8></Sizes></Row0><Row1><Sizes><Toolbar-0473a818><key>debuggergui.enu1</key></Toolbar-0473a818></Sizes></Row1></Top><Left><Row0><Sizes><Wnd4><Rect><Top>-2</Top><Left>-2</Left><Bottom>546</Bottom><Right>198</Right><x>-2</x><y>-2</y><xscreen>200</xscreen><yscreen>200</yscreen><sizeHorzCX>148588</sizeHorzCX><sizeHorzCY>246305</sizeHorzCY><sizeVertCX>148588</sizeVertCX><sizeVertCY>674877</sizeVertCY></Rect></Wnd4></Sizes></Row0></Left><Right><Row0><Sizes><Wnd5><Rect><Top>-2</Top><Left>-2</Left><Bottom>546</Bottom><Right>198</Right><x>-2</x><y>-2</y><xscreen>200</xscreen><yscreen>200</yscreen><sizeHorzCX>148588</sizeHorzCX><sizeHorzCY>246305</sizeHorzCY><sizeVertCX>148588</sizeVertCX><sizeVertCY>674877</sizeVertCY></Rect></Wnd5></Sizes></Row0></Right><Bottom><Row0><Sizes><Wnd3><Rect><Top>-2</Top><Left>-2</Left><Bottom>198</Bottom><Right>1348</Right><x>-2</x><y>-2</y><xscreen>1350</xscreen><yscreen>200</yscreen><sizeHorzCX>1002972</sizeHorzCX><sizeHorzCY>246305</sizeHorzCY><sizeVertCX>148588</sizeVertCX><sizeVertCY>246305</sizeVertCY></Rect></Wnd3></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
+  </Desktop>
+</Project>
+
+

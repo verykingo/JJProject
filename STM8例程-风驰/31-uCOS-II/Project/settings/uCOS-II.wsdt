@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<Workspace>
+  <ConfigDictionary>
+    
+  <CurrentConfigs><Project>uCOS_II/Debug</Project></CurrentConfigs></ConfigDictionary>
+  <Desktop>
+    <Static>
+      <Workspace>
+        <ColumnWidths>
+          
+          
+          
+          
+        <Column0>215</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
+      </Workspace>
+      <Build>
+        
+        
+        
+        
+      <ColumnWidth0>20</ColumnWidth0><ColumnWidth1>965</ColumnWidth1><ColumnWidth2>257</ColumnWidth2><ColumnWidth3>64</ColumnWidth3></Build>
+    <TerminalIO/></Static>
+    <Windows>
+      
+      
+    <Wnd0>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-8766-19390</Identity>
+            <TabName>Workspace</TabName>
+            <Factory>Workspace</Factory>
+            <Session>
+              
+            <NodeDict><ExpandedNode>uCOS_II</ExpandedNode><ExpandedNode>uCOS_II/FWLib</ExpandedNode><ExpandedNode>uCOS_II/User</ExpandedNode><ExpandedNode>uCOS_II/uCOS-II</ExpandedNode><ExpandedNode>uCOS_II/uCOS-II/Ports</ExpandedNode><ExpandedNode>uCOS_II/uCOS-II/Source</ExpandedNode></NodeDict></Session>
+          </Tab>
+        </Tabs>
+        
+      <SelectedTab>0</SelectedTab></Wnd0><Wnd1>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-9415-20196</Identity>
+            <TabName>Build</TabName>
+            <Factory>Build</Factory>
+            <Session/>
+          </Tab>
+        </Tabs>
+        
+      <SelectedTab>0</SelectedTab></Wnd1></Windows>
+    <Editor>
+      
+      
+      
+      
+    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\USER\main.c</Filename><XPos>0</XPos><YPos>32</YPos><SelStart>1319</SelStart><SelEnd>1319</SelEnd></Tab><ActiveTab>0</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\USER\stm8s_conf.h</Filename><XPos>0</XPos><YPos>24</YPos><SelStart>2127</SelStart><SelEnd>2127</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\uCOS-II\Source\ucos_ii.h</Filename><XPos>0</XPos><YPos>147</YPos><SelStart>7425</SelStart><SelEnd>7425</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\uCOS-II\Ports\os_cpu_c.c</Filename><XPos>0</XPos><YPos>134</YPos><SelStart>7956</SelStart><SelEnd>7956</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\uCOS-II\Ports\app_cfg.h</Filename><XPos>0</XPos><YPos>25</YPos><SelStart>880</SelStart><SelEnd>880</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\USER\includes.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>548</SelStart><SelEnd>548</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\uCOS-II\Source\os_cfg.h</Filename><XPos>0</XPos><YPos>51</YPos><SelStart>3379</SelStart><SelEnd>3379</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\uCOS-II\Ports\os_cpu_a.s</Filename><XPos>0</XPos><YPos>227</YPos><SelStart>3903</SelStart><SelEnd>3903</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\uCOS-II\Ports\os_cpu.h</Filename><XPos>0</XPos><YPos>72</YPos><SelStart>3763</SelStart><SelEnd>3789</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\USER\app_hooks.c</Filename><XPos>0</XPos><YPos>78</YPos><SelStart>1057</SelStart><SelEnd>1057</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\uCOS-II\Source\ucos_ii.c</Filename><XPos>0</XPos><YPos>12</YPos><SelStart>1474</SelStart><SelEnd>1474</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\uCOS-II\Source\os_tmr.c</Filename><XPos>0</XPos><YPos>15</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\uCOS-II\Source\os_core.c</Filename><XPos>0</XPos><YPos>578</YPos><SelStart>25523</SelStart><SelEnd>25523</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\USER\led.c</Filename><XPos>0</XPos><YPos>36</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\USER\sysclock.c</Filename><XPos>0</XPos><YPos>27</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\USER\tim1.c</Filename><XPos>0</XPos><YPos>48</YPos><SelStart>0</SelStart><SelEnd>0</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\uCOS-II\Source\os_task.c</Filename><XPos>0</XPos><YPos>194</YPos><SelStart>9110</SelStart><SelEnd>9110</SelEnd></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
+    <Positions>
+      
+      
+      
+      
+      
+    <Top><Row0><Sizes><Toolbar-01378170><key>iaridepm.enu1</key></Toolbar-01378170></Sizes></Row0></Top><Left><Row0><Sizes><Wnd0><Rect><Top>-2</Top><Left>-2</Left><Bottom>576</Bottom><Right>289</Right><x>-2</x><y>-2</y><xscreen>229</xscreen><yscreen>207</yscreen><sizeHorzCX>159028</sizeHorzCX><sizeHorzCY>250605</sizeHorzCY><sizeVertCX>202083</sizeVertCX><sizeVertCY>699758</sizeVertCY></Rect></Wnd0></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>205</Bottom><Right>1442</Right><x>-2</x><y>-2</y><xscreen>1444</xscreen><yscreen>207</yscreen><sizeHorzCX>1002778</sizeHorzCX><sizeHorzCY>250605</sizeHorzCY><sizeVertCX>159028</sizeVertCX><sizeVertCY>250605</sizeVertCY></Rect></Wnd1></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
+  </Desktop>
+</Workspace>
+
+

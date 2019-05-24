@@ -1,0 +1,38 @@
+###############################################################################
+#                                                                             #
+# IAR Assembler V1.31.1.50058 for STM8                  18/Feb/2013  00:17:45 #
+# Copyright 2010-2012 IAR Systems AB.                                         #
+#                                                                             #
+#    Source file  =  C:\Documents and Settings\Administrator.941CB8B5EFF0427\ #
+#                    ×ÀÃæ\STM8208³õ¼¶°æÀý³Ì£¨×îÖÕ°æ£©\31-uCOS-II\uCOS-II\Port #
+#                    s\os_cpu_a.s                                             #
+#    Command line =  "C:\Documents and Settings\Administrator.941CB8B5EFF0427 #
+#                    \×ÀÃæ\STM8208³õ¼¶°æÀý³Ì£¨×îÖÕ°æ£©\31-uCOS-II\uCOS-II\Por #
+#                    ts\os_cpu_a.s" -M<> -r -ld "C:\Documents and             #
+#                    Settings\Administrator.941CB8B5EFF0427\×ÀÃæ\STM8208³õ¼¶° #
+#                    æÀý³Ì£¨×îÖÕ°æ£©\31-uCOS-II\Project\Debug\List\"          #
+#                    --code_model medium --data_model medium -o               #
+#                    "C:\Documents and Settings\Administrator.941CB8B5EFF0427 #
+#                    \×ÀÃæ\STM8208³õ¼¶°æÀý³Ì£¨×îÖÕ°æ£©\31-uCOS-II\Project\Deb #
+#                    ug\Obj\"                                                 #
+#    List file    =  C:\Documents and Settings\Administrator.941CB8B5EFF0427\ #
+#                    ×ÀÃæ\STM8208³õ¼¶°æÀý³Ì£¨×îÖÕ°æ£©\31-uCOS-II\Project\Debu #
+#                    g\List\os_cpu_a.lst                                      #
+#    Object file  =  C:\Documents and Settings\Administrator.941CB8B5EFF0427\ #
+#                    ×ÀÃæ\STM8208³õ¼¶°æÀý³Ì£¨×îÖÕ°æ£©\31-uCOS-II\Project\Debu #
+#                    g\Obj\os_cpu_a.o                                         #
+#                                                                             #
+#                                                                             #
+###############################################################################
+
+##############################################################################
+# Module OS_CPU_A                                                            #
+##############################################################################
+
+ 
+ 394 bytes in section .far_func.text , module OS_CPU_A
+ 
+ 394 bytes of CODE memory  in module OS_CPU_A
+
+Errors: none
+Warnings: none

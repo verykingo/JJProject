@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspace>
+    <project>
+        <path>$WS_DIR$\bootloader.ewp</path>
+    </project>
+    <project>
+        <path>$WS_DIR$\J1_APP_AtomThread.ewp</path>
+    </project>
+    <project>
+        <path>$WS_DIR$\J1_APP_uCOS-II.ewp</path>
+    </project>
+    <batchBuild />
+</workspace>
