@@ -27,16 +27,52 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include <stdio.h>
+
 #include "stm8l15x.h"
 #include "sysclock.h"
 #include "timetick.h"
+#include "queue.h"
 
-#if USE_UCOS_II == 1u
+#if USE_NO_RTOS == 1u
+#include "softtimer.h"
+#elif USE_UCOS_II == 1u
 #include "ucos_ii.h"
 #elif USE_ATOMTHREAD == 1u
 #include "atom.h"
 #endif
 
+/* 队列数据块大小，数据库数目*/
+#define MAX_QUEUE_BUF_SIZE		32		
+#define MAX_QUEUE_BUF_NUMS		10
+
+/* 循环队列 */
+QUEUE Queue;
+
+/* 队列数据存储区 */
+uint8_t QueueBuffer[MAX_QUEUE_BUF_SIZE*MAX_QUEUE_BUF_NUMS] = {0};
+
+#if USE_NO_RTOS == 1u
+/* 定时器回调 */
+TIMER Timer_Task0;
+TIMER Timer_Task1;
+TIMER Timer_Task2;
+
+void Task0( void * pdata )
+{
+	//do nothing
+}
+
+void Task1( void * pdata )
+{
+	//do nothing
+}
+
+void Task2( void * pdata )
+{
+	//do nothing
+}
+
+#elif USE_UCOS_II == 1u
 /* 定义任务堆栈大小 */
 #define  OS_IDLE_STK_SIZE                	200
 #define  OS_TASK_0_STK_SIZE                	200
@@ -54,8 +90,6 @@ OS_STK	Task2Stack[OS_TASK_2_STK_SIZE];
 #define  OS_TASK_1_PRIO                    1
 #define  OS_TASK_2_PRIO                    2
 
-
-#if USE_UCOS_II == 1u
 void Task0( void * pdata )
 {  	
 	static uint32_t task1 = 0;
@@ -107,6 +141,23 @@ void Task2( void * pdata )
 	}	
 }
 #elif USE_ATOMTHREAD == 1u
+/* 定义任务堆栈大小 */
+#define  OS_IDLE_STK_SIZE                	200
+#define  OS_TASK_0_STK_SIZE                	200
+#define  OS_TASK_1_STK_SIZE                	200
+#define  OS_TASK_2_STK_SIZE                	200
+
+/* 定义任务栈空间 */
+OS_STK	IdleStack[OS_IDLE_STK_SIZE];
+OS_STK	Task0Stack[OS_TASK_0_STK_SIZE];	
+OS_STK	Task1Stack[OS_TASK_1_STK_SIZE];
+OS_STK	Task2Stack[OS_TASK_2_STK_SIZE];
+
+/* 定义任务优先级 */
+#define  OS_TASK_0_PRIO                    0
+#define  OS_TASK_1_PRIO                    1
+#define  OS_TASK_2_PRIO                    2
+
 /* ATOM TCB */
 static ATOM_TCB Task0_TCB;
 static ATOM_TCB Task1_TCB;
@@ -179,12 +230,34 @@ void main(void)
 	SystemClock_Init();
 
 	/* TimeTick Init */
-	TimeTick_Init();
+	TimeTick_Init(1);
+
+	/* Create a queue buffer */
+	QueueCreate(&Queue,QueueBuffer,MAX_QUEUE_BUF_SIZE,MAX_QUEUE_BUF_NUMS);
 
 	/* After Finish All Init, Enable Interrupt */
 	enableInterrupts();	
+	
+#if USE_NO_RTOS == 1u
+	Timer_Task0.timer_name 	= (void *)&Timer_Task0;
+	Timer_Task0.cb_func		= Task0;
+	Timer_Task0.cb_data		= NULL;
+	Timer_Task0.cb_ticks 	= TimerGet()+ SS_TO_TICKS(2);
+	TimerInsert(&Timer_Task0);
 
-#if USE_UCOS_II == 1u
+	Timer_Task1.timer_name	= (void *)&Timer_Task1;
+	Timer_Task1.cb_func 	= Task1;
+	Timer_Task1.cb_data 	= NULL;
+	Timer_Task1.cb_ticks	= TimerGet()+ SS_TO_TICKS(3);
+	TimerInsert(&Timer_Task1);
+
+	Timer_Task2.timer_name	= (void *)&Timer_Task2;
+	Timer_Task2.cb_func 	= Task2;
+	Timer_Task2.cb_data 	= NULL;
+	Timer_Task2.cb_ticks	= TimerGet()+ SS_TO_TICKS(5);
+	TimerInsert(&Timer_Task2);
+	
+#elif USE_UCOS_II == 1u
 
 	/* 初始化uCOS系统 */
 	OSInit();	

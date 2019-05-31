@@ -348,12 +348,26 @@ INTERRUPT_HANDLER(TIM3_CC_USART3_RX_IRQHandler,22)
 /*
   TIM1中断服务程序_interrupt_25()，在RTOS/atomthreads-1.3/ports/stm8/atomport.c实现。
 */
+#elif USE_NO_RTOS == 1u
+#include "softtimer.h"
+INTERRUPT_HANDLER(TIM1_UPD_OVF_TRG_COM_IRQHandler,23)
+{
+    /* In order to detect unexpected events during development,
+       it is recommended to set a breakpoint on the following instruction.
+    */
+    TimerTick();
+
+	TIM1_ClearITPendingBit(TIM1_IT_Update);
+}
 #else
 INTERRUPT_HANDLER(TIM1_UPD_OVF_TRG_COM_IRQHandler,23)
 {
     /* In order to detect unexpected events during development,
        it is recommended to set a breakpoint on the following instruction.
     */
+    TimerTick();
+
+	TIM1_ClearITPendingBit(TIM1_IT_Update);
 }
 #endif
 

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<Workspace>
+  <ConfigDictionary>
+    
+  <CurrentConfigs><Project>WWDG/Debug</Project></CurrentConfigs></ConfigDictionary>
+  <Desktop>
+    <Static>
+      <Workspace>
+        <ColumnWidths>
+          
+          
+          
+          
+        <Column0>203</Column0><Column1>27</Column1><Column2>27</Column2><Column3>27</Column3></ColumnWidths>
+      </Workspace>
+      <Build>
+        
+        
+        
+        
+      <ColumnWidth0>20</ColumnWidth0><ColumnWidth1>1035</ColumnWidth1><ColumnWidth2>276</ColumnWidth2><ColumnWidth3>69</ColumnWidth3></Build>
+    <TerminalIO/></Static>
+    <Windows>
+      
+      
+    <Wnd0>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-29875-10721</Identity>
+            <TabName>Workspace</TabName>
+            <Factory>Workspace</Factory>
+            <Session>
+              
+            <NodeDict><ExpandedNode>WWDG</ExpandedNode><ExpandedNode>WWDG/FWlib</ExpandedNode><ExpandedNode>WWDG/USER</ExpandedNode></NodeDict></Session>
+          </Tab>
+        </Tabs>
+        
+      <SelectedTab>0</SelectedTab></Wnd0><Wnd1>
+        <Tabs>
+          <Tab>
+            <Identity>TabID-20948-27672</Identity>
+            <TabName>Build</TabName>
+            <Factory>Build</Factory>
+            <Session/>
+          </Tab>
+        </Tabs>
+        
+      <SelectedTab>0</SelectedTab></Wnd1></Windows>
+    <Editor>
+      
+      
+      
+      
+    <Pane><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\USER\wwdg.h</Filename><XPos>0</XPos><YPos>0</YPos><SelStart>1223</SelStart><SelEnd>1223</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\USER\main.c</Filename><XPos>0</XPos><YPos>15</YPos><SelStart>440</SelStart><SelEnd>440</SelEnd></Tab><ActiveTab>1</ActiveTab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\USER\wwdg.c</Filename><XPos>0</XPos><YPos>45</YPos><SelStart>1649</SelStart><SelEnd>1658</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\USER\led.c</Filename><XPos>0</XPos><YPos>115</YPos><SelStart>2669</SelStart><SelEnd>2911</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\USER\stm8s_conf.h</Filename><XPos>0</XPos><YPos>62</YPos><SelStart>3072</SelStart><SelEnd>3072</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\USER\led.h</Filename><XPos>0</XPos><YPos>68</YPos><SelStart>2267</SelStart><SelEnd>2267</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\FWlib\inc\stm8s.h</Filename><XPos>0</XPos><YPos>18</YPos><SelStart>1308</SelStart><SelEnd>1308</SelEnd></Tab><Tab><Factory>TextEditor</Factory><Filename>$WS_DIR$\..\FWlib\src\stm8s_wwdg.c</Filename><XPos>0</XPos><YPos>32</YPos><SelStart>2379</SelStart><SelEnd>2379</SelEnd></Tab></Pane><ActivePane>0</ActivePane><Sizes><Pane><X>1000000</X><Y>1000000</Y></Pane></Sizes><SplitMode>1</SplitMode></Editor>
+    <Positions>
+      
+      
+      
+      
+      
+    <Top><Row0><Sizes><Toolbar-01378098><key>iaridepm.enu1</key></Toolbar-01378098></Sizes></Row0></Top><Left><Row0><Sizes><Wnd0><Rect><Top>-2</Top><Left>-2</Left><Bottom>593</Bottom><Right>277</Right><x>-2</x><y>-2</y><xscreen>168</xscreen><yscreen>190</yscreen><sizeHorzCX>116667</sizeHorzCX><sizeHorzCY>230024</sizeHorzCY><sizeVertCX>193750</sizeVertCX><sizeVertCY>720339</sizeVertCY></Rect></Wnd0></Sizes></Row0></Left><Right><Row0><Sizes/></Row0></Right><Bottom><Row0><Sizes><Wnd1><Rect><Top>-2</Top><Left>-2</Left><Bottom>188</Bottom><Right>1442</Right><x>-2</x><y>-2</y><xscreen>1444</xscreen><yscreen>190</yscreen><sizeHorzCX>1002778</sizeHorzCX><sizeHorzCY>230024</sizeHorzCY><sizeVertCX>116667</sizeVertCX><sizeVertCY>230024</sizeVertCY></Rect></Wnd1></Sizes></Row0></Bottom><Float><Sizes/></Float></Positions>
+  </Desktop>
+</Workspace>
+
+

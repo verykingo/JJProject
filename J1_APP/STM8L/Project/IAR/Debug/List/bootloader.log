@@ -4,12 +4,12 @@ Global:
   ------   -------------
   _Printf  _PrintfFullNoMb
   _Scanf   _ScanfFullNoMb
-Loading object E:\Wen\JJProject\J1_APP\STM8L\Project\IAR\Debug\Obj\main.o.
+Loading object E:\Wen\MyPorject\JJProject\J1_APP\STM8L\Project\IAR\Debug\Obj\main.o.
               reference :  SystemClock_Init
               definition:  GotoApplication
               definition:  main
               definition:  reintvec
-Loading object E:\Wen\JJProject\J1_APP\STM8L\Project\IAR\Debug\Obj\stm8l15x_clk.o.
+Loading object E:\Wen\MyPorject\JJProject\J1_APP\STM8L\Project\IAR\Debug\Obj\stm8l15x_clk.o.
               reference :  ?b0
               reference :  ?b1
               reference :  ?b2
@@ -55,9 +55,9 @@ Loading object E:\Wen\JJProject\J1_APP\STM8L\Project\IAR\Debug\Obj\stm8l15x_clk.
               definition:  CLK_SYSCLKSourceConfig
               definition:  CLK_SYSCLKSourceSwitchCmd
               definition:  SYSDivFactor
-              definition:  __iar_cc..FcVgtASKGF_
-              definition:  __iar_cc..KxnpHKLj9q6
-Loading object E:\Wen\JJProject\J1_APP\STM8L\Project\IAR\Debug\Obj\sysclock.o.
+              definition:  __iar_cc..FvYDH3FFK06
+              definition:  __iar_cc..F7RkkD8L$CB
+Loading object E:\Wen\MyPorject\JJProject\J1_APP\STM8L\Project\IAR\Debug\Obj\sysclock.o.
               reference :  CLK_GetSYSCLKSource
               reference :  CLK_SYSCLKDivConfig
               reference :  CLK_SYSCLKSourceConfig
@@ -1101,9 +1101,9 @@ Marking from fragment #29 .debug_info (7 stm8l15x_clk.o)
     Marking fragment #28 .debug_line (6 stm8l15x_clk.o)
   Marking symbol .debug_macinfo197                    (86 stm8l15x_clk.o)
     Marking fragment #193 .debug_macinfo (197 stm8l15x_clk.o)
-  Marking symbol __iar_cc..FcVgtASKGF_            Glb (237 stm8l15x_clk.o)
+  Marking symbol __iar_cc..FvYDH3FFK06            Glb (237 stm8l15x_clk.o)
     Marking fragment #164 .debug_info (168 stm8l15x_clk.o)
-  Marking symbol __iar_cc..KxnpHKLj9q6            Glb (238 stm8l15x_clk.o)
+  Marking symbol __iar_cc..F7RkkD8L$CB            Glb (238 stm8l15x_clk.o)
     Marking fragment #166 .debug_info (170 stm8l15x_clk.o)
 Marking from fragment #166 .debug_info (170 stm8l15x_clk.o)
   Marking symbol .debug_abbrev198                     (83 stm8l15x_clk.o)

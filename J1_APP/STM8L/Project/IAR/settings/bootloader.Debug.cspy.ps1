@@ -23,9 +23,9 @@ param([String]$debugfile = "");
 
 if ($debugfile -eq "")
 {
-& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.0_2\common\bin\cspybat" -f "E:\Wen\JJProject\J1_APP\STM8L\Project\IAR\settings\bootloader.Debug.general.xcl" --backend -f "E:\Wen\JJProject\J1_APP\STM8L\Project\IAR\settings\bootloader.Debug.driver.xcl" 
+& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.0_2\common\bin\cspybat" -f "E:\Wen\MyPorject\JJProject\J1_APP\STM8L\Project\IAR\settings\bootloader.Debug.general.xcl" --backend -f "E:\Wen\MyPorject\JJProject\J1_APP\STM8L\Project\IAR\settings\bootloader.Debug.driver.xcl" 
 }
 else
 {
-& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.0_2\common\bin\cspybat" -f "E:\Wen\JJProject\J1_APP\STM8L\Project\IAR\settings\bootloader.Debug.general.xcl" --debug_file=$debugfile --backend -f "E:\Wen\JJProject\J1_APP\STM8L\Project\IAR\settings\bootloader.Debug.driver.xcl" 
+& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.0_2\common\bin\cspybat" -f "E:\Wen\MyPorject\JJProject\J1_APP\STM8L\Project\IAR\settings\bootloader.Debug.general.xcl" --debug_file=$debugfile --backend -f "E:\Wen\MyPorject\JJProject\J1_APP\STM8L\Project\IAR\settings\bootloader.Debug.driver.xcl" 
 }

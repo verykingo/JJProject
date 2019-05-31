@@ -1741,6 +1741,12 @@
             <name>$PROJ_DIR$\..\..\User\main.c</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\..\..\User\queue.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\User\softtimer.c</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\..\..\User\stm8l15x_it.c</name>
         </file>
         <file>

@@ -25,25 +25,28 @@
  * 返回: 无
  * 说明: 无 
  ******************************************************************************/
-void TimeTick_Init()
+void TimeTick_Init(uint8_t TIM)
 {
-	/* Enable TIM1 CLK*/
-	CLK_PeripheralClockConfig(CLK_Peripheral_TIM1, ENABLE); 
+	if(TIM == 1)
+	{
+		/* Enable TIM1 CLK*/
+		CLK_PeripheralClockConfig(CLK_Peripheral_TIM1, ENABLE); 
 
-    /* Reset TIM1 */
-    TIM1_DeInit();
+	    /* Reset TIM1 */
+	    TIM1_DeInit();
 
-    /* Configure a 10ms tick, 16MHz/(15+1)=1MHz, 1s/MHz=1us */
-	TIM1_TimeBaseInit(15, TIM1_CounterMode_Up, 9999, 0);
-	TIM1_SetCounter(0);					/* 将计数器初值设为0 */
-	TIM1_ARRPreloadConfig(DISABLE);		/* 预装载不使能 */
-	ITC_SetSoftwarePriority(TIM1_UPD_OVF_TRG_IRQn, ITC_PriorityLevel_1);
-	
-    /* Generate an interrupt on timer count overflow 计数溢出*/
-    TIM1_ITConfig(TIM1_IT_Update, ENABLE);
+	    /* Configure a 10ms tick, 16MHz/(15+1)=1MHz, 1s/MHz=1us */
+		TIM1_TimeBaseInit(15, TIM1_CounterMode_Up, 9999, 0);
+		TIM1_SetCounter(0);					/* 将计数器初值设为0 */
+		TIM1_ARRPreloadConfig(DISABLE);		/* 预装载不使能 */
+		ITC_SetSoftwarePriority(TIM1_UPD_OVF_TRG_IRQn, ITC_PriorityLevel_1);
+		
+	    /* Generate an interrupt on timer count overflow 计数溢出*/
+	    TIM1_ITConfig(TIM1_IT_Update, ENABLE);
 
-    /* Enable TIM1 */
-    TIM1_Cmd(ENABLE);
+	    /* Enable TIM1 */
+	    TIM1_Cmd(ENABLE);
+	}
 }
 
 
