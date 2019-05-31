@@ -1,9 +1,15 @@
 /*
  * 循环数组队列
  */
- 
+#include <stdlib.h>
 #include <string.h>
 #include "queue.h"
+
+/* 队列块优先级 */
+#if QUEUE_PRIROTY_ENABLE == 1u
+uint8_t	priroty = 0;
+uint8_t prirotytable[QUEUE_MSGS_NUM_MAX]={0x00};
+#endif
 
 /* Forward declarations */
 static uint8_t queue_remove (QUEUE *qptr, uint8_t* msgptr);
@@ -28,6 +34,15 @@ uint8_t QueueCreate (QUEUE *qptr, uint8_t *buff_ptr, uint32_t unit_size, uint32_
         /* Bad values */
         status = QUEUE_ERR_PARAM;
     }
+	
+#if QUEUE_PRIROTY_ENABLE == 1u
+	else if (max_num_msgs > QUEUE_MSGS_NUM_MAX)
+	{
+		/* Bad values */
+        status = QUEUE_ERR_PARAM;
+	}
+#endif
+
     else
     {
        /* Store the queue details */
@@ -40,7 +55,7 @@ uint8_t QueueCreate (QUEUE *qptr, uint8_t *buff_ptr, uint32_t unit_size, uint32_
         qptr->remove_index = 0;
         qptr->num_msgs_stored = 0;
 
-        /* Successful */
+		/* Successful */
         status = QUEUE_OK;
     }
 
@@ -79,7 +94,11 @@ uint8_t QueueDestory(QUEUE *qptr)
 
         /* Successful */
         status = QUEUE_OK;
-
+		
+#if QUEUE_PRIROTY_ENABLE == 1u
+		priroty = 0;
+		memset(prirotytable, 0x00, QUEUE_MSGS_NUM_MAX);
+#endif
 		/* Exit critical region */
 		CRITICAL_END ();
 	}
@@ -212,6 +231,31 @@ uint8_t QueuePut(QUEUE *qptr, uint32_t timeout, uint8_t *msgptr)
 	return (status);
 }
 
+#if QUEUE_PRIROTY_ENABLE == 1u
+/**
+ * QueueSet
+ * 设置队列数据块优先级
+ *
+*/
+uint8_t QueueSet(uint8_t pri)
+{
+	uint8_t status = QUEUE_OK;
+	
+    /* Parameter check */
+    if (pri > QUEUE_PRIROTY_MIX)
+    {
+        /* Bad pointers */
+        status = QUEUE_ERR_PARAM;
+    }
+	else
+	{
+		priroty = pri;
+		status = QUEUE_OK;
+	}
+
+	return (status);
+}
+#endif
 
 /**
  *  queue_remove 将数据移出队列
