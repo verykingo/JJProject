@@ -32,10 +32,19 @@
 #endif
 
 /* 队列返回参数定义 */
-#define QUEUE_OK                  0	//正确
-#define QUEUE_TIMEOUT             1	//超时
-#define QUEUE_WOULDBLOCK          2	//阻塞
-#define QUEUE_ERR_PARAM           3	//参数错误
+#define QUEUE_OK                  0u	//正确
+#define QUEUE_TIMEOUT             1u	//超时
+#define QUEUE_WOULDBLOCK          2u	//阻塞
+#define QUEUE_ERR_PARAM           3u	//参数错误
+
+/* 队列优先级 */
+#define QUEUE_PRIROTY_ENABLE	0u
+
+/* 队列优先级最小值64，最大值0 */
+#define QUEUE_PRIROTY_MIX		64u
+
+/* 队列数据块最大数目 */
+#define QUEUE_MSGS_NUM_MAX		64u
 
 #ifdef __cplusplus
 extern "C" {
