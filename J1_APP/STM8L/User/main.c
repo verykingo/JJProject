@@ -242,19 +242,19 @@ void main(void)
 	Timer_Task0.timer_name 	= (void *)&Timer_Task0;
 	Timer_Task0.cb_func		= Task0;
 	Timer_Task0.cb_data		= NULL;
-	Timer_Task0.cb_ticks 	= TimerGet()+ SS_TO_TICKS(2);
+	Timer_Task0.cb_ticks 	= SS_TO_TICKS(2);
 	TimerInsert(&Timer_Task0);
 
 	Timer_Task1.timer_name	= (void *)&Timer_Task1;
 	Timer_Task1.cb_func 	= Task1;
 	Timer_Task1.cb_data 	= NULL;
-	Timer_Task1.cb_ticks	= TimerGet()+ SS_TO_TICKS(3);
+	Timer_Task1.cb_ticks	= SS_TO_TICKS(3);
 	TimerInsert(&Timer_Task1);
 
 	Timer_Task2.timer_name	= (void *)&Timer_Task2;
 	Timer_Task2.cb_func 	= Task2;
 	Timer_Task2.cb_data 	= NULL;
-	Timer_Task2.cb_ticks	= TimerGet()+ SS_TO_TICKS(5);
+	Timer_Task2.cb_ticks	= SS_TO_TICKS(5);
 	TimerInsert(&Timer_Task2);
 	
 #elif USE_UCOS_II == 1u

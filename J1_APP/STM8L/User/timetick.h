@@ -14,19 +14,19 @@
 /* 自定义数据类型 */
 
 /* 每一个Tick等于10000微秒时间 */
-#define US_PER_TICKS	((uint32_t)(10u*1000u))
+#define US_PER_TICKS	((uint32_t)(10ul*1000ul))
 
 /* 微秒转换 */
 #define TICKS_TO_US(x) 	((uint32_t)(x*US_PER_TICKS))
 #define US_TO_TICKS(x) 	((uint32_t)(x/US_PER_TICKS))
 
 /* 毫秒转换 */
-#define TICKS_TO_MS(x) 	((uint32_t)(x*US_PER_TICKS/1000u))
-#define MS_TO_TICKS(x) 	((uint32_t)(x*1000u/US_PER_TICKS))
+#define TICKS_TO_MS(x) 	((uint32_t)(x*US_PER_TICKS/1000ul))
+#define MS_TO_TICKS(x) 	((uint32_t)(x*1000ul/US_PER_TICKS))
 
 /* 秒转换 */
-#define TICKS_TO_SS(x) 	((uint32_t)(x*US_PER_TICKS/1000u*1000u))
-#define SS_TO_TICKS(x) 	((uint32_t)(x*1000u*1000u/US_PER_TICKS))
+#define TICKS_TO_SS(x) 	((uint32_t)(x*US_PER_TICKS/1000ul*1000ul))
+#define SS_TO_TICKS(x) 	((uint32_t)(x*1000ul*1000ul/US_PER_TICKS))
 
 void TimeTick_Init(uint8_t TIM);
 
