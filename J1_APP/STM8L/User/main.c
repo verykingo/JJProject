@@ -1,20 +1,19 @@
 /**
   ******************************************************************************
-  * @file    Project/STM8L15x_StdPeriph_Template/main.c
-  * @author  MCD Application Team
-  * @version V1.6.1
-  * @date    30-September-2014
+  * @file    Project/main.c
+  * @author  VeryKing.Inc Develop Team
+  * @version V1.0.1
+  * @date    01-June-2019
   * @brief   Main program body
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT 2014 STMicroelectronics</center></h2>
+  * <h2><center>&copy; COPYRIGHT 2019 VeryKing.Inc</center></h2>
   *
-  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  * Licensed under V&K License Agreement V2, (the "License");
   * You may not use this file except in compliance with the License.
   * You may obtain a copy of the License at:
   *
-  *        http://www.st.com/software_license_agreement_liberty_v2
   *
   * Unless required by applicable law or agreed to in writing, software 
   * distributed under the License is distributed on an "AS IS" BASIS, 
@@ -229,8 +228,11 @@ void main(void)
 	/* System CLK Init */
 	SystemClock_Init();
 
-	/* TimeTick Init */
+	/* TimeTick Init for softtimer tick*/
 	TimeTick_Init(1);
+
+	/* TimeTick Init for RTOS tick*/
+	TimeTick_Init(2);
 
 	/* Create a queue buffer */
 	QueueCreate(&Queue,QueueBuffer,MAX_QUEUE_BUF_SIZE,MAX_QUEUE_BUF_NUMS);
@@ -316,4 +318,4 @@ void assert_failed(uint8_t* file, uint32_t line)
   * @}
   */
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+/************************ (C) COPYRIGHT VeryKing.Inc *****END OF FILE****/

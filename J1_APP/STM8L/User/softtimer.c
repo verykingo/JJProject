@@ -65,12 +65,16 @@ uint8_t TimerInsert (TIMER *timer_ptr)
         {
             /* List is empty, insert new head */
             new->next_timer = NULL;
+
+			/* Update the list head with the new timer */
             timer_list = new;
         }
         else
         {
             /* List has at least one entry, enqueue new timer before */
             new->next_timer = timer_list;
+
+			/* Update the list head with the new timer */
             timer_list = new;
         }
 
@@ -119,6 +123,7 @@ uint8_t TimerCancel (TIMER *timer_ptr)
 					/* Free the timer callback memory space*/
 					free(next_ptr);
 
+					/* Update prev_ptr and next_ptr with the list head */
 					prev_ptr = next_ptr = timer_list;
                 }
                 else
@@ -129,6 +134,7 @@ uint8_t TimerCancel (TIMER *timer_ptr)
 					/* Free the timer callback memory space*/
 					free(next_ptr);
 
+					/* Update next_ptr with the next of prev_ptr */
 					next_ptr = prev_ptr->next_timer;
                 }
 				
@@ -170,7 +176,8 @@ uint8_t TimerClear (void)
 	
 		/* Free the timer callback memory space*/
 		free(next_ptr);	
-		
+
+		/* Update next_ptr with the list head */
 		next_ptr = timer_list;
 	}
 
@@ -241,23 +248,37 @@ static void TimerCallbacks (void)
             {
                 /* We're removing the list head */
                 timer_list = next_ptr->next_timer;
+
+				/* Call the registered callback */
+				if (next_ptr->cb_func)
+				{
+					next_ptr->cb_func (next_ptr->cb_data);
+				}
+
+				/* Free the timer callback memory space*/
+				free(next_ptr);	
+
+				/* Update prev_ptr and next_ptr with the list head*/
+				prev_ptr = next_ptr = timer_list;			
             }
             else
             {
                 /* We're removing a mid or tail timer */
                 prev_ptr->next_timer = next_ptr->next_timer;
-            }
 
-            /* Call the registered callback */
-            if (next_ptr->cb_func)
-            {
-                next_ptr->cb_func (next_ptr->cb_data);
-            }
+				/* Call the registered callback */
+				if (next_ptr->cb_func)
+				{
+					next_ptr->cb_func (next_ptr->cb_data);
+				}
 
-            /* Do not update prev_ptr, we have just removed this one */
+				/* Free the timer callback memory space*/
+				free(next_ptr);	
 
+				/* Update next_ptr with the next of prev_ptr */
+				next_ptr = prev_ptr->next_timer;
+            }	
         }
-
         /* Entry is not due, leave it in there with its count decremented */
         else
         {
@@ -266,10 +287,10 @@ static void TimerCallbacks (void)
              * to remove a mid or tail timer.
              */
             prev_ptr = next_ptr;
-        }
 
-        /* Move on to the next in the list */
-        next_ptr = next_ptr->next_timer;
+			/* Move on to the next in the list */
+        	next_ptr = next_ptr->next_timer;
+        }
     }
 }
 
