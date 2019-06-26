@@ -55,5 +55,8 @@ typedef struct protocol
 
 } PROTOCOL;
 
+
+void protocol_command(void* ptr);
+
 #endif
 

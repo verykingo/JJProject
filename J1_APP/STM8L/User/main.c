@@ -31,10 +31,10 @@
 #include "sysclock.h"
 #include "timetick.h"
 #include "queue.h"
-
-#if USE_NO_RTOS == 1u
 #include "softtimer.h"
-#elif USE_UCOS_II == 1u
+#include "protocol.h"
+
+#if USE_UCOS_II == 1u
 #include "ucos_ii.h"
 #elif USE_ATOMTHREAD == 1u
 #include "atom.h"
@@ -239,6 +239,8 @@ void main(void)
 
 	/* After Finish All Init, Enable Interrupt */
 	enableInterrupts();	
+
+	
 	
 #if USE_NO_RTOS == 1u
 	Timer_Task0.timer_name 	= (void *)&Timer_Task0;
