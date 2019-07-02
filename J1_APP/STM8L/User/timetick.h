@@ -13,8 +13,8 @@
 
 /* 自定义数据类型 */
 
-/* 每一个Tick等于10微秒(最大定时时间2^32*10us=42949s)时间 */
-#define US_PER_TICKS	((uint32_t)(10ul))
+/* 每一个Tick等于10毫秒(最大定时时间2^32*10ms=42949000s)时间 */
+#define US_PER_TICKS	((uint32_t)(10000ul))
 
 /* 微秒转换 */
 #define TICKS_TO_US(x) 	((uint32_t)(x*US_PER_TICKS))

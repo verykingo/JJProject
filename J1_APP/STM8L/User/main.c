@@ -52,22 +52,34 @@ uint8_t QueueBuffer[MAX_QUEUE_BUF_SIZE*MAX_QUEUE_BUF_NUMS] = {0};
 
 #if USE_NO_RTOS == 1u
 /* 定时器回调 */
-TIMER Timer_Task0;
-TIMER Timer_Task1;
-TIMER Timer_Task2;
+TIMER Timer_Callback0;
+TIMER Timer_Callback1;
+TIMER Timer_Callback2;
 
-void Task0( void * pdata )
+void Callback0( void * pdata )
 {
+	static uint32_t Callback0 = 0;
+
+	Callback0++;
+	
 	//do nothing
 }
 
-void Task1( void * pdata )
+void Callback1( void * pdata )
 {
+	static uint32_t Callback1 = 0;
+
+	Callback1++;
+
 	//do nothing
 }
 
-void Task2( void * pdata )
+void Callback2( void * pdata )
 {
+	static uint32_t Callback2 = 0;
+
+	Callback2++;
+
 	//do nothing
 }
 
@@ -228,10 +240,10 @@ void main(void)
 	/* System CLK Init */
 	SystemClock_Init();
 
-	/* TimeTick Init for softtimer tick*/
+	/* TimeTick Init for RTOS tick*/
 	TimeTick_Init(1);
 
-	/* TimeTick Init for RTOS tick*/
+	/* TimeTick Init for softtimer tick*/
 	TimeTick_Init(2);
 
 	/* Create a queue buffer */
@@ -243,23 +255,25 @@ void main(void)
 	
 	
 #if USE_NO_RTOS == 1u
-	Timer_Task0.timer_name 	= (void *)&Timer_Task0;
-	Timer_Task0.cb_func		= Task0;
-	Timer_Task0.cb_data		= NULL;
-	Timer_Task0.cb_ticks 	= SS_TO_TICKS(2);
-	TimerInsert(&Timer_Task0);
+	Timer_Callback0.timer_name 	= (void *)&Timer_Callback0;
+	Timer_Callback0.cb_func		= Callback0;
+	Timer_Callback0.cb_data		= NULL;
+	Timer_Callback0.cb_ticks 	= SS_TO_TICKS(2);
+	TimerInsert(&Timer_Callback0);
 
-	Timer_Task1.timer_name	= (void *)&Timer_Task1;
-	Timer_Task1.cb_func 	= Task1;
-	Timer_Task1.cb_data 	= NULL;
-	Timer_Task1.cb_ticks	= SS_TO_TICKS(3);
-	TimerInsert(&Timer_Task1);
+	Timer_Callback1.timer_name	= (void *)&Timer_Callback1;
+	Timer_Callback1.cb_func 	= Callback1;
+	Timer_Callback1.cb_data 	= NULL;
+	Timer_Callback1.cb_ticks	= SS_TO_TICKS(3);
+	TimerInsert(&Timer_Callback1);
 
-	Timer_Task2.timer_name	= (void *)&Timer_Task2;
-	Timer_Task2.cb_func 	= Task2;
-	Timer_Task2.cb_data 	= NULL;
-	Timer_Task2.cb_ticks	= SS_TO_TICKS(5);
-	TimerInsert(&Timer_Task2);
+	Timer_Callback2.timer_name	= (void *)&Timer_Callback2;
+	Timer_Callback2.cb_func 	= Callback2;
+	Timer_Callback2.cb_data 	= NULL;
+	Timer_Callback2.cb_ticks	= SS_TO_TICKS(5);
+	TimerInsert(&Timer_Callback2);
+
+	while(1){};
 	
 #elif USE_UCOS_II == 1u
 
