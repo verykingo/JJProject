@@ -9,7 +9,7 @@
 ;
 ; File      : OS_CPU_A.ASM
 ; Version   : V2.91
-; By        : Johkk Wen
+; By        : Johkkk Wen
 ;             
 ;
 ; For       : STM8L

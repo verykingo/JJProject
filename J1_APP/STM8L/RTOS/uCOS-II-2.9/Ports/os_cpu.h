@@ -1,19 +1,19 @@
 /****************************************Copyright (c)**************************************************
-**                               Guangzhou ZHIYUAN electronics Co.,LTD.
+**                               Shenzhen VeryKing Technology Co.,LTD.
 **                                     
 **                                 http://www.embedtools.com
 **
 **--------------File Info-------------------------------------------------------------------------------
 ** File Name:               os_cpu.h
-** Last modified Date:      2007.12.12
-** Last Version:            1.0
+** Last modified Date:      2019.08.08
+** Last Version:            2.2
 ** Description:             Header file of the ported code  移植代码头文件
 ** 
 **------------------------------------------------------------------------------------------------------
-** Created By:              Steven Zhou 周绍刚
-** Created date:            2007.12.12
-** Version:                 1.0
-** Descriptions:            The original version 初始版本
+** Created By:              Johkkk Wen
+** Created date:            2019.08.08
+** Version:                 2.2
+** Descriptions:            The 2th version 初始版本
 **
 **--------------------------------------------------------------------------------------------------------
 ** Modified by:             

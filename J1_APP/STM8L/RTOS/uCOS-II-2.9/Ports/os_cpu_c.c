@@ -7,14 +7,13 @@
 *                                (c) Copyright 2006, Micrium, Weston, FL
 *                                          All Rights Reserved
 *
-*                                           ARM Cortex-M3 Port
+*                                                STM8 Port
 *
 * File      : OS_CPU_C.C
 * Version   : V2.89
-* By        : Jean J. Labrosse
-*             Brian Nagel
+* By        : Johkkk Wen
 *
-* For       : ARMv7M Cortex-M3
+* For       : STM8
 * Mode      : Thumb2
 ; Toolchain : IAR EWARM V6.10
 *********************************************************************************************************

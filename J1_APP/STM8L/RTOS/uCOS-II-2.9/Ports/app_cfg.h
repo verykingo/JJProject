@@ -16,15 +16,11 @@
 *
 *                                      APPLICATION CONFIGURATION
 *
-*                                     ST Microelectronics STM32
-*                                              on the
-*
-*                                     Micrium uC-Eval-STM32F107
-*                                        Evaluation Board
+*                                       ST Microelectronics STM8
 *
 * Filename      : app_cfg.h
-* Version       : V1.00
-* Programmer(s) : EHS
+* Version       : V2.10
+* Programmer(s) : Johkkk Wen
 *********************************************************************************************************
 */
 
