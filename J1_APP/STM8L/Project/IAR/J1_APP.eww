@@ -7,6 +7,9 @@
         <path>$WS_DIR$\J1_APP_AtomThread.ewp</path>
     </project>
     <project>
+        <path>$WS_DIR$\J1_APP_FreeRTOS.ewp</path>
+    </project>
+    <project>
         <path>$WS_DIR$\J1_APP_NoRTOS.ewp</path>
     </project>
     <project>

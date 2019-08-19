@@ -2193,6 +2193,9 @@
             <name>$PROJ_DIR$\..\..\User\main.c</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\..\..\User\protocol.c</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\..\..\User\queue.c</name>
         </file>
         <file>

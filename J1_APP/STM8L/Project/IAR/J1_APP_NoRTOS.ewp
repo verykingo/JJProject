@@ -16,12 +16,12 @@
                 <debug>1</debug>
                 <option>
                     <name>GenDeviceSelectMenu</name>
-                    <state>STM8L151G6	STM8L151G6</state>
+                    <state>STM8L151C8	STM8L151C8</state>
                 </option>
                 <option>
                     <name>GenCodeModel</name>
                     <version>0</version>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>GenDataModel</name>
@@ -607,7 +607,7 @@
                 </option>
                 <option>
                     <name>IlinkIcfFile</name>
-                    <state>$TOOLKIT_DIR$\config\lnkstm8l151f3.icf</state>
+                    <state>$TOOLKIT_DIR$\config\lnkstm8l151g6.icf</state>
                 </option>
                 <option>
                     <name>IlinkIcfFileSlave</name>
@@ -1698,6 +1698,9 @@
         <name>User</name>
         <file>
             <name>$PROJ_DIR$\..\..\User\main.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\User\protocol.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\User\queue.c</name>

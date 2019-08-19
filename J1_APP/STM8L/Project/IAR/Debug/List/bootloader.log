@@ -64,8 +64,8 @@ Loading object E:\Wen\MyPorject\JJProject\J1_APP\STM8L\Project\IAR\Debug\Obj\sys
               reference :  CLK_SYSCLKSourceSwitchCmd
               definition:  SystemClock_Init
 
-Auto library: dlstm8smn.a -> C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.0_2\stm8\lib\dlstm8smn.a
-Auto library: dbgstm8smd.a -> C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.0_2\stm8\lib\dbgstm8smd.a
+Auto library: dlstm8smn.a -> C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.0\stm8\lib\dlstm8smn.a
+Auto library: dbgstm8smd.a -> C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.0\stm8\lib\dbgstm8smd.a
 
 Library configuration:
 
