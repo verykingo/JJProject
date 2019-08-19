@@ -56,7 +56,8 @@ typedef struct soft_timer
 
 } TIMER;
 
-#define TIMER_STRUCT_SIZE	20
+#define TIMER_STRUCT_SIZE	20			/* 软定时器大小			*/
+#define TIMER_STATCK_SIZE 	400			/* 软定时器堆栈大小 */
 
 /* Function prototypes */
 extern uint8_t 	TimerInsert(TIMER *timer_ptr);

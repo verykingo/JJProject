@@ -6,10 +6,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "softtimer.h"
 
 /* Local data */
+static uint8_t STACK_TIMER[TIMER_STATCK_SIZE]={0};
+static uint8_t STACK_FLAGS[TIMER_STATCK_SIZE/TIMER_STRUCT_SIZE]={0};
+static uint8_t stack_count=TIMER_STATCK_SIZE/TIMER_STRUCT_SIZE;
 
 /* 定时器链表表头指针 */
 static TIMER *timer_list = NULL;
@@ -19,6 +23,8 @@ static uint32_t timer_ticks = 0;
 
 /* 预函数声明 */
 static void TimerCallbacks (void);
+void* timer_mem_malloc(uint32_t size);
+void  timer_mem_free(void *ptr);
 
 /*
  * 添加一个定时器回调
@@ -37,7 +43,7 @@ uint8_t TimerInsert (TIMER *timer_ptr)
     else
     {    
 		/* Copy a new timer callback from timer_ptr */
-		TIMER *new = (TIMER *)malloc(TIMER_STRUCT_SIZE);
+		TIMER *new = (TIMER *)timer_mem_malloc(TIMER_STRUCT_SIZE);
 		if(new == NULL)
 		{
 			return TIMER_ERR_PARAM;
@@ -121,7 +127,7 @@ uint8_t TimerCancel (TIMER *timer_ptr)
                     timer_list = next_ptr->next_timer;
 
 					/* Free the timer callback memory space*/
-					free(next_ptr);
+					timer_mem_free(next_ptr);
 
 					/* Update prev_ptr and next_ptr with the list head */
 					prev_ptr = next_ptr = timer_list;
@@ -132,7 +138,7 @@ uint8_t TimerCancel (TIMER *timer_ptr)
                     prev_ptr->next_timer = next_ptr->next_timer;
 
 					/* Free the timer callback memory space*/
-					free(next_ptr);
+					timer_mem_free(next_ptr);
 
 					/* Update next_ptr with the next of prev_ptr */
 					next_ptr = prev_ptr->next_timer;
@@ -175,7 +181,7 @@ uint8_t TimerClear (void)
 		timer_list = next_ptr->next_timer;
 	
 		/* Free the timer callback memory space*/
-		free(next_ptr);	
+		timer_mem_free(next_ptr);	
 
 		/* Update next_ptr with the list head */
 		next_ptr = timer_list;
@@ -256,7 +262,7 @@ static void TimerCallbacks (void)
 				}
 
 				/* Free the timer callback memory space*/
-				free(next_ptr);	
+				timer_mem_free(next_ptr);	
 
 				/* Update prev_ptr and next_ptr with the list head*/
 				prev_ptr = next_ptr = timer_list;			
@@ -273,7 +279,7 @@ static void TimerCallbacks (void)
 				}
 
 				/* Free the timer callback memory space*/
-				free(next_ptr);	
+				timer_mem_free(next_ptr);	
 
 				/* Update next_ptr with the next of prev_ptr */
 				next_ptr = prev_ptr->next_timer;
@@ -292,6 +298,85 @@ static void TimerCallbacks (void)
         	next_ptr = next_ptr->next_timer;
         }
     }
+}
+
+/**
+ * \b timer_mem_malloc
+ *
+ * 定时器内存空间申请
+ *
+ * malloc memory
+ *
+ * @return menory pointer
+ */
+void* timer_mem_malloc(uint32_t size)
+{	
+	int i;
+	uint8_t *ptr = NULL;
+
+	/* 数据块大小错误 */
+	if(size != TIMER_STRUCT_SIZE)
+	{
+		return NULL;
+	}	
+	
+	/* 没有可用数据块 */
+	if(stack_count==0)
+	{
+		return NULL;
+	}
+
+	/* 查表可用数据块 */
+	for(i=0; i<TIMER_STATCK_SIZE/TIMER_STRUCT_SIZE; i++)
+	{
+		if(STACK_FLAGS[i] == 0)
+		{		
+			break;
+		}
+	}	
+
+	STACK_FLAGS[i] = 1;
+	stack_count--;
+	
+	ptr = STACK_TIMER+i*TIMER_STRUCT_SIZE;
+
+	return ptr;	
+}
+
+/**
+ * \b timer_mem_free
+ *
+ * 定时器内存空间释放
+ *
+ * malloc memory
+ *
+ * @return none
+ */
+void timer_mem_free(void *ptr)
+{
+	/* 指针是空     */
+	if(ptr == NULL)
+	{
+		return;
+	}
+
+	/* 指针没在定时器堆栈范围内 */
+	if(ptr < STACK_TIMER || ptr > STACK_TIMER+TIMER_STATCK_SIZE)
+	{
+		return;
+	}
+
+	/* 数据大小是数据块整数倍 */
+	if(((uint8_t *)ptr-STACK_TIMER)%TIMER_STRUCT_SIZE != 0)
+	{
+		return;
+	}
+
+	STACK_FLAGS[((uint8_t *)ptr-STACK_TIMER)/TIMER_STRUCT_SIZE] = 0;
+	stack_count++;		
+	memset(ptr, 0, TIMER_STRUCT_SIZE);
+
+	return;
 }
 
 

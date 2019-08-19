@@ -39,7 +39,7 @@ void TimeTick_Init(uint8_t TIM)
 	    /* Configure a 10us tick, 16MHz/(15+1)=1MHz, 1s/MHz=1us */
 		TIM1_TimeBaseInit(15, TIM1_CounterMode_Up, 9, 0);
 		TIM1_SetCounter(0);					/* 将计数器初值设为0 */
-		TIM1_ARRPreloadConfig(ENABLE);		/* 预装载不使能 */
+		TIM1_ARRPreloadConfig(ENABLE);		/* 预装载使能 */
 		ITC_SetSoftwarePriority(TIM1_UPD_OVF_TRG_IRQn, ITC_PriorityLevel_1);
 		
 	    /* Generate an interrupt on timer count overflow 计数溢出*/
