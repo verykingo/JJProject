@@ -236,6 +236,16 @@
           <file> 26</file>
         </tool>
       </outputs>
+      <inputs>
+        <tool>
+          <name>BICOMP</name>
+          <file> 36 119 65 89 160 107 76 169 117 165 78 87 96 51 118 152 158 37 80 74 29 77 68 116 115 159 39 75 79 97 82 90 98 81 48 66 105 49</file>
+        </tool>
+        <tool>
+          <name>ICCARM</name>
+          <file> 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 37 75 78 79 80 97 89 82 74 90 87 98 29 81 107 48 77 66 96 105 68 49 65</file>
+        </tool>
+      </inputs>
     </file>
     <file>
       <name>$PROJ_DIR$\..\Driver\STM32F10x_StdPeriph_Driver\src\stm32f10x_pwr.c</name>
@@ -707,11 +717,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 48 79</file>
+          <file> 36 76 169 87 117 165 78 96 119 160 89 107 65 48 51 118 152 158 37 80 74 29 77 68 79 116 115 159 39 75 97 82 90 98 81 66 105 49</file>
         </tool>
         <tool>
           <name>ICCARM</name>
-          <file> 79</file>
+          <file> 79 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 37 75 78 80 97 89 82 74 90 87 98 29 81 107 48 77 66 96 105 68 49 65</file>
         </tool>
       </inputs>
     </file>
@@ -734,11 +744,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 48 97</file>
+          <file> 152 36 29 51 165 158 80 68 118 37 74 77 48 119 76 169 160 117 78 89 87 107 96 65 97 116 115 159 39 75 79 82 90 98 81 66 105 49</file>
         </tool>
         <tool>
           <name>ICCARM</name>
-          <file> 97</file>
+          <file> 97 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 37 75 78 79 80 89 82 74 90 87 98 29 81 107 48 77 66 96 105 68 49 65</file>
         </tool>
       </inputs>
     </file>
@@ -761,11 +771,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 48 98</file>
+          <file> 115 36 76 48 39 82 119 165 79 98 105 51 116 158 159 75 97 90 81 66 49 118 169 152 160 117 37 78 80 89 74 87 29 107 77 96 68 65</file>
         </tool>
         <tool>
           <name>ICCARM</name>
-          <file> 98</file>
+          <file> 98 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 37 75 78 79 80 97 89 82 74 90 87 29 81 107 48 77 66 96 105 68 49 65</file>
         </tool>
       </inputs>
     </file>
@@ -788,11 +798,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 67</file>
+          <file> 36 65 89 76 160 107 119 169 117 165 78 87 96 51 118 152 158 37 80 74 29 77 68 67 116 115 159 39 75 79 97 82 90 98 81 48 66 105 49</file>
         </tool>
         <tool>
           <name>ICCARM</name>
-          <file> 67</file>
+          <file> 67 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 37 75 78 79 80 97 89 82 74 90 87 98 29 81 107 48 77 66 96 105 68 49 65</file>
         </tool>
       </inputs>
     </file>
@@ -814,8 +824,12 @@
       </outputs>
       <inputs>
         <tool>
+          <name>BICOMP</name>
+          <file> 159 119 36 75 66 116 90 76 158 165 97 81 49 48 51 115 39 79 82 98 105 118 169 152 160 117 37 78 80 89 74 87 29 107 77 96 68 65</file>
+        </tool>
+        <tool>
           <name>ICCARM</name>
-          <file> 75</file>
+          <file> 75 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 37 78 79 80 97 89 82 74 90 87 98 29 81 107 48 77 66 96 105 68 49 65</file>
         </tool>
       </inputs>
     </file>
@@ -838,11 +852,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 48 78</file>
+          <file> 159 36 75 66 119 116 90 76 158 165 97 81 49 48 51 115 39 79 82 98 105 78 118 169 152 160 117 37 80 89 74 87 29 107 77 96 68 65</file>
         </tool>
         <tool>
           <name>ICCARM</name>
-          <file> 78</file>
+          <file> 78 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 37 75 79 80 97 89 82 74 90 87 98 29 81 107 48 77 66 96 105 68 49 65</file>
         </tool>
       </inputs>
     </file>
@@ -865,11 +879,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 80</file>
+          <file> 76 36 78 96 119 169 117 165 87 160 89 107 65 51 118 152 158 37 80 74 29 77 68 116 115 159 39 75 79 97 82 90 98 81 48 66 105 49</file>
         </tool>
         <tool>
           <name>ICCARM</name>
-          <file> 80</file>
+          <file> 80 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 37 75 78 79 97 89 82 74 90 87 98 29 81 107 48 77 66 96 105 68 49 65</file>
         </tool>
       </inputs>
     </file>
@@ -892,11 +906,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 74</file>
+          <file> 66 159 75 36 119 116 90 76 158 165 97 81 49 51 115 39 79 82 98 48 105 74 118 169 152 160 117 37 78 80 89 87 29 107 77 96 68 65</file>
         </tool>
         <tool>
           <name>ICCARM</name>
-          <file> 74</file>
+          <file> 74 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 37 75 78 79 80 97 89 82 90 87 98 29 81 107 48 77 66 96 105 68 49 65</file>
         </tool>
       </inputs>
     </file>
@@ -919,11 +933,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 81</file>
+          <file> 65 36 119 89 160 107 76 169 117 165 78 87 96 51 118 152 158 37 80 74 29 77 68 81 116 115 159 39 75 79 97 82 90 98 48 66 105 49</file>
         </tool>
         <tool>
           <name>ICCARM</name>
-          <file> 81</file>
+          <file> 81 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 37 75 78 79 80 97 89 82 74 90 87 98 29 107 48 77 66 96 105 68 49 65</file>
         </tool>
       </inputs>
     </file>
@@ -946,11 +960,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 48 87</file>
+          <file> 119 36 169 87 117 165 76 78 96 160 89 107 65 48 51 118 152 158 37 80 74 29 77 68 116 115 159 39 75 79 97 82 90 98 81 66 105 49</file>
         </tool>
         <tool>
           <name>ICCARM</name>
-          <file> 87</file>
+          <file> 87 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 37 75 78 79 80 97 89 82 74 90 98 29 81 107 48 77 66 96 105 68 49 65</file>
         </tool>
       </inputs>
     </file>
@@ -973,11 +987,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 48 29</file>
+          <file> 76 158 68 36 165 80 152 29 119 118 37 74 77 48 51 169 160 117 78 89 87 107 96 65 116 115 159 39 75 79 97 82 90 98 81 66 105 49</file>
         </tool>
         <tool>
           <name>ICCARM</name>
-          <file> 29</file>
+          <file> 29 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 37 75 78 79 80 97 89 82 74 90 87 98 81 107 48 77 66 96 105 68 49 65</file>
         </tool>
       </inputs>
     </file>
@@ -1000,11 +1014,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 77</file>
+          <file> 79 119 165 105 98 36 76 115 39 82 48 51 116 158 159 75 97 90 81 66 49 77 118 169 152 160 117 37 78 80 89 74 87 29 107 96 68 65</file>
         </tool>
         <tool>
           <name>ICCARM</name>
-          <file> 77</file>
+          <file> 77 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 37 75 78 79 80 97 89 82 74 90 87 98 29 81 107 48 66 96 105 68 49 65</file>
         </tool>
       </inputs>
     </file>
@@ -1027,11 +1041,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 48</file>
+          <file> 76 36 158 97 165 49 81 119 116 159 75 90 66 51 115 39 79 82 98 48 105 118 169 152 160 117 37 78 80 89 74 87 29 107 77 96 68 65</file>
         </tool>
         <tool>
           <name>ICCARM</name>
-          <file> 48</file>
+          <file> 48 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 37 75 78 79 80 97 89 82 74 90 87 98 29 81 107 77 66 96 105 68 49 65</file>
         </tool>
       </inputs>
     </file>
@@ -1054,11 +1068,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 89</file>
+          <file> 77 76 36 37 118 74 119 165 152 158 80 29 68 51 169 160 117 78 89 87 107 96 65 116 115 159 39 75 79 97 82 90 98 81 48 66 105 49</file>
         </tool>
         <tool>
           <name>ICCARM</name>
-          <file> 89</file>
+          <file> 89 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 37 75 78 79 80 97 82 74 90 87 98 29 81 107 48 77 66 96 105 68 49 65</file>
         </tool>
       </inputs>
     </file>
@@ -1081,11 +1095,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 105</file>
+          <file> 36 98 76 165 79 105 119 115 39 82 48 51 116 158 159 75 97 90 81 66 49 118 169 152 160 117 37 78 80 89 74 87 29 107 77 96 68 65</file>
         </tool>
         <tool>
           <name>ICCARM</name>
-          <file> 105</file>
+          <file> 105 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 37 75 78 79 80 97 89 82 74 90 87 98 29 81 107 48 77 66 96 68 49 65</file>
         </tool>
       </inputs>
     </file>
@@ -1108,11 +1122,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 48 68</file>
+          <file> 118 74 36 51 37 77 165 152 158 80 29 68 48 119 76 169 160 117 78 89 87 107 96 65 116 115 159 39 75 79 97 82 90 98 81 66 105 49</file>
         </tool>
         <tool>
           <name>ICCARM</name>
-          <file> 68</file>
+          <file> 68 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 37 75 78 79 80 97 89 82 74 90 87 98 29 81 107 48 77 66 96 105 49 65</file>
         </tool>
       </inputs>
     </file>
@@ -1139,7 +1153,7 @@
         </tool>
         <tool>
           <name>ICCARM</name>
-          <file> 65</file>
+          <file> 65 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 37 75 78 79 80 97 89 82 74 90 87 98 29 81 107 48 77 66 96 105 68 49</file>
         </tool>
       </inputs>
     </file>
@@ -1162,11 +1176,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 90</file>
+          <file> 76 36 78 96 51 169 117 165 87 160 89 107 65 119 118 152 158 37 80 74 29 77 68 90 116 115 159 39 75 79 97 82 98 81 48 66 105 49</file>
         </tool>
         <tool>
           <name>ICCARM</name>
-          <file> 90</file>
+          <file> 90 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 37 75 78 79 80 97 89 82 74 87 98 29 81 107 48 77 66 96 105 68 49 65</file>
         </tool>
       </inputs>
     </file>
@@ -1189,11 +1203,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 48 96</file>
+          <file> 165 36 76 49 158 97 119 81 116 159 75 90 66 48 51 115 39 79 82 98 105 96 118 169 152 160 117 37 78 80 89 74 87 29 107 77 68 65</file>
         </tool>
         <tool>
           <name>ICCARM</name>
-          <file> 96</file>
+          <file> 96 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 37 75 78 79 80 97 89 82 74 90 87 98 29 81 107 48 77 66 105 68 49 65</file>
         </tool>
       </inputs>
     </file>
@@ -1220,7 +1234,7 @@
         </tool>
         <tool>
           <name>ICCARM</name>
-          <file> 37</file>
+          <file> 37 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 75 78 79 80 97 89 82 74 90 87 98 29 81 107 48 77 66 96 105 68 49 65</file>
         </tool>
       </inputs>
     </file>
@@ -1243,11 +1257,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 48 82</file>
+          <file> 36 74 118 76 37 77 119 165 152 158 80 29 68 48 51 169 160 117 78 89 87 107 96 65 82 116 115 159 39 75 79 97 90 98 81 66 105 49</file>
         </tool>
         <tool>
           <name>ICCARM</name>
-          <file> 82</file>
+          <file> 82 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 37 75 78 79 80 97 89 74 90 87 98 29 81 107 48 77 66 96 105 68 49 65</file>
         </tool>
       </inputs>
     </file>
@@ -1270,11 +1284,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 48 107</file>
+          <file> 89 76 36 65 160 107 119 169 117 165 78 87 96 48 51 118 152 158 37 80 74 29 77 68 116 115 159 39 75 79 97 82 90 98 81 66 105 49</file>
         </tool>
         <tool>
           <name>ICCARM</name>
-          <file> 107</file>
+          <file> 107 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 37 75 78 79 80 97 89 82 74 90 87 98 29 81 48 77 66 96 105 68 49 65</file>
         </tool>
       </inputs>
     </file>
@@ -1297,11 +1311,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 48 49</file>
+          <file> 36 81 158 165 76 97 49 51 116 159 75 90 66 48 119 115 39 79 82 98 105 118 169 152 160 117 37 78 80 89 74 87 29 107 77 96 68 65</file>
         </tool>
         <tool>
           <name>ICCARM</name>
-          <file> 49</file>
+          <file> 49 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 37 75 78 79 80 97 89 82 74 90 87 98 29 81 107 48 77 66 96 105 68 65</file>
         </tool>
       </inputs>
     </file>
@@ -1324,11 +1338,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 48 66</file>
+          <file> 51 165 36 76 49 158 97 81 116 159 75 90 66 48 119 115 39 79 82 98 105 118 169 152 160 117 37 78 80 89 74 87 29 107 77 96 68 65</file>
         </tool>
         <tool>
           <name>ICCARM</name>
-          <file> 66</file>
+          <file> 66 36 119 76 165 158 169 115 159 152 160 116 117 39 51 118 37 75 78 79 80 97 89 82 74 90 87 98 29 81 107 48 77 96 105 68 49 65</file>
         </tool>
       </inputs>
     </file>
@@ -1351,11 +1365,11 @@
       <inputs>
         <tool>
           <name>BICOMP</name>
-          <file> 169 185 165 152 160 158 174 115 159 151</file>
+          <file> 36 115 185 118 65 89 165 107 159 51 117 78 87 96 158 174 169 152 160 119 76 37 80 74 29 77 68 151 116 39 75 79 97 82 90 98 81 48 66 105 49</file>
         </tool>
         <tool>
           <name>ICCARM</name>
-          <file> 151 165 158 169 115 159 152 160 185 174</file>
+          <file> 151 165 158 169 115 159 152 160 185 174 36 119 76 116 117 39 51 118 37 75 78 79 80 97 89 82 74 90 87 98 29 81 107 48 77 66 96 105 68 49 65</file>
         </tool>
       </inputs>
     </file>
@@ -1396,115 +1410,7 @@
       </outputs>
     </file>
     <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\User\system_stm32f10x.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
       <name>$PROJ_DIR$\..\..\CMSIS\DeviceSupport\system_stm32f10x.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\Driver\STM32F10x_StdPeriph_Driver\src\stm32f10x_cec.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\Driver\STM32F10x_StdPeriph_Driver\src\stm32f10x_dac.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\Driver\STM32F10x_StdPeriph_Driver\src\stm32f10x_gpio.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\User\stm32f10x_it.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\Driver\STM32F10x_StdPeriph_Driver\src\stm32f10x_bkp.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\Driver\STM32F10x_StdPeriph_Driver\src\stm32f10x_can.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\Driver\STM32F10x_StdPeriph_Driver\src\stm32f10x_crc.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\Driver\STM32F10x_StdPeriph_Driver\src\stm32f10x_exti.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\Driver\STM32F10x_StdPeriph_Driver\src\stm32f10x_iwdg.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\Driver\STM32F10x_StdPeriph_Driver\src\stm32f10x_fsmc.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\Driver\STM32F10x_StdPeriph_Driver\src\stm32f10x_i2c.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\Driver\STM32F10x_StdPeriph_Driver\src\stm32f10x_rtc.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\Driver\STM32F10x_StdPeriph_Driver\src\stm32f10x_rcc.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\Driver\STM32F10x_StdPeriph_Driver\src\stm32f10x_dbgmcu.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\Driver\STM32F10x_StdPeriph_Driver\src\stm32f10x_tim.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\Driver\STM32F10x_StdPeriph_Driver\src\stm32f10x_usart.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\Driver\STM32F10x_StdPeriph_Driver\src\misc.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\Driver\STM32F10x_StdPeriph_Driver\src\stm32f10x_flash.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\Driver\STM32F10x_StdPeriph_Driver\src\stm32f10x_spi.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\Driver\STM32F10x_StdPeriph_Driver\src\stm32f10x_adc.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\Driver\STM32F10x_StdPeriph_Driver\src\stm32f10x_dma.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\Driver\STM32F10x_StdPeriph_Driver\src\stm32f10x_pwr.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\Driver\STM32F10x_StdPeriph_Driver\src\stm32f10x_wwdg.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\Driver\STM32F10x_StdPeriph_Driver\src\stm32f10x_sdio.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\User\main.c</name>
-      <tool>ICCARM</tool>
-    </forcedrebuild>
-    <forcedrebuild>
-      <name>$PROJ_DIR$\..\..\CMSIS\CoreSupport\core_cm3.c</name>
       <tool>ICCARM</tool>
     </forcedrebuild>
   </configuration>
