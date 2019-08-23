@@ -2193,6 +2193,12 @@
             <name>FreeRTOSv10.2.1</name>
             <group>
                 <name>portable</name>
+                <file>
+                    <name>$PROJ_DIR$\..\..\RTOS\FreeRTOSv10.2.1\FreeRTOS\Source\portable\IAR\STM8\port.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\..\RTOS\FreeRTOSv10.2.1\FreeRTOS\Source\portable\IAR\STM8\portasm.s</name>
+                </file>
             </group>
             <group>
                 <name>source</name>
