@@ -32,7 +32,7 @@
 #include "atomport-private.h"
 
 #include "stm8l15x.h"
-#include "timetick.h"
+#include "vktimetick.h"
 
 /** Forward declarations */
 static NO_REG_SAVE void thread_shell (void);
@@ -235,7 +235,7 @@ void archThreadContextInit (ATOM_TCB *tcb_ptr, void *stack_top, void (*entry_poi
 void archInitSystemTickTimer ( void )
 {
 	/* TimeTick Init */
-	TimeTick_Init(1);
+	vkTimeTick_Init(1);
 }
 
 

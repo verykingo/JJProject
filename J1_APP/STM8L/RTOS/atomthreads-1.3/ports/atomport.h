@@ -40,7 +40,8 @@
 /**
  * Date types(Compiler specific)  数据类型（和编译器相关）
  */
-typedef void *				POINTER;
+#define POINTER  void *
+//typedef void *				POINTER;
 typedef unsigned char    	OS_STK;     /*  Each stack entry is 8-bit wide  堆栈是8位宽度 */  
 
 
