@@ -2193,21 +2193,6 @@
             <name>$PROJ_DIR$\..\..\User\main.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\User\protocol.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\User\queue.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\User\queue.h</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\User\softtimer.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\User\softtimer.h</name>
-        </file>
-        <file>
             <name>$PROJ_DIR$\..\..\User\stm8l15x_conf.h</name>
         </file>
         <file>
@@ -2223,10 +2208,16 @@
             <name>$PROJ_DIR$\..\..\User\sysclock.h</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\User\timetick.c</name>
+            <name>$PROJ_DIR$\..\..\User\vkprotocol.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\User\timetick.h</name>
+            <name>$PROJ_DIR$\..\..\User\vkqueue.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\User\vksofttimer.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\User\vktimetick.c</name>
         </file>
     </group>
 </project>

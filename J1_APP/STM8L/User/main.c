@@ -26,35 +26,37 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include <stdio.h>
-
 #include "stm8l15x.h"
 #include "sysclock.h"
-#include "timetick.h"
-#include "queue.h"
-#include "softtimer.h"
-#include "protocol.h"
+#include "vktimetick.h"
+#include "vksofttimer.h"
+#include "vkprotocol.h"
 
 #if USE_UCOS_II == 1u
 #include "ucos_ii.h"
 #elif USE_ATOMTHREAD == 1u
 #include "atom.h"
+#elif USE_FREERTOS ==1u
+//#include "FreeRTOS.h"
 #endif
+
+#include "vkqueue.h"
 
 /* 队列数据块大小，数据库数目*/
 #define MAX_QUEUE_BUF_SIZE		32		
 #define MAX_QUEUE_BUF_NUMS		10
 
 /* 循环队列 */
-QUEUE Queue;
+vkQUEUE Queue;
 
 /* 队列数据存储区 */
 uint8_t QueueBuffer[MAX_QUEUE_BUF_SIZE*MAX_QUEUE_BUF_NUMS] = {0};
 
 #if USE_NO_RTOS == 1u
 /* 定时器回调 */
-TIMER Timer_Callback0;
-TIMER Timer_Callback1;
-TIMER Timer_Callback2;
+vkTIMER Timer_Callback0;
+vkTIMER Timer_Callback1;
+vkTIMER Timer_Callback2;
 
 void Callback0( void * pdata )
 {
@@ -241,37 +243,37 @@ void main(void)
 	SystemClock_Init();
 
 	/* TimeTick Init for RTOS tick*/
-	TimeTick_Init(1);
+	vkTimeTick_Init(1);
 
 	/* TimeTick Init for softtimer tick*/
-	TimeTick_Init(2);
+	vkTimeTick_Init(2);
 
+#if USE_FREERTOS ==0u
 	/* Create a queue buffer */
-	QueueCreate(&Queue,QueueBuffer,MAX_QUEUE_BUF_SIZE,MAX_QUEUE_BUF_NUMS);
+	vkQueueCreate(&Queue,QueueBuffer,MAX_QUEUE_BUF_SIZE,MAX_QUEUE_BUF_NUMS);
+#endif
 
 	/* After Finish All Init, Enable Interrupt */
 	enableInterrupts();	
-
-	
 	
 #if USE_NO_RTOS == 1u
 	Timer_Callback0.timer_name 	= (void *)&Timer_Callback0;
 	Timer_Callback0.cb_func		= Callback0;
 	Timer_Callback0.cb_data		= NULL;
-	Timer_Callback0.cb_ticks 	= SS_TO_TICKS(2);
-	TimerInsert(&Timer_Callback0);
+	Timer_Callback0.cb_ticks 	= vkSS_TO_TICKS(2);
+	vkTimerInsert(&Timer_Callback0);
 
 	Timer_Callback1.timer_name	= (void *)&Timer_Callback1;
 	Timer_Callback1.cb_func 	= Callback1;
 	Timer_Callback1.cb_data 	= NULL;
-	Timer_Callback1.cb_ticks	= SS_TO_TICKS(3);
-	TimerInsert(&Timer_Callback1);
+	Timer_Callback1.cb_ticks	= vkSS_TO_TICKS(3);
+	vkTimerInsert(&Timer_Callback1);
 
 	Timer_Callback2.timer_name	= (void *)&Timer_Callback2;
 	Timer_Callback2.cb_func 	= Callback2;
 	Timer_Callback2.cb_data 	= NULL;
-	Timer_Callback2.cb_ticks	= SS_TO_TICKS(5);
-	TimerInsert(&Timer_Callback2);
+	Timer_Callback2.cb_ticks	= vkSS_TO_TICKS(5);
+	vkTimerInsert(&Timer_Callback2);
 
 	while(1){};
 	
@@ -306,7 +308,7 @@ void main(void)
 	atomOSStart();
 	
 #endif
-	
+
 }
 
 #ifdef  USE_FULL_ASSERT

@@ -146,7 +146,7 @@
                 </option>
                 <option>
                     <name>IccOptLevel</name>
-                    <state>1</state>
+                    <state>3</state>
                 </option>
                 <option>
                     <name>IccOptStrategy</name>
@@ -155,12 +155,12 @@
                 </option>
                 <option>
                     <name>IccOptLevelSlave</name>
-                    <state>1</state>
+                    <state>3</state>
                 </option>
                 <option>
                     <name>IccOptAllowList</name>
                     <version>0</version>
-                    <state>000000</state>
+                    <state>111111</state>
                 </option>
                 <option>
                     <name>IccGenerateDebugInfo</name>
@@ -1741,19 +1741,19 @@
             <name>$PROJ_DIR$\..\..\User\main.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\User\queue.c</name>
-        </file>
-        <file>
-            <name>$PROJ_DIR$\..\..\User\softtimer.c</name>
-        </file>
-        <file>
             <name>$PROJ_DIR$\..\..\User\stm8l15x_it.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\User\sysclock.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\User\timetick.c</name>
+            <name>$PROJ_DIR$\..\..\User\vkqueue.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\User\vksofttimer.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\User\vktimetick.c</name>
         </file>
     </group>
 </project>

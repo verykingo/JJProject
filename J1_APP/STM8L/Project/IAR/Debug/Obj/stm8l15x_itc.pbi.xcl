@@ -6,9 +6,9 @@ E:\Wen\MyPorject\JJProject\J1_APP\STM8L\Project\IAR\..\..\User
 -I
 E:\Wen\MyPorject\JJProject\J1_APP\STM8L\Project\IAR\..\..\Driver\STM8L15x_StdPeriph_Driver\inc
 -I
-E:\Wen\MyPorject\JJProject\J1_APP\STM8L\Project\IAR\..\..\RTOS\FreeRTOSv10.2.1\FreeRTOS\Source\include
+E:\Wen\MyPorject\JJProject\J1_APP\STM8L\Project\IAR\..\..\RTOS\uCOS-II-2.9\Source
 -I
-E:\Wen\MyPorject\JJProject\J1_APP\STM8L\Project\IAR\..\..\RTOS\FreeRTOSv10.2.1\FreeRTOS\Source\\portable\IAR\STM8
+E:\Wen\MyPorject\JJProject\J1_APP\STM8L\Project\IAR\..\..\RTOS\uCOS-II-2.9\Ports
 -I
 C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.0\stm8\inc
 -I
@@ -18,9 +18,9 @@ E:\Wen\MyPorject\JJProject\J1_APP\STM8L\User
 -I
 E:\Wen\MyPorject\JJProject\J1_APP\STM8L\Driver\STM8L15x_StdPeriph_Driver\inc
 -I
-E:\Wen\MyPorject\JJProject\J1_APP\STM8L\RTOS\FreeRTOSv10.2.1\FreeRTOS\Source\include
+E:\Wen\MyPorject\JJProject\J1_APP\STM8L\RTOS\uCOS-II-2.9\Source
 -I
-E:\Wen\MyPorject\JJProject\J1_APP\STM8L\RTOS\FreeRTOSv10.2.1\FreeRTOS\Source\portable\IAR\STM8
+E:\Wen\MyPorject\JJProject\J1_APP\STM8L\RTOS\uCOS-II-2.9\Ports
 -D__CHAR_BITS__=8
 -D__CHAR_MAX__=0xff
 -D__CHAR_MIN__=0

@@ -2232,9 +2232,6 @@
             <name>$PROJ_DIR$\..\..\User\main.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\User\protocol.c</name>
-        </file>
-        <file>
             <name>$PROJ_DIR$\..\..\User\softtimer.c</name>
         </file>
         <file>
@@ -2245,6 +2242,9 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\User\timetick.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\User\vkprotocol.c</name>
         </file>
     </group>
 </project>

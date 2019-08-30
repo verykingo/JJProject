@@ -292,13 +292,13 @@ INTERRUPT_HANDLER(ADC1_COMP_IRQHandler,18)
   * @retval None
   */
 #if (USE_NO_RTOS == 1u || USE_UCOS_II == 1u || USE_ATOMTHREAD == 1u)
-#include "softtimer.h"
+#include "vksofttimer.h"
 INTERRUPT_HANDLER(TIM2_UPD_OVF_TRG_BRK_USART2_TX_IRQHandler,19)
 {
 	/* In order to detect unexpected events during development,
 	   it is recommended to set a breakpoint on the following instruction.
 	*/
-	TimerTick();
+	vkTimerTick();
 
 	TIM2_ClearITPendingBit(TIM2_IT_Update);
 }
