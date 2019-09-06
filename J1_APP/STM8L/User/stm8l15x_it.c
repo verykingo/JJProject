@@ -28,6 +28,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm8l15x_it.h"
+#include "vkusart.h"
 
 /** @addtogroup STM8L15x_StdPeriph_Template
   * @{
@@ -308,6 +309,9 @@ INTERRUPT_HANDLER(TIM2_UPD_OVF_TRG_BRK_USART2_TX_IRQHandler,19)
     /* In order to detect unexpected events during development,
        it is recommended to set a breakpoint on the following instruction.
     */
+	vkUsart_Send_Byte(COM2);
+
+	USART_ClearITPendingBit(USART2, USART_IT_TC);    
 }
 #endif
 
@@ -321,6 +325,9 @@ INTERRUPT_HANDLER(TIM2_CC_USART2_RX_IRQHandler,20)
     /* In order to detect unexpected events during development,
        it is recommended to set a breakpoint on the following instruction.
     */
+	vkUsart_Recv_Byte(COM2);
+	
+	USART_ClearITPendingBit(USART2, USART_IT_RXNE);    
 }
 
 
@@ -334,6 +341,9 @@ INTERRUPT_HANDLER(TIM3_UPD_OVF_TRG_BRK_USART3_TX_IRQHandler,21)
     /* In order to detect unexpected events during development,
        it is recommended to set a breakpoint on the following instruction.
     */
+	vkUsart_Send_Byte(COM3);
+
+	USART_ClearITPendingBit(USART3, USART_IT_TC);
 }
 /**
   * @brief Timer3 Capture/Compare /USART3 RX Interrupt routine.
@@ -345,6 +355,10 @@ INTERRUPT_HANDLER(TIM3_CC_USART3_RX_IRQHandler,22)
     /* In order to detect unexpected events during development,
        it is recommended to set a breakpoint on the following instruction.
     */
+	vkUsart_Recv_Byte(COM3);
+	
+	USART_ClearITPendingBit(USART3, USART_IT_RXNE);
+
 }
 
 
@@ -415,7 +429,10 @@ INTERRUPT_HANDLER(USART1_TX_TIM5_UPD_OVF_TRG_BRK_IRQHandler,27)
 {
     /* In order to detect unexpected events during development,
        it is recommended to set a breakpoint on the following instruction.
-    */
+    */		
+    vkUsart_Send_Byte(COM1);
+
+	USART_ClearITPendingBit(USART1, USART_IT_TC);
 }
 
 /**
@@ -428,6 +445,9 @@ INTERRUPT_HANDLER(USART1_RX_TIM5_CC_IRQHandler,28)
     /* In order to detect unexpected events during development,
        it is recommended to set a breakpoint on the following instruction.
     */
+	vkUsart_Recv_Byte(COM1);
+	
+	USART_ClearITPendingBit(USART1, USART_IT_RXNE);
 }
 
 /**

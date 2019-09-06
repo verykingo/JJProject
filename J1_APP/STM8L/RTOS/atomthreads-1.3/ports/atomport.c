@@ -287,5 +287,5 @@ INTERRUPT_HANDLER(TIM1_UPD_OVF_TRG_COM_IRQHandler,23)
     TIM1->SR1 = (uint8_t)(~(uint8_t)0x01);
 
     /* Call the interrupt exit routine */
-    atomIntExit(TRUE);
+   	atomIntExit(TRUE);
 }

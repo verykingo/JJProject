@@ -2235,6 +2235,9 @@
             <name>$PROJ_DIR$\..\..\User\sysclock.c</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\..\..\User\vkleds.c</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\..\..\User\vkqueue.c</name>
         </file>
         <file>

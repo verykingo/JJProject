@@ -155,7 +155,7 @@ int8_t vkQueueGet (vkQUEUE *qptr, uint32_t timeout, uint8_t *msgptr)
  * 将数据放入队列
  *
 */
-int8_t QueuePut(vkQUEUE *qptr, uint32_t timeout, uint8_t *msgptr)
+int8_t vkQueuePut(vkQUEUE *qptr, uint32_t timeout, uint8_t *msgptr)
 {
 	CRITICAL_STORE;
 	int8_t status = vkQUEUE_OK;
@@ -211,6 +211,62 @@ int8_t QueuePut(vkQUEUE *qptr, uint32_t timeout, uint8_t *msgptr)
 	}
 
 	return (status);
+}
+
+
+/**
+ *  vkQueueClear
+ *	队列清空
+ */
+int8_t vkQueueClear (vkQUEUE *qptr)
+{	 
+	CRITICAL_STORE;
+	int8_t status = vkQUEUE_OK;
+
+	/* Parameter check */
+	if (qptr == NULL)
+	{
+		/* Bad pointer */
+		status = vkQUEUE_ERR_PARAM;
+	}
+	else
+	{
+		/* Enter critical region */
+		CRITICAL_START ();
+
+		/* Set the queue details to 0 */
+		memset(qptr->buff_ptr, 0, qptr->unit_size*qptr->max_num_msgs);
+
+		/* Initialise the insert/remove pointers */
+		qptr->insert_index = 0;
+		qptr->remove_index = 0;
+		qptr->num_msgs_stored = 0;
+
+		/* Successful */
+		status = vkQUEUE_OK;		
+
+		/* Exit critical region */
+		CRITICAL_END ();
+	}
+
+	 return (status);
+}
+
+
+/**
+ *  vkQueueEmpty
+ *	队列状态
+ */
+int8_t vkQueueEmpty (vkQUEUE *qptr)
+{
+	if(qptr->num_msgs_stored == 0)
+	{
+		return vkQUEUE_NULL;
+	}
+	else
+	{
+		return vkQUEUE_BEING;
+	}
 }
 
 /**

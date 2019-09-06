@@ -46,14 +46,14 @@
 #define POINTER   void *
 
 /* Callback function prototype */
-typedef void ( * TIMER_CB_FUNC ) ( POINTER cb_data ) ;
+typedef void ( * vkTIMER_CB_FUNC ) ( POINTER cb_data ) ;
 
 /* Data structures */
 /* Timer descriptor 定时器定义 */
 typedef struct soft_timer
 {
 	POINTER			timer_name;			/* Timer Name 定时器名字 */
-    TIMER_CB_FUNC   cb_func;    		/* Callback function 回调函数 */
+    vkTIMER_CB_FUNC cb_func;    		/* Callback function 回调函数 */
     POINTER	        cb_data;    		/* Pointer to callback parameter/data 函数参数 */
     uint32_t	    cb_ticks;   		/* Ticks until callback 定时时间 */
 

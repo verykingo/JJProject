@@ -31,6 +31,8 @@
 #include "vktimetick.h"
 #include "vksofttimer.h"
 #include "vkprotocol.h"
+#include "vkleds.h"
+#include "vkUsart.h"
 
 #if USE_UCOS_II == 1u
 #include "ucos_ii.h"
@@ -43,8 +45,8 @@
 #include "vkqueue.h"
 
 /* 队列数据块大小，数据库数目*/
-#define MAX_QUEUE_BUF_SIZE		32		
-#define MAX_QUEUE_BUF_NUMS		10
+#define MAX_QUEUE_BUF_SIZE		1		
+#define MAX_QUEUE_BUF_NUMS		1
 
 /* 循环队列 */
 vkQUEUE Queue;
@@ -58,39 +60,43 @@ vkTIMER Timer_Callback0;
 vkTIMER Timer_Callback1;
 vkTIMER Timer_Callback2;
 
-void Callback0( void * pdata )
+void Callback0(void * pdata)
 {
 	static uint32_t Callback0 = 0;
 
 	Callback0++;
+
+	vkLedsSet(LED0, Callback0%2);
 	
-	//do nothing
+	vkTimerInsert(&Timer_Callback0);
 }
 
-void Callback1( void * pdata )
+void Callback1(void * pdata)
 {
 	static uint32_t Callback1 = 0;
 
 	Callback1++;
 
-	//do nothing
+	vkLedsSet(LED1, Callback1%2);
+
+	vkTimerInsert(&Timer_Callback1);
 }
 
-void Callback2( void * pdata )
+void Callback2(void * pdata)
 {
 	static uint32_t Callback2 = 0;
 
 	Callback2++;
 
-	//do nothing
+	vkTimerInsert(&Timer_Callback2);
 }
 
 #elif USE_UCOS_II == 1u
 /* 定义任务堆栈大小 */
-#define  OS_IDLE_STK_SIZE                	200
-#define  OS_TASK_0_STK_SIZE                	200
-#define  OS_TASK_1_STK_SIZE                	200
-#define  OS_TASK_2_STK_SIZE                	200
+#define  OS_IDLE_STK_SIZE                	100
+#define  OS_TASK_0_STK_SIZE                	100
+#define  OS_TASK_1_STK_SIZE                	80
+#define  OS_TASK_2_STK_SIZE                	80
 
 /* 定义任务栈空间 */
 OS_STK	IdleStack[OS_IDLE_STK_SIZE];
@@ -103,54 +109,50 @@ OS_STK	Task2Stack[OS_TASK_2_STK_SIZE];
 #define  OS_TASK_1_PRIO                    1
 #define  OS_TASK_2_PRIO                    2
 
-void Task0( void * pdata )
-{  	
-	static uint32_t task1 = 0;
+void Task0(void * pdata)
+{  		
+	static uint32_t task0_count = 0;
 	while(1)
 	{
-		task1++;
-		if(task1 > 10000)
+		task0_count++;
+		if(task0_count > 10000)
 		{
-			task1 = 0;
+			task0_count = 0;
 		}	
 
-		OSTimeDlyHMSM(0,0,1,0 );
-		
-		task1++;
+		vkLedsSet(LED0, task0_count%2);
+		OSTimeDlyHMSM(0,0,2,0 );		
 	}	
 }
 
-void Task1( void * pdata )
+void Task1(void * pdata)
 {  	
-	static uint32_t task2 = 0;
+	static uint32_t task1_count = 0;
 	while(1)
 	{
-		task2++;
-		if(task2 > 10000)
+		task1_count++;
+		if(task1_count > 10000)
 		{
-			task2 = 0;
+			task1_count = 0;
 		}	
 
-		OSTimeDlyHMSM(0,0,1,0 );
-		
-		task2++;
+		vkLedsSet(LED1, task1_count%2);
+		OSTimeDlyHMSM(0,0,3,0);
 	}	
 }
 
-void Task2( void * pdata )
+void Task2(void * pdata)
 {  	
-	static uint32_t task3 = 0;
+	static uint32_t task2_count = 0;
 	while(1)
 	{
-		task3++;
-		if(task3 > 10000)
+		task2_count++;
+		if(task2_count > 10000)
 		{
-			task3 = 0;
+			task2_count = 0;
 		}	
 
-		OSTimeDlyHMSM(0,0,1,0 );
-
-		task3++;
+		OSTimeDlyHMSM(0,0,1,0);
 	}	
 }
 #elif USE_ATOMTHREAD == 1u
@@ -176,54 +178,50 @@ static ATOM_TCB Task0_TCB;
 static ATOM_TCB Task1_TCB;
 static ATOM_TCB Task2_TCB;
 
-void Task0( uint32_t pdata )
+void Task0(uint32_t pdata)
 {  	
-	static uint32_t task1 = 0;
+	static uint32_t task0_count = 0;
 	while(1)
 	{
-		task1++;
-		if(task1 > 10000)
+		task0_count++;
+		if(task0_count > 10000)
 		{
-			task1 = 0;
+			task0_count = 0;
 		}	
 
-		atomTimerDelay(100 );
-
-		task1++;
+		vkLedsSet(LED0, task0_count%2);
+		atomTimerDelay(100);
 	}	
 }
 
-void Task1( uint32_t pdata )
+void Task1(uint32_t pdata)
 {  	
-	static uint32_t task2 = 0;
+	static uint32_t task1_count = 0;
 	while(1)
 	{
-		task2++;
-		if(task2 > 10000)
+		task1_count++;
+		if(task1_count > 10000)
 		{
-			task2 = 0;
+			task1_count = 0;
 		}	
 
-		atomTimerDelay(200 );
-
-		task2++;
+		vkLedsSet(LED1, task1_count%2);
+		atomTimerDelay(200);
 	}	
 }
 
-void Task2( uint32_t pdata )
+void Task2(uint32_t pdata)
 {  	
-	static uint32_t task3 = 0;
+	static uint32_t task3_count = 0;
 	while(1)
 	{
-		task3++;
-		if(task3 > 10000)
+		task3_count++;
+		if(task3_count > 10000)
 		{
-			task3 = 0;
+			task3_count = 0;
 		}	
 
-		atomTimerDelay(300 );
-
-		task3++;
+		atomTimerDelay(300);
 	}	
 }
 
@@ -242,20 +240,28 @@ void main(void)
 	/* System CLK Init */
 	SystemClock_Init();
 
+	/* Leds Init */
+	vkLeds_Init();
+
+	/* USART1 Init 115200 */
+	vkUsart_Init(COM1, 115200);
+
 	/* TimeTick Init for RTOS tick*/
 	vkTimeTick_Init(1);
 
 	/* TimeTick Init for softtimer tick*/
 	vkTimeTick_Init(2);
 
-#if USE_FREERTOS ==0u
 	/* Create a queue buffer */
 	vkQueueCreate(&Queue,QueueBuffer,MAX_QUEUE_BUF_SIZE,MAX_QUEUE_BUF_NUMS);
-#endif
 
 	/* After Finish All Init, Enable Interrupt */
 	enableInterrupts();	
-	
+
+	vkUsart_Send(COM1 ,"hello ", 6);
+	vkUsart_Send(COM1 ,"world!!!", 8);
+	vkUsart_Send(COM1 ,"This is a good", 14);
+
 #if USE_NO_RTOS == 1u
 	Timer_Callback0.timer_name 	= (void *)&Timer_Callback0;
 	Timer_Callback0.cb_func		= Callback0;
@@ -278,7 +284,6 @@ void main(void)
 	while(1){};
 	
 #elif USE_UCOS_II == 1u
-
 	/* 初始化uCOS系统 */
 	OSInit();	
 
@@ -293,9 +298,8 @@ void main(void)
 
 	/* 启动uCOS系统 */
 	OSStart();
-	
-#elif USE_ATOMTHREAD == 1u
 
+#elif USE_ATOMTHREAD == 1u
 	/* 初始化AtomThread系统 */
 	atomOSInit(&IdleStack[OS_IDLE_STK_SIZE-1], OS_IDLE_STK_SIZE);
 

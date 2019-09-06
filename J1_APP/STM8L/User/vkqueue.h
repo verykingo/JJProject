@@ -32,10 +32,13 @@
 #endif
 
 /* 队列返回参数定义 */
-#define vkQUEUE_OK                  0		//正确
+#define vkQUEUE_OK                  0	//正确
 #define vkQUEUE_TIMEOUT             -1	//超时
 #define vkQUEUE_WOULDBLOCK          -2	//阻塞
 #define vkQUEUE_ERR_PARAM           -3	//参数错误
+#define vkQUEUE_NULL				-4	//空队列
+#define vkQUEUE_FILLED				-5	//满队列
+#define vkQUEUE_BEING				-6	//队列有元素
 
 #ifdef __cplusplus
 extern "C" {
@@ -55,6 +58,8 @@ extern int8_t vkQueueCreate (vkQUEUE *qptr, uint8_t *buff_ptr, uint32_t unit_siz
 extern int8_t vkQueueDestory (vkQUEUE *qptr);
 extern int8_t vkQueueGet (vkQUEUE *qptr, uint32_t timeout, uint8_t *msgptr);
 extern int8_t vkQueuePut (vkQUEUE *qptr, uint32_t timeout, uint8_t *msgptr);
+extern int8_t vkQueueClear (vkQUEUE *qptr);
+extern int8_t vkQueueEmpty (vkQUEUE *qptr);
 
 
 

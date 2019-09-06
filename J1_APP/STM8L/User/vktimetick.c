@@ -1,8 +1,8 @@
 /******************************************************************************
- * 文件名  ：vktimetick.c
+ * 文件  ：vktimetick.c
  * 描述    ：STM8L节拍定时器
  * 平台    ：STM8L
- * 修改时间 ：2019-04-01
+ * 时间  ：2019-04-01
 
 *******************************************************************************/
 
@@ -19,7 +19,7 @@
 /* 全局变量定义 */
 
 /*******************************************************************************
- * 名称: TimeTick_Init
+ * 名称: vkTimeTick_Init
  * 功能: TIM初始化操作
  * 形参: TIM定时器
  * 返回: 无
@@ -36,8 +36,8 @@ void vkTimeTick_Init(uint8_t TIM)
 	    /* Reset TIM1 */
 	    TIM1_DeInit();
 
-	    /* Configure a 10us tick, 16MHz/(15+1)=1MHz, 1s/MHz=1us */
-		TIM1_TimeBaseInit(15, TIM1_CounterMode_Up, 9, 0);
+	    /* Configure a 1ms tick, 16MHz/(15+1)=1MHz, 1s/MHz=1us */
+		TIM1_TimeBaseInit(15, TIM1_CounterMode_Up, 999, 0);
 		TIM1_SetCounter(0);					/* 将计数器初值设为0 */
 		TIM1_ARRPreloadConfig(ENABLE);		/* 预装载使能 */
 		ITC_SetSoftwarePriority(TIM1_UPD_OVF_TRG_IRQn, ITC_PriorityLevel_1);

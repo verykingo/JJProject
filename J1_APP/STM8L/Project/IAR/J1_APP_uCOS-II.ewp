@@ -65,20 +65,20 @@
                 <option>
                     <name>GenLibInFormatter</name>
                     <version>0</version>
-                    <state>2</state>
+                    <state>5</state>
                 </option>
                 <option>
                     <name>GenLibInFormatterDescription</name>
-                    <state>Full formatting, without multibytes.</state>
+                    <state>No specifier n, no float, no scan set, no assignment suppressing.</state>
                 </option>
                 <option>
                     <name>GenLibOutFormatter</name>
                     <version>0</version>
-                    <state>2</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>GenLibOutFormatterDescription</name>
-                    <state>Full formatting, without multibytes.</state>
+                    <state>Full formatting.</state>
                 </option>
                 <option>
                     <name>GenStackSize</name>
@@ -113,11 +113,11 @@
                 <option>
                     <name>GenMathFunctionVariant</name>
                     <version>0</version>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>GenMathFunctionDescription</name>
-                    <state>Default variants of cos, sin, tan, log, log10, pow, and exp.</state>
+                    <state>Smaller size, higher execution speed, less precision, smaller input range.</state>
                 </option>
             </data>
         </settings>
@@ -1747,6 +1747,9 @@
             <name>$PROJ_DIR$\..\..\User\sysclock.c</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\..\..\User\vkleds.c</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\..\..\User\vkqueue.c</name>
         </file>
         <file>
@@ -1754,6 +1757,9 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\User\vktimetick.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\User\vkusart.c</name>
         </file>
     </group>
 </project>
