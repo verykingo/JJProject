@@ -14,7 +14,7 @@ void protocol_command(void* ptr);
 vkTIMER Rep_Timer[4];
 vkTIMER Rtp_Timer[4];
 
-extern PROTOCOL protocol[]= {
+static const PROTOCOL protocol[]= {
 	/*id, 	cmd, 		rep_flag,			rep_ways		rep_cout	rep_nums	rep_time	rpt_flag	rep_timer 		rpt_timer */
 	{0, 	APP_CMD_1, 	REP_FLAG_ZERO, 		REP_WYAS_NOW, 	0, 			3, 			1000, 		0,			&Rep_Timer[0],	&Rtp_Timer[0]},
 	{1, 	APP_CMD_2, 	REP_FLAG_ZERO, 		REP_WYAS_NOW, 	0, 			3, 			1000, 		0,			&Rep_Timer[1],	&Rtp_Timer[1]},
