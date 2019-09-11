@@ -1715,6 +1715,9 @@
             <name>$PROJ_DIR$\..\..\User\sysclock.h</name>
         </file>
         <file>
+            <name>$PROJ_DIR$\..\..\User\vkAT.c</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\..\..\User\vkleds.c</name>
         </file>
         <file>

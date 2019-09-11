@@ -8,6 +8,9 @@
 
 /* 包含系统头文件 */
 #include "stm8l15x.h"
+#include "stdio.h"
+#include "stdlib.h"
+#include "string.h"
 
 /* 包含自定义头文件 */
 #include "vkAT.h"
@@ -15,33 +18,40 @@
 /* 自定义新类型 */
 
 /* 自定义宏 */
+#define isspace(c)	((c) == ' ' || ((c) >= '\t' && (c) <= '\r'))
+#define isascii(c)	(((c) & ~0x7F) == 0)
+#define isupper(c)	((c) >= 'A' && (c) <= 'Z')
+#define islower(c)	((c) >= 'a' && (c) <= 'z')
+#define isalpha(c)	(isupper(c) || islower(c))
+#define isdigit(c)	((c) >= '0' && (c) <= '9')
+#define isxdigit(c)	(isdigit(c) || ((c) >= 'A' && (c) <= 'F') || ((c) >= 'a' && (c) <= 'f'))
+#define isprint(c)	((c) >= ' ' && (c) <= '~')
+#define toupper(c)	((c) - 0x20 * (((c) >= 'a') && ((c) <= 'z')))
+#define tolower(c)	((c) + 0x20 * (((c) >= 'A') && ((c) <= 'Z')))
+#define toascii(c)	((unsigned)(c) & 0x7F)
+#define isalnum(c)	(isalpha(c) || isdigit(c))
+#define isodigit(c)	((c) >= '0' && (c) <= '7')
 
 /* 全局变量定义 */
-
 static const vkAT AT[]= {
-	/* id, 	AT Commond, 			AT Function */
+  /* id, 	AT Commond, 			AT Function */
 	{0, 	"AT+TEST", 				AT_Test},
 	{1, 	"AT+RESET", 			AT_Reset}
 };
 
+static int parse_atcmd_line(const char * data, int start, int end);
+static int get_plus_index(const char * string, int start, int end);
+static int get_space_index(const char * string, int start, int end);
+static int trim_spaces(const char * string, int * start, int * end);
+
 /*******************************************************************************
- * 名称: AT命令
+ * 名称: AT命令解析
  * 功能: AT命令
- * 形参: AT命令
+ * 形参: data字符串指针，data_len字符串长度
  * 返回: 无
  * 说明: 无 
  ******************************************************************************/
-void AT_Test(void *data)
-{
-	return;
-}
-
-void AT_Reset(void *data)
-{
-	return;
-}
-
-static int AT_parser(const char * data, int data_len)
+int vkATParser(const char * data, int data_len)
 {
 	if (data == NULL) 
 	{
@@ -55,66 +65,67 @@ static int AT_parser(const char * data, int data_len)
 		return -1;
 	}
 
-	// 解析每一个字段行 parse each field line
+	// 解析每一个AT命令行 parse each AT command line
 	int start = 0;
 	for (int i = start; i < data_len; i++) 
 	{
 		if (data[i] == '\n' && i - 1 > start && data[i - 1] == '\r') 
 		{
-			parse_field_line(data, start, i - 2);
+			parse_atcmd_line(data, start, i - 2);
 			start = i + 1;
 		}
 	}
+
+	return 0;
 }
 
-/** 解析字段行函数
+/** 解析AT命令函数
  *	@brief	解析字段行
  *	@param	
  *	@return 0成功，-1失败
  *	@note	无
  **/	
-static int parse_field_line(const char * data, int start, int end) 
+static int parse_atcmd_line(const char * data, int start, int end) 
 {
-	// 1.定位冒号 find the colon
-	if (data[start] == '+' || data[start+1] == '+') 
+	// 1.定位＋号
+	if (data[start] == '+' || data[start+1] == '+')
 	{
-		printf("the first character of line should not be colon\r\n");
+		printf("the first and second character of line should not be plus\r\n");
 		printf("%s\r\n", data);
 		return -1;
 	}
 
-	int colon = get_colon_index(data, start + 2, end);
-	if (colon == -1) 
+	int plus = get_plus_index(data, start + 2, end);
+	if (plus == -1) 
 	{
-		printf("there is no colon in line\r\n");
+		printf("there is no plus in line\r\n");
 		printf("%s\r\n", data);
 		return -1;
 	}
 
-	if (colon == end) 
+	if (plus == end)
 	{
-		// value is empty
+		// atcmd is empty
 		return -1;
 	}
 
-	// 1.定位空格号
-	if (data[colon+1] == ' ') 
+	// 2.定位空格号
+	if (data[plus+1] == ' ')
 	{
 		printf("the first character of AT+ should not be space\r\n");
 		printf("%s\r\n", data);
 		return -1;
 	}
 
-	int space = get_space_index(data, colon+1, end)
+	int space = get_space_index(data, plus+1, end);
 	if (space == -1) 
 	{
 		printf("there is no space in line\r\n");
 		printf("%s\r\n", data);
 		space = end+1;
-	}
-	
+	}	
 
-	// 2.提取字段和字段长度 get field, field_len
+	// 3.提取字段和字段长度 get field, field_len
 	int i = start;
 	int j = space - 1;
 	if (trim_spaces(data, &i, &j) == -1) 
@@ -125,7 +136,9 @@ static int parse_field_line(const char * data, int start, int end)
 	int field_len = j - i + 1;
 
 
-	// 3. 提取值和值长度 get value, value_len
+	// 4. 提取值和值长度 get value, value_len
+	const char * value = NULL;
+	int value_len = 0;
 	if(space < end)
 	{
 		i = space + 1;
@@ -134,49 +147,22 @@ static int parse_field_line(const char * data, int start, int end)
 		{
 			return -1;
 		};
-		const char * value = &data[i];
-		size_t value_len = j - i + 1;
+		value = &data[i];
+
+		value_len = j - i + 1;
 	}
 
+	for(int k=0; k<(sizeof(AT)/sizeof(vkAT)); k++)
+	{
+		// 5.设置每个字段值数据包结构体中 set each field's value to packet
+		if (field_len == strlen(AT[k].at_cmd) && strncasecmp(field, AT[k].at_cmd, field_len) == 0) 
+		{
+			AT[k].at_fun((void*)value, value_len);
 
-	// 4.设置每个字段值数据包结构体中 set each field's value to packet
-	//查询目标
-	if (field_len == strlen("st") && strncasecmp(field, "st", field_len) == 0) 
-	{
-		memcpy(packet->st, value, value_len < LSSDP_FIELD_LEN ? value_len : LSSDP_FIELD_LEN - 1);
-		return 0;
+			break;
+		}		
 	}
-	//通知目标
-	if (field_len == strlen("nt") && strncasecmp(field, "nt", field_len) == 0) 
-	{
-		memcpy(packet->st, value, value_len < LSSDP_FIELD_LEN ? value_len : LSSDP_FIELD_LEN - 1);
-		return 0;
-	}
-	//唯一服务号
-	if (field_len == strlen("usn") && strncasecmp(field, "usn", field_len) == 0) 
-	{
-		memcpy(packet->usn, value, value_len < LSSDP_MINI_LEN ? value_len : LSSDP_MINI_LEN - 1);
-		return 0;
-	}
-	//设备位置
-	if (field_len == strlen("location") && strncasecmp(field, "location", field_len) == 0) 
-	{
-		memcpy(packet->location, value, value_len < LSSDP_LOCATION_LEN ? value_len : LSSDP_LOCATION_LEN - 1);
-		return 0;
-	}
-	//SM识别号
-	if (field_len == strlen("sm_id") && strncasecmp(field, "sm_id", field_len) == 0) 
-	{
-		memcpy(packet->sm_id, value, value_len < LSSDP_MINI_LEN ? value_len : LSSDP_MINI_LEN - 1);
-		return 0;
-	}
-	//设备类型
-	if (field_len == strlen("dev_type") && strncasecmp(field, "dev_type", field_len) == 0) 
-	{
-		memcpy(packet->device_type, value, value_len < LSSDP_MINI_LEN ? value_len : LSSDP_MINI_LEN - 1);
-		return 0;
-	}
-
+	
 	// the field is not in the struct packet
 	return 0;
 }
@@ -187,7 +173,7 @@ static int parse_field_line(const char * data, int start, int end)
  *	@return -1失败，否则返回位置
  *	@note	无
  **/
-static int get_colon_index(const char * string, int start, int end) 
+static int get_plus_index(const char * string, int start, int end) 
 {
 	int i;
 	for (i = start; i <= end; i++) 
@@ -225,7 +211,7 @@ static int get_space_index(const char * string, int start, int end)
  *	@return -1失败，0成功
  *	@note	无
  **/
-static int trim_spaces(const char * string, size_t * start, size_t * end) 
+static int trim_spaces(const char * string, int * start, int * end) 
 {
 	int i = *start;
 	int j = *end;
@@ -243,5 +229,15 @@ static int trim_spaces(const char * string, size_t * start, size_t * end)
 	return 0;
 }
 
+void AT_Test(void *data, int len)
+{
+	
+	return;
+}
+
+void AT_Reset(void *data, int len)
+{
+	return;
+}
 
 

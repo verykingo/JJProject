@@ -39,7 +39,12 @@
 #elif USE_ATOMTHREAD == 1u
 #include "atom.h"
 #elif USE_FREERTOS ==1u
-//#include "FreeRTOS.h"
+#include "FreeRTOSConfig.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "semphr.h"
+#include "list.h"
+#include "timers.h"
 #endif
 
 #include "vkqueue.h"
@@ -95,8 +100,8 @@ void Callback2(void * pdata)
 /* 定义任务堆栈大小 */
 #define  OS_IDLE_STK_SIZE                	100
 #define  OS_TASK_0_STK_SIZE                	100
-#define  OS_TASK_1_STK_SIZE                	80
-#define  OS_TASK_2_STK_SIZE                	80
+#define  OS_TASK_1_STK_SIZE                	100
+#define  OS_TASK_2_STK_SIZE                	100
 
 /* 定义任务栈空间 */
 OS_STK	IdleStack[OS_IDLE_STK_SIZE];
@@ -225,6 +230,61 @@ void Task2(uint32_t pdata)
 	}	
 }
 
+#elif USE_FREERTOS == 1u
+
+void Task0(uint32_t pdata)
+{  	
+	static uint32_t task0_count = 0;
+	while(1)
+	{
+		task0_count++;
+		if(task0_count > 10000)
+		{
+			task0_count = 0;
+		}	
+
+		vkLedsSet(LED0, task0_count%2);
+		vTaskDelay(100);
+	}
+
+	vTaskDelete(NULL);
+}
+
+void Task1(uint32_t pdata)
+{  	
+	static uint32_t task1_count = 0;
+	while(1)
+	{
+		task1_count++;
+		if(task1_count > 10000)
+		{
+			task1_count = 0;
+		}	
+
+		vkLedsSet(LED1, task1_count%2);
+		vTaskDelay(200);
+	}	
+
+	vTaskDelete(NULL);
+}
+
+void Task2(uint32_t pdata)
+{  	
+	static uint32_t task3_count = 0;
+	while(1)
+	{
+		task3_count++;
+		if(task3_count > 10000)
+		{
+			task3_count = 0;
+		}	
+
+		vTaskDelay(300);
+	}
+
+	vTaskDelete(NULL);
+}
+
 #endif
 
 /**
@@ -244,7 +304,14 @@ void main(void)
 	vkLeds_Init();
 
 	/* USART1 Init 115200 */
-	vkUsart_Init(COM1, 115200);
+	if(-1 == vkUsart_Init(COM1, 115200))
+	{
+		printf("failed!\r\n");
+	}
+	if(-1 == vkUsart_Init(COM3, 115200))
+	{
+		printf("failed!\r\n");
+	}
 
 	/* TimeTick Init for RTOS tick*/
 	vkTimeTick_Init(1);
@@ -260,7 +327,11 @@ void main(void)
 
 	vkUsart_Send(COM1 ,"hello ", 6);
 	vkUsart_Send(COM1 ,"world!!!", 8);
-	vkUsart_Send(COM1 ,"This is a good", 14);
+	vkUsart_Send(COM1 ,"This is a good\r\n", 16);
+
+	vkUsart_Send(COM3 ,"hello ", 6);
+	vkUsart_Send(COM3 ,"world!!!", 8);
+	vkUsart_Send(COM3 ,"This is a good\r\n", 16);
 
 #if USE_NO_RTOS == 1u
 	Timer_Callback0.timer_name 	= (void *)&Timer_Callback0;
@@ -310,6 +381,14 @@ void main(void)
 
 	/* 启动AtomThread系统 */
 	atomOSStart();
+#elif USE_FREERTOS == 1u
+	
+	xTaskCreate((TaskFunction_t)Task0, ((const char*)"Task0"), 1024, NULL, tskIDLE_PRIORITY + 3 , NULL);
+	xTaskCreate((TaskFunction_t)Task1, ((const char*)"Task1"), 1024, NULL, tskIDLE_PRIORITY + 3 , NULL);
+	xTaskCreate((TaskFunction_t)Task2, ((const char*)"Task2"), 1024, NULL, tskIDLE_PRIORITY + 3 , NULL);
+
+	/*Enable Schedule, Start Kernel*/
+	vTaskStartScheduler();
 	
 #endif
 

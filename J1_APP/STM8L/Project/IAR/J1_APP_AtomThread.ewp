@@ -1755,5 +1755,8 @@
         <file>
             <name>$PROJ_DIR$\..\..\User\vktimetick.c</name>
         </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\User\vkusart.c</name>
+        </file>
     </group>
 </project>

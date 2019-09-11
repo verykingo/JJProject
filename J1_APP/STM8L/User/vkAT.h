@@ -17,7 +17,7 @@
 /* 自定义数据类型 */
 
 /* Callback function prototype */
-typedef void ( * vkAT_FUNC ) ( void* at_data );
+typedef void ( * vkAT_FUNC ) ( void* at_data, int len );
 
 typedef struct at
 {
@@ -27,8 +27,11 @@ typedef struct at
 
 } vkAT;
 
-void AT_Reset(void *data);
-void AT_Test(void *data);
+
+int vkATParser(const char * data, int data_len);
+
+void AT_Reset(void *data, int len);
+void AT_Test(void *data, int len);
 
 
 #endif

@@ -29,6 +29,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm8l15x_it.h"
 #include "vkusart.h"
+#include "vksofttimer.h"
 
 /** @addtogroup STM8L15x_StdPeriph_Template
   * @{
@@ -292,28 +293,25 @@ INTERRUPT_HANDLER(ADC1_COMP_IRQHandler,18)
   * @param  None
   * @retval None
   */
-#if (USE_NO_RTOS == 1u || USE_UCOS_II == 1u || USE_ATOMTHREAD == 1u)
-#include "vksofttimer.h"
-INTERRUPT_HANDLER(TIM2_UPD_OVF_TRG_BRK_USART2_TX_IRQHandler,19)
-{
-	/* In order to detect unexpected events during development,
-	   it is recommended to set a breakpoint on the following instruction.
-	*/
-	vkTimerTick();
-
-	TIM2_ClearITPendingBit(TIM2_IT_Update);
-}
-#else
 INTERRUPT_HANDLER(TIM2_UPD_OVF_TRG_BRK_USART2_TX_IRQHandler,19)
 {
     /* In order to detect unexpected events during development,
        it is recommended to set a breakpoint on the following instruction.
     */
-	vkUsart_Send_Byte(COM2);
-
-	USART_ClearITPendingBit(USART2, USART_IT_TC);    
+    /* 软件定时器Tick */
+	if(TIM2_GetITStatus(TIM2_IT_Update) != RESET)
+	{
+		vkTimerTick();
+		TIM2_ClearITPendingBit(TIM2_IT_Update);		
+	}
+	
+    /* 串口发送一个字节数据完成 */
+    if(USART_GetITStatus(USART2, USART_IT_TC) != RESET)
+	{
+		vkUsart_Send_Byte(COM2);
+		USART_ClearITPendingBit(USART2, USART_IT_TC);
+    }
 }
-#endif
 
 /**
   * @brief Timer2 Capture/Compare / USART2 RX Interrupt routine.
@@ -325,9 +323,12 @@ INTERRUPT_HANDLER(TIM2_CC_USART2_RX_IRQHandler,20)
     /* In order to detect unexpected events during development,
        it is recommended to set a breakpoint on the following instruction.
     */
-	vkUsart_Recv_Byte(COM2);
-	
-	USART_ClearITPendingBit(USART2, USART_IT_RXNE);    
+   	/* 串口收到一个字节数据 */
+    if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
+    {  
+		vkUsart_Recv_Byte(COM2);	
+		USART_ClearITPendingBit(USART2, USART_IT_RXNE);
+    }
 }
 
 
@@ -341,9 +342,12 @@ INTERRUPT_HANDLER(TIM3_UPD_OVF_TRG_BRK_USART3_TX_IRQHandler,21)
     /* In order to detect unexpected events during development,
        it is recommended to set a breakpoint on the following instruction.
     */
-	vkUsart_Send_Byte(COM3);
-
-	USART_ClearITPendingBit(USART3, USART_IT_TC);
+	/* 串口发送一个字节数据完成 */
+    if(USART_GetITStatus(USART3, USART_IT_TC) != RESET)
+	{
+		vkUsart_Send_Byte(COM3);
+		USART_ClearITPendingBit(USART3, USART_IT_TC);
+	}
 }
 /**
   * @brief Timer3 Capture/Compare /USART3 RX Interrupt routine.
@@ -355,10 +359,12 @@ INTERRUPT_HANDLER(TIM3_CC_USART3_RX_IRQHandler,22)
     /* In order to detect unexpected events during development,
        it is recommended to set a breakpoint on the following instruction.
     */
-	vkUsart_Recv_Byte(COM3);
-	
-	USART_ClearITPendingBit(USART3, USART_IT_RXNE);
-
+   	/* 串口收到一个字节数据 */
+    if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
+    {    	
+		vkUsart_Recv_Byte(COM3);	
+		USART_ClearITPendingBit(USART3, USART_IT_RXNE);
+    }
 }
 
 
@@ -429,10 +435,14 @@ INTERRUPT_HANDLER(USART1_TX_TIM5_UPD_OVF_TRG_BRK_IRQHandler,27)
 {
     /* In order to detect unexpected events during development,
        it is recommended to set a breakpoint on the following instruction.
-    */		
-    vkUsart_Send_Byte(COM1);
+    */
+   	/* 串口发送一个字节数据完成 */
+    if(USART_GetITStatus(USART1, USART_IT_TC) != RESET)
+    {
+    	vkUsart_Send_Byte(COM1);
 
-	USART_ClearITPendingBit(USART1, USART_IT_TC);
+		USART_ClearITPendingBit(USART1, USART_IT_TC);
+    }
 }
 
 /**
@@ -445,9 +455,19 @@ INTERRUPT_HANDLER(USART1_RX_TIM5_CC_IRQHandler,28)
     /* In order to detect unexpected events during development,
        it is recommended to set a breakpoint on the following instruction.
     */
-	vkUsart_Recv_Byte(COM1);
-	
-	USART_ClearITPendingBit(USART1, USART_IT_RXNE);
+    /* 串口收到一个字节数据 */
+    if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+	{
+		vkUsart_Recv_Byte(COM1);
+		USART_ClearITPendingBit(USART1, USART_IT_RXNE);		
+	}
+
+	/* 串口空闲，收到一行字节数据 */
+	if(USART_GetITStatus(USART1, USART_IT_IDLE) != RESET)
+	{
+		vkUsart_Recv_Line(COM1);
+		USART_ClearITPendingBit(USART1, USART_IT_IDLE);
+	}	
 }
 
 /**

@@ -609,7 +609,7 @@
                 </option>
                 <option>
                     <name>IlinkIcfFile</name>
-                    <state>lnk0t.icf</state>
+                    <state>$TOOLKIT_DIR$\config\lnkstm8l151c8.icf</state>
                 </option>
                 <option>
                     <name>IlinkIcfFileSlave</name>
@@ -673,7 +673,7 @@
                 </option>
                 <option>
                     <name>IlinkProgramEntryLabel</name>
-                    <state></state>
+                    <state>__iar_program_start</state>
                 </option>
                 <option>
                     <name>DoFill</name>
@@ -1741,19 +1741,28 @@
             <name>$PROJ_DIR$\..\..\User\main.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\User\softtimer.c</name>
-        </file>
-        <file>
             <name>$PROJ_DIR$\..\..\User\stm8l15x_it.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\User\sysclock.c</name>
         </file>
         <file>
-            <name>$PROJ_DIR$\..\..\User\timetick.c</name>
+            <name>$PROJ_DIR$\..\..\User\vkleds.c</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\User\vkprotocol.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\User\vkqueue.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\User\vksofttimer.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\User\vktimetick.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\User\vkusart.c</name>
         </file>
     </group>
 </project>
