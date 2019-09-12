@@ -235,7 +235,7 @@ void archThreadContextInit (ATOM_TCB *tcb_ptr, void *stack_top, void (*entry_poi
 void archInitSystemTickTimer ( void )
 {
 	/* TimeTick Init */
-	vkTimeTick_Init(1);
+	vkTimeTick_Init(TIME1);
 }
 
 

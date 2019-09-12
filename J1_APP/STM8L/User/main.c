@@ -314,10 +314,10 @@ void main(void)
 	}
 
 	/* TimeTick Init for RTOS tick*/
-	vkTimeTick_Init(1);
+	vkTimeTick_Init(TIME1);
 
 	/* TimeTick Init for softtimer tick*/
-	vkTimeTick_Init(2);
+	vkTimeTick_Init(TIME2);
 
 	/* Create a queue buffer */
 	vkQueueCreate(&Queue,QueueBuffer,MAX_QUEUE_BUF_SIZE,MAX_QUEUE_BUF_NUMS);

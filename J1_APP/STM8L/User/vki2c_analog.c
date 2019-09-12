@@ -1,15 +1,25 @@
+/******************************************************************************
+ * 文件  vki2c_analog.c
+ * 描述    ：模拟I2C
+ * 平台    ：ALL
+ * 时间  ：2019-04-01
 
-#include "analog_i2c.h"
+*******************************************************************************/
+
+#include "vksofttimer.h"
+#include "vki2c_analog.h"
 
 /* I2C初始化 */  
-void i2c_Init(void)
+int vkI2C_Init(void)
 {
    	/* 初始化 */
    	I2C_SCL_INIT();
 	I2C_SDA_INIT();
 
 	/* 延时10ms */
-	I2C_DELAYMS(10);	
+	I2C_DELAYMS(10);
+
+	return 0;
 }
 
  /* I2C起始信号 */	
@@ -221,7 +231,7 @@ uint8_t i2c_Read_Byte(void)
 }
 
 /* I2C写数据 */ 
-int i2c_Write(uint8_t slave_addr, uint8_t *data, int length)
+int vkI2C_Write(uint8_t slave_addr, uint8_t *data, int length)
 {
 	int ret = 0;
 	
@@ -269,7 +279,7 @@ EXIT:
 }
 
 /* I2C读数据 */ 
-int i2c_Read(uint8_t slave_addr, uint8_t *data, int length)
+int vkI2C_Read(uint8_t slave_addr, uint8_t *data, int length)
 {
 	int ret = 0;
 	
@@ -326,26 +336,26 @@ EXIT:
 }
 
 /* I2C扫描设备 */ 
-int i2c_Scan(void)
+int vkI2C_Scan(void)
 {
 	/* 初始化 */
-	i2c_Init();
+	vkI2C_Init();
 
 	/* 从0x00~0xFF 写人I2C从设备的地址，扫描从设备地址 */
 	/* EMF32扩展板温度传感器地址0x41, 紫外传感器地址0x60 */
-	char buf = 0x55;
+	uint8_t buf = 0x55;
 	uint8_t addr = 0x00;
 	I2C_PRINTF("I2C Scan:");
 	for(int i=0; i<256; i++)
 	{
-		if(i2c_Write(addr, &buf, 1) == 1)
+		if(vkI2C_Write(addr, &buf, 1) == 1)
 		{
 			I2C_PRINTF("0x%X ", addr);			
 		}
 		
 		addr=addr+1;
 
-		DelayMs(10);	
+		I2C_DELAYMS(10);	
 	}
 	I2C_PRINTF("\n");
 
@@ -353,17 +363,17 @@ int i2c_Scan(void)
 }
 
 /* I2C查找设备 */ 
-int i2c_Find(uint8_t slave_addr)
+int vkI2C_Find(uint8_t slave_addr)
 {
 	/* 初始化 */
-	i2c_Init();
+	vkI2C_Init();
 
 	/* 从0x00~0xFF 写人I2C从设备的地址，扫描从设备地址 */
 	/* EMF32扩展板温度传感器地址0x41, 紫外传感器地址0x60 */
-	char buf = 0x55;
+	uint8_t buf = 0x55;
 	I2C_PRINTF("I2C Find:");
 
-	if(i2c_Write(slave_addr, &buf, 1) == 1)
+	if(vkI2C_Write(slave_addr, &buf, 1) == 1)
 	{
 		I2C_PRINTF("0x%X\n", slave_addr);
 		return 0;

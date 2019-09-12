@@ -1,19 +1,30 @@
-/*
- * 循环数组队列
- */
- 
+/******************************************************************************
+ * 文件  ：vkqueue.c
+ * 描述    ：循环数组队列
+ * 平台    ：ALL
+ * 时间  ：2019-04-01
+
+*******************************************************************************/
+
 #include <stdlib.h>
 #include <string.h>
+
 #include "vkqueue.h"
 
 /* Forward declarations */
 static int8_t queue_remove (vkQUEUE *qptr, uint8_t* msgptr);
 static int8_t queue_insert (vkQUEUE *qptr, uint8_t* msgptr);
 
-/**
- * QueueCreate
- * 创建队列
- */
+/*******************************************************************************
+ * 名称: vkQueueCreate
+ * 功能: 创建循环数组队列
+ * 形参: qptr 队列指针
+         buff_ptr 队列存储空间首地址
+         unit_size 队列单元大小
+         max_num_msgs 队列大小
+ * 返回: 成功0，失败负数
+ * 说明: 无 
+ ******************************************************************************/
 int8_t vkQueueCreate (vkQUEUE *qptr, uint8_t *buff_ptr, uint32_t unit_size, uint32_t max_num_msgs)
 {
     int8_t status = vkQUEUE_OK;
@@ -48,11 +59,14 @@ int8_t vkQueueCreate (vkQUEUE *qptr, uint8_t *buff_ptr, uint32_t unit_size, uint
     return (status);
 }
 
-/**
- * QueueDelete
- * 删除队列
- */
-int8_t QueueDestory(vkQUEUE *qptr)
+/*******************************************************************************
+ * 名称: vkQueueDestory
+ * 功能: 销毁循环数组队列
+ * 形参: qptr 队列指针
+ * 返回: 成功0，失败负数
+ * 说明: 无 
+ ******************************************************************************/
+int8_t vkQueueDestory(vkQUEUE *qptr)
 {    
     CRITICAL_STORE;
 	int8_t status = vkQUEUE_OK;
@@ -79,7 +93,7 @@ int8_t QueueDestory(vkQUEUE *qptr)
         qptr->num_msgs_stored = 0;
 
         /* Successful */
-        status = vkQUEUE_OK;		
+        status = vkQUEUE_OK;	
 
 		/* Exit critical region */
 		CRITICAL_END ();
@@ -88,10 +102,15 @@ int8_t QueueDestory(vkQUEUE *qptr)
 	 return (status);
 }
 
-/**
- *  QueueGet
- *	从队列中取数据
- */
+/*******************************************************************************
+ * 名称: vkQueueGet
+ * 功能: 获取一个队列单元
+ * 形参: qptr 队列指针
+ 		 timeout 超时时间
+ 		 msgptr 队列单元指针
+ * 返回: 成功0，失败负数
+ * 说明: 无 
+ ******************************************************************************/
 int8_t vkQueueGet (vkQUEUE *qptr, uint32_t timeout, uint8_t *msgptr)
 {
     CRITICAL_STORE;
@@ -150,11 +169,15 @@ int8_t vkQueueGet (vkQUEUE *qptr, uint32_t timeout, uint8_t *msgptr)
     return (status);
 }
 
-/**
- * QueuePut
- * 将数据放入队列
- *
-*/
+/*******************************************************************************
+ * 名称: vkQueuePut
+ * 功能: 插入一个队列单元
+ * 形参: qptr 队列指针
+ 		 timeout 超时时间
+ 		 msgptr 队列单元指针
+ * 返回: 成功0，失败负数
+ * 说明: 无 
+ ******************************************************************************/
 int8_t vkQueuePut(vkQUEUE *qptr, uint32_t timeout, uint8_t *msgptr)
 {
 	CRITICAL_STORE;
@@ -214,10 +237,13 @@ int8_t vkQueuePut(vkQUEUE *qptr, uint32_t timeout, uint8_t *msgptr)
 }
 
 
-/**
- *  vkQueueClear
- *	队列清空
- */
+/*******************************************************************************
+ * 名称: vkQueueClear
+ * 功能: 清空队列
+ * 形参: qptr 队列指针
+ * 返回: 成功0，失败负数
+ * 说明: 无 
+ ******************************************************************************/
 int8_t vkQueueClear (vkQUEUE *qptr)
 {	 
 	CRITICAL_STORE;
@@ -253,10 +279,13 @@ int8_t vkQueueClear (vkQUEUE *qptr)
 }
 
 
-/**
- *  vkQueueEmpty
- *	队列状态
- */
+/*******************************************************************************
+ * 名称: vkQueueEmpty
+ * 功能: 判断队列是否是空
+ * 形参: qptr 队列指针
+ * 返回: 成功0，失败负数
+ * 说明: 无 
+ ******************************************************************************/
 int8_t vkQueueEmpty (vkQUEUE *qptr)
 {
 	if(qptr->num_msgs_stored == 0)

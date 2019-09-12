@@ -35,18 +35,7 @@
 /* Scheduler includes. */
 #include "FreeRTOS.h"
 #include "task.h"
-
-/* Constants required to manipulate the NVIC. */
-#define portNVIC_SYSTICK_CTRL			( ( volatile uint32_t * ) 0xe000e010 )
-#define portNVIC_SYSTICK_LOAD			( ( volatile uint32_t * ) 0xe000e014 )
-#define portNVIC_SYSTICK_CURRENT_VALUE	( ( volatile uint32_t * ) 0xe000e018 )
-#define portNVIC_SYSPRI2			( ( volatile uint32_t *) 0xe000ed20 )
-#define portNVIC_SYSTICK_CLK		0x00000004
-#define portNVIC_SYSTICK_INT		0x00000002
-#define portNVIC_SYSTICK_ENABLE		0x00000001
-#define portMIN_INTERRUPT_PRIORITY	( 255UL )
-#define portNVIC_PENDSV_PRI			( portMIN_INTERRUPT_PRIORITY << 16UL )
-#define portNVIC_SYSTICK_PRI		( portMIN_INTERRUPT_PRIORITY << 24UL )
+#include "portmacro.h"
 
 /* Constants required to set up the initial stack. */
 #define portINITIAL_XPSR			( 0x01000000 )
@@ -124,13 +113,17 @@ static void prvTaskExitError( void )
  */
 BaseType_t xPortStartScheduler( void )
 {
+	/* 配置系统Tick和PendSV中断优先级 */
+	#if 0
 	/* Make PendSV and SysTick the lowest priority interrupts. */
 	*(portNVIC_SYSPRI2) |= portNVIC_PENDSV_PRI;		//pend中断优先级
 	*(portNVIC_SYSPRI2) |= portNVIC_SYSTICK_PRI;	//系统tick中断优先级
-
+	#endif 
+	
 	/* Start the timer that generates the tick ISR.  Interrupts are disabled
 	here already. */
 	prvSetupTimerInterrupt();
+
 
 	/* Initialise the critical nesting count ready for the first task. */
 	uxCriticalNesting = 0;
@@ -153,13 +146,11 @@ void vPortEndScheduler( void )
 
 void vPortYield( void )
 {
-	/* Set a PendSV to request a context switch. */
-	*(portNVIC_INT_CTRL) = portNVIC_PENDSVSET;
-
+	/* 产生一个PendSV中断，从而引起切换任务 */
+	xPortPendSVHandler();
+	
 	/* Barriers are normally not required but do ensure the code is completely
 	within the specified behaviour for the architecture. */
-	//__DSB();
-	//__ISB();
 }
 /*-----------------------------------------------------------*/
 
@@ -167,8 +158,6 @@ void vPortEnterCritical( void )
 {
 	portDISABLE_INTERRUPTS();
 	uxCriticalNesting++;
-	//__DSB();
-	//__ISB();
 }
 /*-----------------------------------------------------------*/
 
@@ -185,7 +174,7 @@ void vPortExitCritical( void )
 
 void xPortSysTickHandler( void )
 {
-uint32_t ulPreviousMask;
+	uint32_t ulPreviousMask;
 
 	ulPreviousMask = portSET_INTERRUPT_MASK_FROM_ISR();
 	{
@@ -193,7 +182,7 @@ uint32_t ulPreviousMask;
 		if( xTaskIncrementTick() != pdFALSE )
 		{
 			/* Pend a context switch. */
-			*(portNVIC_INT_CTRL) = portNVIC_PENDSVSET;
+			xPortPendSVHandler();
 		}
 	}
 	portCLEAR_INTERRUPT_MASK_FROM_ISR( ulPreviousMask );
@@ -206,6 +195,8 @@ uint32_t ulPreviousMask;
  */
 static void prvSetupTimerInterrupt( void )
 {
+	/* 设置系统Tick */
+	# if 0
 	/* Stop and reset the SysTick. */
 	*(portNVIC_SYSTICK_CTRL) = 0UL;
 	*(portNVIC_SYSTICK_CURRENT_VALUE) = 0UL;
@@ -213,6 +204,9 @@ static void prvSetupTimerInterrupt( void )
 	/* Configure SysTick to interrupt at the requested rate. */
 	*(portNVIC_SYSTICK_LOAD) = ( configCPU_CLOCK_HZ / configTICK_RATE_HZ ) - 1UL;
 	*(portNVIC_SYSTICK_CTRL) = portNVIC_SYSTICK_CLK | portNVIC_SYSTICK_INT | portNVIC_SYSTICK_ENABLE;
+	#endif
+	
 }
+
 /*-----------------------------------------------------------*/
 

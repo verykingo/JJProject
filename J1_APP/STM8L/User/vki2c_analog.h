@@ -1,6 +1,13 @@
+/******************************************************************************
+ * 文件  vki2c_analog.h
+ * 描述    ：模拟I2C
+ * 平台    ：ALL
+ * 时间  ：2019-04-01
 
-#ifndef __ANALOG_I2C_H__
-#define __ANALOG_I2C_H__
+*******************************************************************************/
+
+#ifndef __VKI2C_ANALOG_H__
+#define __VKI2C_ANALOG_H__
 #include "stdio.h"
 
 /*************** 硬件平台无关宏定义 ***************/
@@ -10,7 +17,7 @@
 
 /* 硬件平台相关使能 */
 #define USING_REALTEK_RTL8710BX 0u
-
+#define USING_STM8L15X 			1u
 
 /*************** 硬件平台相关宏定义 ***************/
 #if USING_REALTEK_RTL8710BX==1u
@@ -51,30 +58,40 @@ gpio_t 		rtl_gpio_i2c_sda;
 
 /* I2C打印 */
 #define I2C_PRINTF(Fmt, Arg...) printf(Fmt, ##Arg)
-#else
+
+#elif USING_STM8L15X == 1u
+#include "stm8l15x.h"
+
+/* SCL&SDA引脚 */
+#define I2C_SCL_GPIO GPIOE
+#define I2C_SDA_GPIO GPIOE
+
+#define I2C_SCL_PIN	GPIO_Pin_2	//PE_2
+#define I2C_SDA_PIN	GPIO_Pin_3	//PE_3
+
 /* SCL&SDA初始化 */
-#define I2C_SCL_INIT()	
-#define I2C_SDA_INIT()	
+#define I2C_SCL_INIT()	GPIO_Init(I2C_SCL_GPIO, I2C_SCL_PIN, GPIO_Mode_Out_OD_HiZ_Fast)
+#define I2C_SDA_INIT()	GPIO_Init(I2C_SDA_GPIO, I2C_SDA_PIN, GPIO_Mode_Out_OD_HiZ_Fast)
 
 /* SCL&SDA设值，拉高x=1，拉低x=0 */
-#define I2C_SCL_SET(x)	
-#define I2C_SDA_SET(x)	
+#define I2C_SCL_SET(x)	(x==1)?GPIO_SetBits(I2C_SCL_GPIO, I2C_SCL_PIN):GPIO_ResetBits(I2C_SCL_GPIO, I2C_SCL_PIN)
+#define I2C_SDA_SET(x)	(x==1)?GPIO_SetBits(I2C_SDA_GPIO, I2C_SDA_PIN):GPIO_ResetBits(I2C_SDA_GPIO, I2C_SDA_PIN)
 
 /* SCL&SDA取值，返回1拉高，返回0拉低 */
-#define I2C_SCL_GET()	
-#define I2C_SDA_GET()	
+#define I2C_SCL_GET()	(RESET==GPIO_ReadInputDataBit(I2C_SCL_GPIO, I2C_SCL_PIN))?0:1
+#define I2C_SDA_GET()	(RESET==GPIO_ReadInputDataBit(I2C_SDA_GPIO, I2C_SDA_PIN))?0:1
 
 /* SCL&SDA方向，输出x=1，输入x=0 */
-#define I2C_SCL_DIR(x)	
-#define I2C_SDA_DIR(x)	
+#define I2C_SCL_DIR(x)	(x==1)?( I2C_SCL_GPIO->DDR |= I2C_SCL_PIN):(I2C_SCL_GPIO->DDR &= (uint8_t)(~(I2C_SCL_PIN)))
+#define I2C_SDA_DIR(x)	(x==1)?( I2C_SDA_GPIO->DDR |= I2C_SDA_PIN):(I2C_SDA_GPIO->DDR &= (uint8_t)(~(I2C_SDA_PIN)))
 
 /* I2C微秒/毫秒延时 */
-#define I2C_DELAYUS(x)	
-#define I2C_DELAYMS(x)	
+#define I2C_DELAYUS(x)	nop();nop();nop();nop()
+#define I2C_DELAYMS(x)	vkTimerDelayMS(x)
 
 /* I2C临界区保护 */
-#define I2C_ENTER_CRITICAL() 
-#define I2C_EXIT_CRITICAL()  
+#define I2C_ENTER_CRITICAL()  __istate_t _istate = __get_interrupt_state(); __disable_interrupt()
+#define I2C_EXIT_CRITICAL()   __set_interrupt_state(_istate)
 
 /* I2C打印 */
 #define I2C_PRINTF(Fmt, Arg...) printf(Fmt, ##Arg)
@@ -83,10 +100,11 @@ gpio_t 		rtl_gpio_i2c_sda;
 
 
 /* 模拟I2C接口函数 */
-int i2c_Write(uint8_t slave_addr, uint8_t *data, int length);
-int i2c_Read(uint8_t slave_addr, uint8_t *data, int length);
-int i2c_Find(uint8_t slave_addr);
-int i2c_Scan(void);
+int vkI2C_Init(void);
+int vkI2C_Write(uint8_t slave_addr, uint8_t *data, int length);
+int vkI2C_Read(uint8_t slave_addr, uint8_t *data, int length);
+int vkI2C_Find(uint8_t slave_addr);
+int vkI2C_Scan(void);
 
 
 #endif

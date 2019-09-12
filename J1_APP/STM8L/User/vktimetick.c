@@ -25,9 +25,9 @@
  * 返回: 无
  * 说明: 无 
  ******************************************************************************/
-void vkTimeTick_Init(uint8_t TIM)
+void vkTimeTick_Init(vkTIME TIM)
 {
-	/* 定时器1 */
+	/* 定时器1: 1ms/tick */
 	if(TIM == 1)	
 	{
 		/* Enable TIM1 CLK*/
@@ -48,7 +48,7 @@ void vkTimeTick_Init(uint8_t TIM)
 	    /* Enable TIM1 */
 	    TIM1_Cmd(ENABLE);
 	}
-	/* 定时器2 */
+	/* 定时器2: 10ms/tick    */
 	else if(TIM == 2)
 	{
 		/* Enable TIM2 CLK*/
@@ -66,9 +66,10 @@ void vkTimeTick_Init(uint8_t TIM)
 		/* Generate an interrupt on timer count overflow 计数溢出*/
 		TIM2_ITConfig(TIM2_IT_Update, ENABLE);
 		
-		/* Enable TIM1 */
+		/* Enable TIM2 */
 		TIM2_Cmd(ENABLE);		
 	}
+	/* 定时器3: 10ms/tick    */
 	else if(TIM == 3)
 	{
 		/* Enable TIM3 CLK*/
@@ -88,7 +89,8 @@ void vkTimeTick_Init(uint8_t TIM)
 		
 		/* Enable TIM3 */
 		TIM3_Cmd(ENABLE);		
-	}	
+	}
+	/* 定时器4: 100ms/tick    */
 	else if(TIM == 4)
 	{
 		/* Enable TIM4 CLK*/
@@ -109,6 +111,7 @@ void vkTimeTick_Init(uint8_t TIM)
 		/* Enable TIM4 */
 		TIM4_Cmd(ENABLE);		
 	}
+	/* 定时器5: 10ms/tick    */
 	else if(TIM == 5)
 	{
 		/* Enable TIM5 CLK*/

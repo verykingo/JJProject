@@ -1,9 +1,12 @@
-/*
- * 软定时器，允许多次插入同一个定时器，一次性删除队列中名字相同的多个定时器
- * 如果要确保定时器链表中只有一个特定名字的定时器，则必须在插入之前，先删除
- * 该定时器
- */
+/******************************************************************************
+ * 文件  ：vksofttimer.c
+ * 描述    ：软定时器，允许多次插入同一个定时器，一次性删除队列中名字相同的多个定时器
+           如果要确保定时器链表中只有一个特定名字的定时器，则必须在插入之前，先删除
+           该定时器。
+ * 平台    ：ALL
+ * 时间  ：2019-04-01
 
+*******************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,9 +29,13 @@ static void TimerCallbacks (void);
 void* timer_mem_malloc(uint32_t size);
 void  timer_mem_free(void *ptr);
 
-/*
- * 添加一个定时器回调
-*/
+/*******************************************************************************
+ * 名称: vkTimerInsert
+ * 功能: 插入一个软定时器
+ * 形参: 软定时器指针
+ * 返回: 成功vkTIMER_OK，失败负数
+ * 说明: 无 
+ ******************************************************************************/
 int8_t vkTimerInsert (vkTIMER *timer_ptr)
 {
     int8_t status;
@@ -94,9 +101,13 @@ int8_t vkTimerInsert (vkTIMER *timer_ptr)
     return (status);
 }
 
-/* 
- * 删除一个定时器回调
-*/
+/*******************************************************************************
+ * 名称: vkTimerCancel
+ * 功能: 删除一个软定时器
+ * 形参: 软定时器指针
+ * 返回: 成功vkTIMER_OK，失败负数
+ * 说明: 无 
+ ******************************************************************************/
 int8_t vkTimerCancel (vkTIMER *timer_ptr)
 {
     int8_t status = vkTIMER_ERR_NOT_FOUND;
@@ -162,9 +173,13 @@ int8_t vkTimerCancel (vkTIMER *timer_ptr)
     return (status);
 }
 
-/* 
- * 清空定时链表
-*/
+/*******************************************************************************
+ * 名称: vkTimerClear
+ * 功能: 删除所有软定时器
+ * 形参: 软定时器指针
+ * 返回: 成功vkTIMER_OK
+ * 说明: 无 
+ ******************************************************************************/
 int8_t vkTimerClear (void)
 {
     vkTIMER *next_ptr;
@@ -193,19 +208,73 @@ int8_t vkTimerClear (void)
 	return vkTIMER_OK;	
 }
 
-
-uint32_t vkTimerGet(void)
+/*******************************************************************************
+ * 名称: vkTimerGetTicks
+ * 功能: 获取软定时器Ticks
+ * 形参: 
+ * 返回: 
+ * 说明: 无 
+ ******************************************************************************/
+uint32_t vkTimerGetTicks(void)
 {
     return (timer_ticks);
 }
 
-void vkTimerSet(uint32_t new_time)
+/*******************************************************************************
+ * 名称: vkTimerSetTicks
+ * 功能: 设置软定时器Ticks
+ * 形参: 
+ * 返回: 
+ * 说明: 无 
+ ******************************************************************************/
+int8_t vkTimerSetTicks(uint32_t new_time)
 {
     timer_ticks = new_time;
+
+	return 0;
 }
 
+/*******************************************************************************
+ * 名称: vkTimerDelayMS
+ * 功能: 定时器延时毫秒
+ * 形参: 
+ * 返回: 
+ * 说明: TIMER_US_PER_TICK不大于1ms,才能精确延时到毫秒
+ ******************************************************************************/
+void vkTimerDelayMS(uint32_t msec)
+{
+	uint32_t tick_start = vkTimerGetTicks();
+
+	while(vkTimerGetTicks() >= (tick_start + msec*1000/TIMER_US_PER_TICK))
+	{
+		break;
+	}
+
+	return;
+}
+
+/*******************************************************************************
+ * 名称: vkTimerDelayS
+ * 功能: 定时器延时秒
+ * 形参: 
+ * 返回: 
+ * 说明: 无 
+ ******************************************************************************/
+void vkTimerDelayS(uint32_t s)
+{
+	uint32_t tick_start = vkTimerGetTicks();
+
+	while(vkTimerGetTicks() >= (tick_start + s*1000*1000/TIMER_US_PER_TICK))
+	{
+		break;
+	}
+
+	return;
+}
+
+
 /**
- * \b TimerTick
+ * \b vkTimerTick
  *
  * 定时器Tick中断回调函数
  *

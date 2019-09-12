@@ -1,9 +1,13 @@
-/*
- * 循环数组队列
- */
+/******************************************************************************
+ * 文件  ：vkqueue.h
+ * 描述    ：循环数组队列
+ * 平台    ：ALL
+ * 时间  ：2019-04-01
 
-#ifndef __QUEUE_H_
-#define __QUEUE_H_
+*******************************************************************************/
+
+#ifndef __VKQUEUE_H_
+#define __VKQUEUE_H_
 
 /* 平台相关数据类型定义 */
 #include "stm8l15x.h"
@@ -30,6 +34,7 @@
 #define CRITICAL_END()      _setCC_(ccr)
 #define FORCE_USED
 #endif
+
 
 /* 队列返回参数定义 */
 #define vkQUEUE_OK                  0	//正确
@@ -67,4 +72,4 @@ extern int8_t vkQueueEmpty (vkQUEUE *qptr);
 }
 #endif
 
-#endif /* __QUEUE_H */
+#endif /* __VKQUEUE_H */

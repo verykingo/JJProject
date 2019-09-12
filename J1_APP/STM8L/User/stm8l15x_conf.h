@@ -63,10 +63,10 @@
 #include "stm8l15x_wwdg.h"
 
 /* Exported define ------------------------------------------------------------*/
-#define USE_NO_RTOS 	1u		/* 不使用实时操作系统 */
+#define USE_NO_RTOS 	0u		/* 不使用实时操作系统 */
 #define USE_UCOS_II		0u		/* 使用uCOS-II实时操作系统    */
 #define USE_ATOMTHREAD 	0u		/* 使用AtomThread实时操作系统 */
-#define USE_FREERTOS    0u		/* 使用FreeRTOS实时操作系统 */
+#define USE_FREERTOS    1u		/* 使用FreeRTOS实时操作系统 */
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/

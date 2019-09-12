@@ -53,7 +53,7 @@ typedef struct protocol
 	vkTIMER*			rep_timer;		//应答定时回调
 	vkTIMER*			rpt_timer;		//命令重发定时回调
 
-} PROTOCOL;
+} vkPROTOCOL;
 
 
 void protocol_command(void* ptr);

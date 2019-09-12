@@ -46,7 +46,7 @@
  *     contains the typedefs required to build FreeRTOS.  Read the instructions
  *     in FreeRTOS/source/stdint.readme for more information.
  */
-#include <stdint.h> /* READ COMMENT ABOVE. */
+//#include <stdint.h> /* READ COMMENT ABOVE. */
 
 #ifdef __cplusplus
 extern "C" {

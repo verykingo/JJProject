@@ -1,6 +1,12 @@
-/*
- * 软定时器
- */
+/******************************************************************************
+ * 文件  ：vksofttimer.h
+ * 描述    ：软定时器，允许多次插入同一个定时器，一次性删除队列中名字相同的多个定时器
+           如果要确保定时器链表中只有一个特定名字的定时器，则必须在插入之前，先删除
+           该定时器。
+ * 平台    ：ALL
+ * 时间  ：2019-04-01
+
+*******************************************************************************/
 
 #ifndef __VKSOFTTIMER_H_
 #define __VKSOFTTIMER_H_
@@ -64,13 +70,16 @@ typedef struct soft_timer
 
 #define TIMER_STRUCT_SIZE	20			/* 软定时器大小			*/
 #define TIMER_STATCK_SIZE 	400			/* 软定时器堆栈大小 */
+#define TIMER_US_PER_TICK	10000		/* 定时器每个tick是10000us */
 
 /* Function prototypes */
 extern int8_t 	vkTimerInsert(vkTIMER *timer_ptr);
 extern int8_t 	vkTimerCancel(vkTIMER *timer_ptr);
 extern int8_t 	vkTimerClear (void);
-extern uint32_t vkTimerGet (void);
-extern void 	vkTimerSet (uint32_t new_time);
+extern uint32_t vkTimerGetTicks (void);
+extern int8_t 	vkTimerSetTicks (uint32_t new_time);
+extern void vkTimerDelayMS(uint32_t msec);
+extern void vkTimerDelayS(uint32_t s);
 
 extern void vkTimerTick (void);
 

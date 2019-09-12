@@ -16,11 +16,7 @@
  * 功能: 设置系统时钟频率
  * 形参: 无
  * 返回: 无
- * 说明: 时钟选择
-         如果选择外部24MHz主时钟的，外部不是24M的话
-         把#define HSE_24M  HSE_VALUE注释掉即可,
-         如果不需要切换到外部时钟，把#define __HSE_VALUE  HSE_VALUE
-         注释掉即可
+ * 说明: 时钟选择16MHz
  ******************************************************************************/
 void SystemClock_Init(void)
 {
@@ -35,6 +31,5 @@ void SystemClock_Init(void)
 	while (CLK_GetSYSCLKSource() != CLK_SYSCLKSource_HSI)
 	{}	
 }
-
 
 /***************************************************************END OF FILE****/
