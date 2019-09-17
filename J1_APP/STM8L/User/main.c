@@ -33,6 +33,7 @@
 #include "vkprotocol.h"
 #include "vkleds.h"
 #include "vkUsart.h"
+#include "vkAT.h"
 
 #if USE_UCOS_II == 1u
 #include "ucos_ii.h"
@@ -325,13 +326,13 @@ void main(void)
 	/* After Finish All Init, Enable Interrupt */
 	enableInterrupts();	
 
-	vkUsart_Send(COM1 ,"hello ", 6);
-	vkUsart_Send(COM1 ,"world!!!", 8);
-	vkUsart_Send(COM1 ,"This is a good\r\n", 16);
 
 	vkUsart_Send(COM3 ,"hello ", 6);
+	vkTimerDelaySS(1);
 	vkUsart_Send(COM3 ,"world!!!", 8);
-	vkUsart_Send(COM3 ,"This is a good\r\n", 16);
+	vkTimerDelaySS(1);
+	vkUsart_Send(COM3 ,"This is a good new.\r\n", 22);
+	vkTimerDelaySS(1);
 
 #if USE_NO_RTOS == 1u
 	Timer_Callback0.timer_name 	= (void *)&Timer_Callback0;
@@ -352,7 +353,10 @@ void main(void)
 	Timer_Callback2.cb_ticks	= vkSS_TO_TICKS(5);
 	vkTimerInsert(&Timer_Callback2);
 
-	while(1){};
+	while(1)
+	{
+		vkATEcho(COM3);
+	};
 	
 #elif USE_UCOS_II == 1u
 	/* 初始化uCOS系统 */

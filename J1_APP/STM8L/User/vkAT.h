@@ -13,6 +13,7 @@
 /* 包含系统头文件 */
 
 /* 包含自定义头文件 */
+#include "vkusart.h"
 
 /* 自定义数据类型 */
 
@@ -29,10 +30,12 @@ typedef struct at
 
 
 int vkATParser(const char * data, int data_len);
+int vkATEcho(vkCOM com);
 
 void AT_Reset(void *data, int len);
 void AT_Test(void *data, int len);
 
+#define AT_COMMANDLINE_SIZE_MAX	16
 
 #endif
 

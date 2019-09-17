@@ -180,7 +180,6 @@ int vkUsart_Init(vkCOM com, uint32_t BaudRate)
 	
   	/* Enable the USART Receive interrupt: this interrupt is generated 
   	   when the USART receive data register is not empty */
-  	USART_ClearITPendingBit(gUsart[com].usart, USART_IT_RXNE);
  	USART_ITConfig(gUsart[com].usart, USART_IT_RXNE, ENABLE);
 
 	/* Enable the USART Transmit complete interrupt: this interrupt is 
@@ -189,25 +188,20 @@ int vkUsart_Init(vkCOM com, uint32_t BaudRate)
   	USART_ITConfig(gUsart[com].usart, USART_IT_TC, ENABLE);	
 
 	/* Enable the USART IDLE line interrupt */
-	USART_ClearITPendingBit(gUsart[com].usart, USART_IT_IDLE);
   	USART_ITConfig(gUsart[com].usart, USART_IT_IDLE, ENABLE);	
 
 	/* Enable USART */
 	USART_Cmd(gUsart[com].usart, ENABLE);
 
-	/* Create Tx/Rx queue buffer */
-	if(vkQUEUE_OK != vkQueueCreate(&gUsart[com].tx_queue,gUsart[com].tx_buffer,sizeof(char),UART_SEND_RECV_BUFSIZE))
-	{
-		return -1;
-	}
-	if(vkQUEUE_OK != vkQueueCreate(&gUsart[com].rx_queue,gUsart[com].rx_buffer,sizeof(char),UART_SEND_RECV_BUFSIZE))
-	{
-		return -1;
-	}
-
+	/* Set Zero */
+	gUsart[com].tx_index = 0;
+	gUsart[com].rx_index = 0;	
+	gUsart[com].tx_count = 0;
+	gUsart[com].rx_count = 0;	
 	gUsart[com].tx_doing = 0;
 	gUsart[com].rx_idle = 0;
 
+	/* DMA Configure */
 	if(com == COM1)
 	{
 		if(gUsart[COM3].dma_enable == 0)
@@ -270,8 +264,8 @@ int vkUsart_Init(vkCOM com, uint32_t BaudRate)
 			USART_DMACmd(gUsart[com].usart, USART_DMAReq_RX, ENABLE);
 
 			/* DMA_ITConfig */
-			//ITC_SetSoftwarePriority(DMA1_CHANNEL0_1_IRQn, ITC_PriorityLevel_2);
-			//ITC_SetSoftwarePriority(DMA1_CHANNEL2_3_IRQn, ITC_PriorityLevel_2); 
+			ITC_SetSoftwarePriority(DMA1_CHANNEL0_1_IRQn, ITC_PriorityLevel_2);
+			ITC_SetSoftwarePriority(DMA1_CHANNEL2_3_IRQn, ITC_PriorityLevel_2); 
 
 			/* Disable RXNE and TC  */
 			USART_ITConfig(gUsart[com].usart, USART_IT_RXNE, DISABLE);
@@ -408,26 +402,6 @@ int vkUsart_Deinit(vkCOM com)
 	/* RESET USART */
   	USART_DeInit(gUsart[com].usart);
 
-	/* Free buffer memmory */
-	if(NULL!=gUsart[com].tx_buffer)
-	{
-		free(gUsart[com].tx_buffer);
-	}
-	if(NULL!=gUsart[com].rx_buffer)
-	{
-		free(gUsart[com].rx_buffer);
-	}
-
-	/* Destory Tx/Rx queue buffer */
-	if(vkQUEUE_OK != vkQueueDestory(&gUsart[com].tx_queue))
-	{
-		return -1;
-	}
-	if(vkQUEUE_OK != vkQueueDestory(&gUsart[com].rx_queue))
-	{
-		return -1;
-	}
-
 	/* Set be NULL */
 	gUsart[com].usart = NULL;
 
@@ -523,24 +497,24 @@ int getchar(void)
 }
 
 /*
- * 接收中断处理函数
+ * 一个字节数据接收中断处理函数
  */
 int vkUsart_Recv_Byte(vkCOM com)
 {
-	uint8_t c = USART_ReceiveData8(gUsart[com].usart); 
-
-	/* 接收缓存队列存在一行数据 */
-	if(gUsart[com].rx_idle == 1)
+	int ret = 0;
+	
+	/* 一帧数据接收未完成，持续取数据 */
+	if(gUsart[com].rx_idle == 0 && gUsart[com].rx_count < UART_SEND_RECV_BUFSIZE)
 	{
-		return -1;
+		gUsart[com].rx_buffer[gUsart[com].rx_index++] = USART_ReceiveData8(gUsart[com].usart);
+		gUsart[com].rx_count++;
 	}
-
-	if(vkQUEUE_OK != vkQueuePut(&gUsart[com].rx_queue, 0, &c))
+	else
 	{
-		return -1;
+		ret = -1;
 	}
 	
-	return 0;
+	return ret;
 }
 
 /*
@@ -548,8 +522,10 @@ int vkUsart_Recv_Byte(vkCOM com)
  */
 int vkUsart_Recv_Line(vkCOM com)
 {
+	/* 关IDLE中断 */
+	USART_ITConfig(gUsart[com].usart, USART_IT_IDLE, DISABLE);	
 	gUsart[com].rx_idle = 1;
-
+	
 	if(gUsart[com].dma_enable == 1)
 	{
 		DMA_Cmd(gUsart[com].rx_channel, DISABLE); 
@@ -563,68 +539,60 @@ int vkUsart_Recv_Line(vkCOM com)
  */
 int vkUsart_Send_Byte(vkCOM com)
 {
-	uint8_t c;
-
-	/* 缓存队列有数据，且发送数据寄存器是空 */
-	if(vkQUEUE_OK != vkQueueGet(&gUsart[com].tx_queue, 0, &c))
+	/* 逐字节发送数据 */
+	if(gUsart[com].tx_index < gUsart[com].tx_count)
 	{
-		gUsart[com].tx_doing = 0;		
-		return -1;
+		/* Write a character to the USART */	
+	  	USART_SendData8(gUsart[com].usart, gUsart[com].tx_buffer[gUsart[com].tx_index++]);		
 	}
-
-	/* Write a character to the USART */
-	gUsart[com].tx_doing = 1;
-  	USART_SendData8(gUsart[com].usart, (uint8_t)c);	
-	
+	/* 数据发送完成 */
+	else
+	{		
+		gUsart[com].tx_doing = 0;
+	}	
 	return 0;
 }
 
-int vkUsart_QUE_Send(vkCOM com, uint8_t *buf, int size)
+int vkUsart_INT_Send(vkCOM com, uint8_t *buf, int size)
 {
-	int ret = 0;
+	int ret = -1;	
 
-	/* 发送数据放入缓存队列 */
-	for(int i=0; i<size; i++)
+	/* 发送缓存没有正在发送数据 */
+	if(gUsart[com].tx_doing == 0)
 	{
-		if(vkQUEUE_OK != vkQueuePut(&gUsart[com].tx_queue, 0, (uint8_t *)buf+i))
-		{
-			break;
-		}
+		gUsart[com].tx_doing = 1;
+		
+		ret = (size>UART_SEND_RECV_BUFSIZE)?UART_SEND_RECV_BUFSIZE:size;
+		
+		memcpy(gUsart[com].tx_buffer, buf, ret);
 
-		ret++;
-	}
+		gUsart[com].tx_count = ret;
+		gUsart[com].tx_index = 0;
 
-	/* 缓存队列有数据 */
-	if(vkQUEUE_NULL != vkQueueEmpty(&gUsart[com].tx_queue) && gUsart[com].tx_doing == 0)
-	{
 		vkUsart_Send_Byte(com);
-	}	
+	}
 	
 	return ret;
 }
 
-int vkUsart_QUE_Recv(vkCOM com, uint8_t *buf, int size)
+int vkUsart_INT_Recv(vkCOM com, uint8_t *buf, int size)
 {
-	int ret = 0;
+	int ret = -1;
 
-	/* 接收缓存队列不存在一行数据 */
-	if(gUsart[com].rx_idle == 0)
+	/* 接收缓存收到一帧数据 */
+	if(gUsart[com].rx_idle == 1)
 	{
-		return -1;
+		ret = (size>gUsart[com].rx_count)?gUsart[com].rx_count:size;
+		
+		memcpy(buf, gUsart[com].rx_buffer, ret);
+		
+		gUsart[com].rx_index = 0;	
+		gUsart[com].rx_count = 0;
+
+		/* 开IDLE中断 */
+		gUsart[com].rx_idle = 0;	
+		USART_ITConfig(gUsart[com].usart, USART_IT_IDLE, ENABLE);		
 	}
-
-	/* 从缓存队列中读出数据 */
-	for(int i=0; i<size; i++)
-	{
-		if(vkQUEUE_OK != vkQueueGet(&gUsart[com].rx_queue, 0, (uint8_t *)buf+i))
-		{
-			break;
-		}
-
-		ret++;		
-	}
-
-	gUsart[com].rx_idle = 0;
 
 	return ret;
 }
@@ -683,7 +651,7 @@ int vkUsart_DMA_Recv(vkCOM com, uint8_t *buf, int size)
 	}
 
 	/* 获取接收数据大小 */
-	ret = DMA_GetCurrDataCounter(gUsart[com].rx_channel);
+	ret = UART_SEND_RECV_BUFSIZE - DMA_GetCurrDataCounter(gUsart[com].rx_channel);
 
 	ret = (ret<size)?ret:size;
 	
@@ -697,7 +665,9 @@ int vkUsart_DMA_Recv(vkCOM com, uint8_t *buf, int size)
     DMA_SetCurrDataCounter(gUsart[com].rx_channel, UART_SEND_RECV_BUFSIZE); 
     DMA_Cmd(gUsart[com].rx_channel, ENABLE);
 
-	gUsart[com].rx_idle = 0;
+	/* 开IDLE中断 */
+	gUsart[com].rx_idle = 0;	
+	USART_ITConfig(gUsart[com].usart, USART_IT_IDLE, ENABLE);
 
 	return ret;	
 }
@@ -711,13 +681,24 @@ int vkUsart_DMA_Recv(vkCOM com, uint8_t *buf, int size)
  ******************************************************************************/
 int vkUsart_Send(vkCOM com, uint8_t *buf, int size)
 {
+	/* 参数检查 */
+	if(com != COM1 && com != COM2 && com != COM3)
+	{
+		return -1;
+	}
+
+	if(buf == NULL || size <= 0)
+	{	
+		return -1;
+	}
+
 	if(gUsart[com].dma_enable == 1)
 	{
 		return vkUsart_DMA_Send(com, buf, size);
 	}
 	else
 	{
-		return vkUsart_QUE_Send(com, buf, size);
+		return vkUsart_INT_Send(com, buf, size);
 	}
 }
 
@@ -730,13 +711,24 @@ int vkUsart_Send(vkCOM com, uint8_t *buf, int size)
  ******************************************************************************/
 int vkUsart_Recv(vkCOM com, uint8_t *buf, int size)
 {
+	/* 参数检查 */
+	if(com != COM1 && com != COM2 && com != COM3)
+	{
+		return -1;
+	}
+
+	if(buf == NULL || size <= 0)
+	{	
+		return -1;
+	}
+
 	if(gUsart[com].dma_enable == 1)
 	{
 		return vkUsart_DMA_Recv(com, buf, size);
 	}
 	else
 	{
-		return vkUsart_QUE_Recv(com, buf, size);
+		return vkUsart_INT_Recv(com, buf, size);
 	}	
 }
 

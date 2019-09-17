@@ -39,6 +39,8 @@ static const vkAT AT[]= {
 	{1, 	"AT+RESET", 			AT_Reset}
 };
 
+static vkCOM ATCOM = (vkCOM)-1;
+
 static int parse_atcmd_line(const char * data, int start, int end);
 static int get_plus_index(const char * string, int start, int end);
 static int get_space_index(const char * string, int start, int end);
@@ -229,14 +231,58 @@ static int trim_spaces(const char * string, int * start, int * end)
 	return 0;
 }
 
+/*******************************************************************************
+ * 名称: AT命令环境
+ * 功能: AT命令环境
+ * 形参: 串口com
+ * 返回: 无
+ * 说明: 无 
+ ******************************************************************************/
+int vkATEcho(vkCOM com)
+{		
+	uint8_t data[AT_COMMANDLINE_SIZE_MAX];
+	static uint8_t command[AT_COMMANDLINE_SIZE_MAX];
+	static uint8_t index = 0;
+		
+	ATCOM = com;
+	
+	int ret = vkUsart_Recv(ATCOM, data, AT_COMMANDLINE_SIZE_MAX);	
+
+	if(ret > 0)
+	{
+		if(ret==1 && data[0] == '\r')
+		{
+			vkATParser((const char *)command, index);
+			index = 0;
+			memset(command, 0, sizeof(command));
+			vkUsart_Send(ATCOM ,"\r\n#", 3);			
+		}
+		else
+		{
+			vkUsart_Send(ATCOM ,data, ret);
+			if(index+ret <= AT_COMMANDLINE_SIZE_MAX)
+			{
+				memcpy(command+index, data, ret);
+				index += ret;
+			}
+		}		
+	}
+	
+	return 0;
+}
+
+
 void AT_Test(void *data, int len)
 {
+	vkUsart_Send(ATCOM ,"OK\r\n", 4);
 	
 	return;
 }
 
 void AT_Reset(void *data, int len)
 {
+	vkUsart_Send(ATCOM ,"OK\r\n", 4);
+	
 	return;
 }
 

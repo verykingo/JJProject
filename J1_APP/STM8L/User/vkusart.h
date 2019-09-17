@@ -16,17 +16,19 @@
 #include "vkqueue.h"
 
 /* 自定义数据类型 */
-#define UART_SEND_RECV_BUFSIZE 64		//发送接收缓存大小
+#define UART_SEND_RECV_BUFSIZE 64		//发送接收缓存大小,最大值255
 
 typedef struct USART
 {	
 	USART_TypeDef* 	usart;			//串口
 	uint8_t			tx_buffer[UART_SEND_RECV_BUFSIZE];		//发送缓存
 	uint8_t			rx_buffer[UART_SEND_RECV_BUFSIZE];		//接收缓存
-	vkQUEUE 		tx_queue;		//发送队列
-	vkQUEUE 		rx_queue;		//接收队列
+	uint8_t			tx_index;								//发送索引
+	uint8_t			rx_index;								//接收索引
+	uint8_t			tx_count;								//发送计数
+	uint8_t			rx_count;								//接收计数
 	uint8_t			tx_doing;		//正在发送
-	uint8_t			rx_idle;		//接收空闲
+	uint8_t			rx_idle;		//收到一帧数据
 
 	uint8_t			dma_enable;			//dma使能标记
 	DMA_Channel_TypeDef* tx_channel;	//dma发送通道
@@ -40,7 +42,7 @@ typedef enum COM
 	COM3 = 2	//串口3
 } vkCOM;
 
-#define UART1_DMA_ENABLE	1u
+#define UART1_DMA_ENABLE	0u
 #define UART2_DMA_ENABLE	0u
 #define UART3_DMA_ENABLE	0u
 

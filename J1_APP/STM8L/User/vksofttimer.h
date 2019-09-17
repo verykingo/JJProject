@@ -79,7 +79,7 @@ extern int8_t 	vkTimerClear (void);
 extern uint32_t vkTimerGetTicks (void);
 extern int8_t 	vkTimerSetTicks (uint32_t new_time);
 extern void vkTimerDelayMS(uint32_t msec);
-extern void vkTimerDelayS(uint32_t s);
+extern void vkTimerDelaySS(uint32_t s);
 
 extern void vkTimerTick (void);
 

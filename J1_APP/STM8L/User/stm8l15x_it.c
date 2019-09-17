@@ -99,6 +99,10 @@ INTERRUPT_HANDLER(DMA1_CHANNEL0_1_IRQHandler,2)
     /* In order to detect unexpected events during development,
        it is recommended to set a breakpoint on the following instruction.
     */
+	if(DMA_GetITStatus(DMA1_IT_TC1) != RESET)
+	{
+		DMA_ClearITPendingBit(DMA1_IT_TC1);
+	}
 }
 /**
   * @brief DMA1 channel2 and channel3 Interrupt routine.
@@ -323,14 +327,19 @@ INTERRUPT_HANDLER(TIM2_CC_USART2_RX_IRQHandler,20)
     /* In order to detect unexpected events during development,
        it is recommended to set a breakpoint on the following instruction.
     */
-   	/* 串口收到一个字节数据 */
-    if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
-    {  
-		vkUsart_Recv_Byte(COM2);	
-		USART_ClearITPendingBit(USART2, USART_IT_RXNE);
-    }
+	/* 串口收到一个字节数据 */
+	if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
+	{		
+		vkUsart_Recv_Byte(COM2);
+	}
+	
+	/* 串口空闲，收到一行最后一个字节数据 */
+	if(USART_GetITStatus(USART2, USART_IT_IDLE) != RESET)
+	{
+		USART_ReceiveData8(USART2);
+		vkUsart_Recv_Line(COM2);		
+	}
 }
-
 
 /**
   * @brief Timer3 Update/Overflow/Trigger/Break Interrupt routine.
@@ -359,14 +368,20 @@ INTERRUPT_HANDLER(TIM3_CC_USART3_RX_IRQHandler,22)
     /* In order to detect unexpected events during development,
        it is recommended to set a breakpoint on the following instruction.
     */
-   	/* 串口收到一个字节数据 */
+
+	/* 串口收到一个字节数据 */
     if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
     {    	
-		vkUsart_Recv_Byte(COM3);	
-		USART_ClearITPendingBit(USART3, USART_IT_RXNE);
+		vkUsart_Recv_Byte(COM3);
     }
-}
 
+	/* 串口空闲，收到一行最后一个字节数据 */
+	if(USART_GetITStatus(USART3, USART_IT_IDLE) != RESET)
+	{
+		USART_ReceiveData8(USART3);
+		vkUsart_Recv_Line(COM3);		
+	}
+}
 
 /**
   * @brief TIM1 Update/Overflow/Trigger/Commutation Interrupt routine. is "_interrupt_25"
@@ -455,19 +470,19 @@ INTERRUPT_HANDLER(USART1_RX_TIM5_CC_IRQHandler,28)
     /* In order to detect unexpected events during development,
        it is recommended to set a breakpoint on the following instruction.
     */
-    /* 串口收到一个字节数据 */
-    if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
-	{
-		vkUsart_Recv_Byte(COM1);
-		USART_ClearITPendingBit(USART1, USART_IT_RXNE);		
-	}
 
-	/* 串口空闲，收到一行字节数据 */
+	/* 串口收到一个字节数据 */
+    if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
+    {    	
+		vkUsart_Recv_Byte(COM1);
+    }
+
+	/* 串口空闲，收到一行最后一个字节数据 */
 	if(USART_GetITStatus(USART1, USART_IT_IDLE) != RESET)
 	{
-		vkUsart_Recv_Line(COM1);
-		USART_ClearITPendingBit(USART1, USART_IT_IDLE);
-	}	
+		USART_ReceiveData8(USART1);
+		vkUsart_Recv_Line(COM1);		
+	}
 }
 
 /**

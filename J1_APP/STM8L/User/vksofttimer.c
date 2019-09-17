@@ -245,10 +245,7 @@ void vkTimerDelayMS(uint32_t msec)
 {
 	uint32_t tick_start = vkTimerGetTicks();
 
-	while(vkTimerGetTicks() >= (tick_start + msec*1000/TIMER_US_PER_TICK))
-	{
-		break;
-	}
+	while(vkTimerGetTicks() <= (tick_start + (uint32_t)(msec*1000)/TIMER_US_PER_TICK))
 
 	return;
 }
@@ -260,14 +257,11 @@ void vkTimerDelayMS(uint32_t msec)
  * 返回: 
  * 说明: 无 
  ******************************************************************************/
-void vkTimerDelayS(uint32_t s)
+void vkTimerDelaySS(uint32_t s)
 {
 	uint32_t tick_start = vkTimerGetTicks();
 
-	while(vkTimerGetTicks() >= (tick_start + s*1000*1000/TIMER_US_PER_TICK))
-	{
-		break;
-	}
+	while(vkTimerGetTicks() <= (tick_start + (uint32_t)(s*1000*1000)/TIMER_US_PER_TICK));
 
 	return;
 }
