@@ -300,7 +300,7 @@ void vkTimerTick (void)
  */
 static void TimerCallbacks (void)
 {
-    vkTIMER *prev_ptr, *next_ptr;
+    vkTIMER *prev_ptr, *next_ptr, *expire_ptr;
 
     /*
      * Walk the list decrementing each timer's remaining ticks count and
@@ -318,34 +318,38 @@ static void TimerCallbacks (void)
                 /* We're removing the list head */
                 timer_list = next_ptr->next_timer;
 
+                expire_ptr = next_ptr;
+                 
+                /* Update prev_ptr and next_ptr with the list head*/
+				prev_ptr = next_ptr = timer_list;
+                 
 				/* Call the registered callback */
-				if (next_ptr->cb_func)
+				if (expire_ptr->cb_func)
 				{
-					next_ptr->cb_func (next_ptr->cb_data);
+					expire_ptr->cb_func (expire_ptr->cb_data);
 				}
 
 				/* Free the timer callback memory space*/
-				timer_mem_free(next_ptr);	
-
-				/* Update prev_ptr and next_ptr with the list head*/
-				prev_ptr = next_ptr = timer_list;			
+				timer_mem_free(expire_ptr);			
             }
             else
             {
                 /* We're removing a mid or tail timer */
                 prev_ptr->next_timer = next_ptr->next_timer;
+                
+                expire_ptr = next_ptr;
+                
+                /* Update next_ptr with the next of prev_ptr */
+				next_ptr = prev_ptr->next_timer;
 
 				/* Call the registered callback */
-				if (next_ptr->cb_func)
+				if (expire_ptr->cb_func)
 				{
-					next_ptr->cb_func (next_ptr->cb_data);
+					expire_ptr->cb_func (expire_ptr->cb_data);
 				}
 
 				/* Free the timer callback memory space*/
-				timer_mem_free(next_ptr);	
-
-				/* Update next_ptr with the next of prev_ptr */
-				next_ptr = prev_ptr->next_timer;
+				timer_mem_free(expire_ptr);
             }	
         }
         /* Entry is not due, leave it in there with its count decremented */
