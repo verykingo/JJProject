@@ -51,15 +51,15 @@ extern "C" {
 
 typedef struct queue
 {
-    uint8_t *   buff_ptr;       	/* Pointer to queue data area 队列数据区域起始地址 */
-    uint32_t    unit_size;      	/* Size of each message 队列数据单元大小 */
-    uint32_t    max_num_msgs;   	/* Max number of storable messages 最大可存储数据单元数 */
-    uint32_t    insert_index;   	/* Next byte index to insert into 数据单元插入位置 */
-    uint32_t    remove_index;   	/* Next byte index to remove from 数据单元删除位置 */
-    uint32_t    num_msgs_stored;	/* Number of messages stored 已存入数据单元数 */
+    uint8_t*   	buff_ptr;       	/* Pointer to queue data area 队列数据区域起始地址 */
+    uint8_t    	unit_size;      	/* Size of each message 队列数据单元大小 */
+    uint8_t    	max_num_msgs;   	/* Max number of storable messages 最大可存储数据单元数 */
+    uint8_t    	insert_index;   	/* Next byte index to insert into 数据单元插入位置 */
+    uint8_t    	remove_index;   	/* Next byte index to remove from 数据单元删除位置 */
+    uint8_t    	num_msgs_stored;	/* Number of messages stored 已存入数据单元数 */
 } vkQUEUE;
 
-extern int8_t vkQueueCreate (vkQUEUE *qptr, uint8_t *buff_ptr, uint32_t unit_size, uint32_t max_num_msgs);
+extern int8_t vkQueueCreate (vkQUEUE *qptr, uint8_t *buff_ptr, uint8_t unit_size, uint8_t max_num_msgs);
 extern int8_t vkQueueDestory (vkQUEUE *qptr);
 extern int8_t vkQueueGet (vkQUEUE *qptr, uint32_t timeout, uint8_t *msgptr);
 extern int8_t vkQueuePut (vkQUEUE *qptr, uint32_t timeout, uint8_t *msgptr);

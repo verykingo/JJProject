@@ -60,6 +60,11 @@ vkQUEUE Queue;
 /* 队列数据存储区 */
 uint8_t QueueBuffer[MAX_QUEUE_BUF_SIZE*MAX_QUEUE_BUF_NUMS] = {0};
 
+/* 串口3发送接收数据缓存 */
+uint8_t COM3_TxBuffer[64] = {0};
+uint8_t COM3_RxBuffer[64] = {0};
+
+
 #if USE_NO_RTOS == 1u
 /* 定时器回调 */
 vkTIMER Timer_Callback0;
@@ -158,7 +163,7 @@ void Task2(void * pdata)
 			task2_count = 0;
 		}	
 
-		OSTimeDlyHMSM(0,0,1,0);
+		OSTimeDlyHMSM(0,0,5,0);
 	}	
 }
 #elif USE_ATOMTHREAD == 1u
@@ -196,7 +201,7 @@ void Task0(uint32_t pdata)
 		}	
 
 		vkLedsSet(LED0, task0_count%2);
-		atomTimerDelay(100);
+		atomTimerDelay(2000);
 	}	
 }
 
@@ -212,7 +217,7 @@ void Task1(uint32_t pdata)
 		}	
 
 		vkLedsSet(LED1, task1_count%2);
-		atomTimerDelay(200);
+		atomTimerDelay(3000);
 	}	
 }
 
@@ -227,7 +232,7 @@ void Task2(uint32_t pdata)
 			task3_count = 0;
 		}	
 
-		atomTimerDelay(300);
+		atomTimerDelay(5000);
 	}	
 }
 
@@ -245,7 +250,7 @@ void Task0(uint32_t pdata)
 		}	
 
 		vkLedsSet(LED0, task0_count%2);
-		vTaskDelay(100);
+		vTaskDelay(2000);
 	}
 
 	vTaskDelete(NULL);
@@ -263,7 +268,7 @@ void Task1(uint32_t pdata)
 		}	
 
 		vkLedsSet(LED1, task1_count%2);
-		vTaskDelay(200);
+		vTaskDelay(3000);
 	}	
 
 	vTaskDelete(NULL);
@@ -280,7 +285,7 @@ void Task2(uint32_t pdata)
 			task3_count = 0;
 		}	
 
-		vTaskDelay(300);
+		vTaskDelay(5000);
 	}
 
 	vTaskDelete(NULL);
@@ -304,12 +309,7 @@ void main(void)
 	/* Leds Init */
 	vkLeds_Init();
 
-	/* USART1 Init 115200 */
-	if(-1 == vkUsart_Init(COM1, 115200))
-	{
-		printf("failed!\r\n");
-	}
-	if(-1 == vkUsart_Init(COM3, 115200))
+	if(-1 == vkUsart_Init(COM3,115200,COM3_TxBuffer,(sizeof(COM3_TxBuffer)/sizeof(COM3_TxBuffer[0])),COM3_RxBuffer,(sizeof(COM3_RxBuffer)/sizeof(COM3_RxBuffer[0]))))
 	{
 		printf("failed!\r\n");
 	}
@@ -320,20 +320,21 @@ void main(void)
 	/* TimeTick Init for softtimer tick*/
 	vkTimeTick_Init(TIME2);
 
+	/* TimeTick Init for pluse tick*/
+	vkTimeTick_Init(TIME5);
+
 	/* Create a queue buffer */
 	vkQueueCreate(&Queue,QueueBuffer,MAX_QUEUE_BUF_SIZE,MAX_QUEUE_BUF_NUMS);
 
 	/* After Finish All Init, Enable Interrupt */
 	enableInterrupts();	
 
-
-	vkUsart_Send(COM3 ,"hello ", 6);
-	vkTimerDelaySS(1);
-	vkUsart_Send(COM3 ,"world!!!", 8);
-	vkTimerDelaySS(1);
-	vkUsart_Send(COM3 ,"This is a good new.\r\n", 22);
-	vkTimerDelaySS(1);
-
+	vkUsart_Send(COM3 ,"Hello STM8L!\r\n", 14);
+	vkTimerDelayMS(100);
+	
+	vkAT_TerminalStart(COM3);
+	//vkAT_CommunicationStart(COM3);
+	
 #if USE_NO_RTOS == 1u
 	Timer_Callback0.timer_name 	= (void *)&Timer_Callback0;
 	Timer_Callback0.cb_func		= Callback0;
@@ -354,9 +355,7 @@ void main(void)
 	vkTimerInsert(&Timer_Callback2);
 
 	while(1)
-	{
-		vkATEcho(COM3);
-	};
+	{};
 	
 #elif USE_UCOS_II == 1u
 	/* 初始化uCOS系统 */

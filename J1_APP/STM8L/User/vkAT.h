@@ -14,12 +14,22 @@
 
 /* 包含自定义头文件 */
 #include "vkusart.h"
+#include "vksofttimer.h"
+#include "vktimetick.h"
+
+#define AT_COMMANDLINE_SIZE_MAX		16	//最大值255
+#define TERMINAL_BUFFER_SIZE		16	//最大值255
+#define COMMUNICATION_BUFFER_SIZE	64	//最大值255
+
 
 /* 自定义数据类型 */
 
 /* Callback function prototype */
-typedef void ( * vkAT_FUNC ) ( void* at_data, int len );
+typedef void ( * vkAT_FUNC ) ( void* at_data, int len);
 
+/*
+ * AT命令结构体
+ */
 typedef struct at
 {
 	uint16_t			at_id;			//AT识别号
@@ -28,14 +38,37 @@ typedef struct at
 
 } vkAT;
 
+/*
+ * 窗口终端数据结构体
+ */
+typedef struct terminal
+{
+	uint8_t tern_enable;
+	vkCOM 	term_com;							//终端串口
+	uint8_t term_count;							//终端数据计数
+	uint8_t term_cursor;						//终端数据游标
+	uint8_t term_buffer[TERMINAL_BUFFER_SIZE];	//终端数据缓存
+	vkTIMER term_timer;							//终端定时器
+} vkTERMINAL;
 
-int vkATParser(const char * data, int data_len);
-int vkATEcho(vkCOM com);
+typedef struct communication
+{
+	uint8_t comm_enable;
+	vkCOM 	comm_com;								//终端串口
+	uint8_t comm_buffer[COMMUNICATION_BUFFER_SIZE];	//终端数据缓存
+	vkTIMER comm_timer;								//终端定时器
+} vkCOMMUNICATION;
 
+int vkAT_TerminalStart(vkCOM com);
+int vkAT_TerminalStop();
+int vkAT_TerminalPrint(uint8_t *buf, int size);
+
+int vkAT_CommunicationStart(vkCOM com);
+int vkAT_CommunicationStop();
+
+int vkAT_Parser(const char * data, int data_len);
 void AT_Reset(void *data, int len);
 void AT_Test(void *data, int len);
-
-#define AT_COMMANDLINE_SIZE_MAX	16
 
 #endif
 

@@ -20,12 +20,12 @@ static int8_t queue_insert (vkQUEUE *qptr, uint8_t* msgptr);
  * 功能: 创建循环数组队列
  * 形参: qptr 队列指针
          buff_ptr 队列存储空间首地址
-         unit_size 队列单元大小
-         max_num_msgs 队列大小
+         unit_size 队列单元大小,最大值255
+         max_num_msgs 队列大小,最大值255
  * 返回: 成功0，失败负数
  * 说明: 无 
  ******************************************************************************/
-int8_t vkQueueCreate (vkQUEUE *qptr, uint8_t *buff_ptr, uint32_t unit_size, uint32_t max_num_msgs)
+int8_t vkQueueCreate (vkQUEUE *qptr, uint8_t *buff_ptr, uint8_t unit_size, uint8_t max_num_msgs)
 {
     int8_t status = vkQUEUE_OK;
 
@@ -132,7 +132,7 @@ int8_t vkQueueGet (vkQUEUE *qptr, uint32_t timeout, uint8_t *msgptr)
 			/* Protect access to the queue object and OS queues */
 			CRITICAL_START ();
 			
-			if(timeout == 0)			//超时时间到
+			if(timeout == 0)				//超时时间到
 			{				
 				status = vkQUEUE_TIMEOUT;	//返回超时
 			}

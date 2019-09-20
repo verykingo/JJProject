@@ -18,15 +18,15 @@
 typedef struct LED_GPIO
 {
 	GPIO_TypeDef* GPIOx; 
-	uint16_t GPIO_Pin;
+	uint8_t GPIO_Pin;
 } LED_GPIO;
 
-enum vkLED
+typedef enum led
 {
 	LED0 = 0,
 	LED1,
 	LEDMAX
-};
+} vkLED;
 
 /* 自定义变量 */
 const static struct LED_GPIO led_gpio[] = 	{{GPIOE, GPIO_Pin_0},
@@ -34,6 +34,6 @@ const static struct LED_GPIO led_gpio[] = 	{{GPIOE, GPIO_Pin_0},
 											};
 
 int vkLeds_Init();
-int vkLedsSet(enum vkLED led, int state);
+int vkLedsSet(vkLED led, uint8_t state);
 
 #endif

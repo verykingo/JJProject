@@ -30,6 +30,7 @@
 #include "stm8l15x_it.h"
 #include "vkusart.h"
 #include "vksofttimer.h"
+#include "vkpluse.h"
 
 /** @addtogroup STM8L15x_StdPeriph_Template
   * @{
@@ -101,7 +102,14 @@ INTERRUPT_HANDLER(DMA1_CHANNEL0_1_IRQHandler,2)
     */
 	if(DMA_GetITStatus(DMA1_IT_TC1) != RESET)
 	{
+		vkUsart_Send_Over(COM3);
 		DMA_ClearITPendingBit(DMA1_IT_TC1);
+	}
+	
+	if(DMA_GetITStatus(DMA1_IT_TC0) != RESET)
+	{
+		vkUsart_Send_Over(COM2);
+		DMA_ClearITPendingBit(DMA1_IT_TC2);
 	}
 }
 /**
@@ -458,6 +466,13 @@ INTERRUPT_HANDLER(USART1_TX_TIM5_UPD_OVF_TRG_BRK_IRQHandler,27)
 
 		USART_ClearITPendingBit(USART1, USART_IT_TC);
     }
+	
+	if(TIM5_GetITStatus(TIM5_IT_Update) != RESET)
+	{	
+		/* Âö³å */
+		vkPluseTick();
+		TIM5_ClearITPendingBit(TIM5_IT_Update);
+	}
 }
 
 /**

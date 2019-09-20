@@ -44,7 +44,7 @@ int vkLeds_Init()
  * 返回: 无
  * 说明: 无 
  ******************************************************************************/
-int vkLedsSet(enum vkLED led, int state)
+int vkLedsSet(vkLED led, uint8_t state)
 {
 	if(led >=LEDMAX)
 	{

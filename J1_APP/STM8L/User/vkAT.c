@@ -18,19 +18,20 @@
 /* 自定义新类型 */
 
 /* 自定义宏 */
-#define isspace(c)	((c) == ' ' || ((c) >= '\t' && (c) <= '\r'))
-#define isascii(c)	(((c) & ~0x7F) == 0)
-#define isupper(c)	((c) >= 'A' && (c) <= 'Z')
-#define islower(c)	((c) >= 'a' && (c) <= 'z')
-#define isalpha(c)	(isupper(c) || islower(c))
-#define isdigit(c)	((c) >= '0' && (c) <= '9')
+#define isspace(c)	((c) == ' ' || ((c) >= '\t' && (c) <= '\r')) //空格
+#define isascii(c)	(((c) & ~0x7F) == 0) //ASCII字符
+#define isupper(c)	((c) >= 'A' && (c) <= 'Z') //大写
+#define islower(c)	((c) >= 'a' && (c) <= 'z') //小写
+#define isalpha(c)	(isupper(c) || islower(c)) //字母
+#define isdigit(c)	((c) >= '0' && (c) <= '9') //数字
 #define isxdigit(c)	(isdigit(c) || ((c) >= 'A' && (c) <= 'F') || ((c) >= 'a' && (c) <= 'f'))
-#define isprint(c)	((c) >= ' ' && (c) <= '~')
-#define toupper(c)	((c) - 0x20 * (((c) >= 'a') && ((c) <= 'z')))
-#define tolower(c)	((c) + 0x20 * (((c) >= 'A') && ((c) <= 'Z')))
-#define toascii(c)	((unsigned)(c) & 0x7F)
-#define isalnum(c)	(isalpha(c) || isdigit(c))
-#define isodigit(c)	((c) >= '0' && (c) <= '7')
+#define isprint(c)	((c) >= ' ' && (c) <= '~') //打印
+#define toupper(c)	((c) - 0x20 * (((c) >= 'a') && ((c) <= 'z'))) //变大写
+#define tolower(c)	((c) + 0x20 * (((c) >= 'A') && ((c) <= 'Z'))) //变小写
+#define toascii(c)	((unsigned)(c) & 0x7F) //变ASSIC码
+#define isalnum(c)	(isalpha(c) || isdigit(c)) //字母数字
+#define isodigit(c)	((c) >= '0' && (c) <= '7') //八进制
+#define isdispch(c) ((c) >= 0x20 && (c) <= 0x7E) //可显示字符
 
 /* 全局变量定义 */
 static const vkAT AT[]= {
@@ -39,21 +40,22 @@ static const vkAT AT[]= {
 	{1, 	"AT+RESET", 			AT_Reset}
 };
 
-static vkCOM ATCOM = (vkCOM)-1;
-
+static vkTERMINAL ATTerminal = {0};
+vkCOMMUNICATION   ATCommunication = {0};
+	
 static int parse_atcmd_line(const char * data, int start, int end);
 static int get_plus_index(const char * string, int start, int end);
 static int get_space_index(const char * string, int start, int end);
 static int trim_spaces(const char * string, int * start, int * end);
 
 /*******************************************************************************
- * 名称: AT命令解析
+ * 名称: AT命令解析函数
  * 功能: AT命令
  * 形参: data字符串指针，data_len字符串长度
  * 返回: 无
  * 说明: 无 
  ******************************************************************************/
-int vkATParser(const char * data, int data_len)
+int vkAT_Parser(const char *data, int data_len)
 {
 	if (data == NULL) 
 	{
@@ -231,57 +233,231 @@ static int trim_spaces(const char * string, int * start, int * end)
 	return 0;
 }
 
+void Terminal_Callback(void * pdata)
+{
+	uint8_t data[TERMINAL_BUFFER_SIZE];
+
+	/* 获取串口终端数据 */
+	int ret = vkUsart_Recv(ATTerminal.term_com, data, TERMINAL_BUFFER_SIZE);	
+
+	if(ret > 0)
+	{
+		/* 一个字符 */
+		if(ret==1)
+		{
+			if(data[0] == '\r')	//Enter按键
+			{
+				/* 手动添加\r\n */
+				ATTerminal.term_buffer[ATTerminal.term_cursor++]='\r';
+				ATTerminal.term_buffer[ATTerminal.term_cursor++]='\n';
+				ATTerminal.term_count += 2;
+
+				/* 打印提示符 */
+				vkUsart_Send(ATTerminal.term_com ,"\r\n#", 3);
+				
+				/* 解析AT命令 */
+				vkAT_Parser((const char *)ATTerminal.term_buffer, ATTerminal.term_cursor);
+
+				ATTerminal.term_count = 0;
+				ATTerminal.term_cursor = 0;
+				memset(ATTerminal.term_buffer, 0, TERMINAL_BUFFER_SIZE);				
+			}
+			else if(data[0] == 0x7F)	//DEL按键
+			{
+				if(ATTerminal.term_count > 0)
+				{
+				 	vkUsart_Send(ATTerminal.term_com ,data, ret);
+					ATTerminal.term_buffer[--ATTerminal.term_cursor]='\0';
+					ATTerminal.term_count -= 1;
+				}
+			}
+			else if(isdispch(data[0]) == 1) //可显示字符
+			{				
+				if(ATTerminal.term_cursor+ret <= (TERMINAL_BUFFER_SIZE-2))
+				{
+					vkUsart_Send(ATTerminal.term_com ,data, ret);					
+					memcpy(ATTerminal.term_buffer+ATTerminal.term_cursor, data, ret);
+					ATTerminal.term_count += ret;
+					ATTerminal.term_cursor += ret;					
+				}
+			}
+		}
+		/* 多个字符 */
+		else
+		{	
+			if(data[0] != 0x1B)	//ESC按键
+			{
+				if(ATTerminal.term_cursor+ret<=(TERMINAL_BUFFER_SIZE-2))
+				{
+					vkUsart_Send(ATTerminal.term_com ,data, ret);
+					memcpy(ATTerminal.term_buffer+ATTerminal.term_cursor, data, ret);
+					ATTerminal.term_count += ret;
+					ATTerminal.term_cursor += ret;
+				}				
+			}
+		}		
+	}	
+
+	/* 再次启动软定时器 */
+	vkTimerInsert(&ATTerminal.term_timer);
+}
+
 /*******************************************************************************
- * 名称: AT命令环境
+ * 名称: AT命令串口终端启动命令
  * 功能: AT命令环境
  * 形参: 串口com
  * 返回: 无
  * 说明: 无 
  ******************************************************************************/
-int vkATEcho(vkCOM com)
-{		
-	uint8_t data[AT_COMMANDLINE_SIZE_MAX];
-	static uint8_t command[AT_COMMANDLINE_SIZE_MAX];
-	static uint8_t index = 0;
-		
-	ATCOM = com;
+int vkAT_TerminalStart(vkCOM com)
+{
+	ATTerminal.tern_enable = 1;
+	ATTerminal.term_com = com;
+	ATTerminal.term_count = 0;
+	ATTerminal.term_cursor = 0;	
+	memset(ATTerminal.term_buffer, 0, TERMINAL_BUFFER_SIZE);
 	
-	int ret = vkUsart_Recv(ATCOM, data, AT_COMMANDLINE_SIZE_MAX);	
+	/* 设置定时器回调，10ms执行一次回调函数 */
+	ATTerminal.term_timer.timer_name = (void *)&Terminal_Callback;
+	ATTerminal.term_timer.cb_func 	= Terminal_Callback;
+	ATTerminal.term_timer.cb_data 	= NULL;
+	ATTerminal.term_timer.cb_ticks	= vkMS_TO_TICKS(10);
 
-	if(ret > 0)
-	{
-		if(ret==1 && data[0] == '\r')
-		{
-			vkATParser((const char *)command, index);
-			index = 0;
-			memset(command, 0, sizeof(command));
-			vkUsart_Send(ATCOM ,"\r\n#", 3);			
-		}
-		else
-		{
-			vkUsart_Send(ATCOM ,data, ret);
-			if(index+ret <= AT_COMMANDLINE_SIZE_MAX)
-			{
-				memcpy(command+index, data, ret);
-				index += ret;
-			}
-		}		
-	}
+	/* 显示提示符“#” */
+	vkUsart_Send(ATTerminal.term_com ,"\r\n#", 3);
+
+	/* 启动软定时器 */
+	vkTimerInsert(&ATTerminal.term_timer);
 	
 	return 0;
 }
 
+int vkAT_TerminalStop()
+{
+	ATTerminal.tern_enable = 0;	
+	
+	/* 停止软定时器 */
+	vkTimerCancel(&ATTerminal.term_timer);
+
+	return 0;
+}
+
+/*******************************************************************************
+ * 名称: AT命令串口终端打印
+ * 功能: 打印字符串
+ * 形参: 串口com
+ * 返回: 无
+ * 说明: 无 
+ ******************************************************************************/
+int vkAT_TerminalPrint(uint8_t *buf, int size)
+{
+	int ret;
+	uint8_t data[TERMINAL_BUFFER_SIZE];
+	uint8_t len = (size < (TERMINAL_BUFFER_SIZE-3))?size:(TERMINAL_BUFFER_SIZE-3);
+	
+	memcpy(data, buf, len);
+	memcpy(data+len, "\r\n#", 3);
+	len += 3;
+	ret = vkUsart_Send(ATTerminal.term_com , data, len);
+
+	return ret;
+}
+
+void Communication_Callback(void * pdata)
+{
+	/* 清零 */
+	memset(ATCommunication.comm_buffer, 0, COMMUNICATION_BUFFER_SIZE);
+	
+	/* 获取串口终端数据 */
+	int ret = vkUsart_Recv(ATCommunication.comm_com, ATCommunication.comm_buffer, COMMUNICATION_BUFFER_SIZE);
+
+	if(ret > 0)
+	{
+		/* 解析AT命令 */
+		vkAT_Parser((const char *)ATCommunication.comm_buffer, strlen((const char *)ATCommunication.comm_buffer));		
+	}
+
+	/* 再次启动软定时器 */
+	vkTimerInsert(&ATCommunication.comm_timer);	
+}
+
+/*******************************************************************************
+ * 名称: AT命令数据通信启动
+ * 功能: 
+ * 形参: 串口com
+ * 返回: 无
+ * 说明: 无 
+ ******************************************************************************/
+int vkAT_CommunicationStart(vkCOM com)
+{
+	ATCommunication.comm_enable = 1;
+	ATCommunication.comm_com = com;
+	
+	memset(ATTerminal.term_buffer, 0, TERMINAL_BUFFER_SIZE);
+
+	/* 设置定时器回调，10ms执行一次回调函数 */
+	ATCommunication.comm_timer.timer_name = (void *)&Communication_Callback;
+	ATCommunication.comm_timer.cb_func 	= Communication_Callback;
+	ATCommunication.comm_timer.cb_data 	= NULL;
+	ATCommunication.comm_timer.cb_ticks	= vkMS_TO_TICKS(10);
+
+	/* 启动软定时器 */
+	vkTimerInsert(&ATCommunication.comm_timer);	
+
+	return 0;
+}
+
+/*******************************************************************************
+ * 名称: AT命令数据通信停止
+ * 功能: 
+ * 形参: 串口com
+ * 返回: 无
+ * 说明: 无 
+ ******************************************************************************/
+int vkAT_CommunicationStop()
+{
+	ATCommunication.comm_enable = 0;
+
+	/* 停止软定时器 */
+	vkTimerCancel(&ATCommunication.comm_timer);
+
+      return 0;
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+//AT命令动作定义
+/////////////////////////////////////////////////////////////////////////////////
 
 void AT_Test(void *data, int len)
 {
-	vkUsart_Send(ATCOM ,"OK\r\n", 4);
+	if(data != NULL)
+	{
+	
+	}
+	
+	if(ATTerminal.tern_enable == 1)
+	{
+		vkAT_TerminalPrint("OK\r\n", 4);
+	}
+
+	if(ATCommunication.comm_enable == 1)
+	{
+		vkUsart_Send(ATCommunication.comm_com ,"OK\r\n", 4);
+	}
 	
 	return;
 }
 
 void AT_Reset(void *data, int len)
 {
-	vkUsart_Send(ATCOM ,"OK\r\n", 4);
+	if(ATTerminal.tern_enable == 1)
+	{
+		vkAT_TerminalPrint("OK\r\n", 4);
+	}
+	if(ATCommunication.comm_enable == 1)
+	{
+		vkUsart_Send(ATCommunication.comm_com ,"OK\r\n", 4);
+	}	
 	
 	return;
 }

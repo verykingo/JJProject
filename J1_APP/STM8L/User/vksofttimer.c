@@ -17,6 +17,7 @@
 static uint8_t STACK_TIMER[TIMER_STATCK_SIZE]={0};
 static uint8_t STACK_FLAGS[TIMER_STATCK_SIZE/TIMER_STRUCT_SIZE]={0};
 static uint8_t stack_count=TIMER_STATCK_SIZE/TIMER_STRUCT_SIZE;
+static uint8_t stack_index=0;
 
 /* 定时器链表表头指针 */
 static vkTIMER *timer_list = NULL;
@@ -56,15 +57,15 @@ int8_t vkTimerInsert (vkTIMER *timer_ptr)
 			return vkTIMER_ERR_PARAM;
 		}
 		
-		/* Protect the list */
-        CRITICAL_START ();
-		
 		new->timer_name = timer_ptr->timer_name;
 		new->cb_func	= timer_ptr->cb_func;
 		new->cb_data	= timer_ptr->cb_data;
 		new->cb_ticks	= timer_ptr->cb_ticks;
 		new->next_timer	= timer_ptr->next_timer;
-			
+
+		/* Protect the list */
+        CRITICAL_START ();
+		
         /*
          * Enqueue in the list of timers.
          *
@@ -245,7 +246,7 @@ void vkTimerDelayMS(uint32_t msec)
 {
 	uint32_t tick_start = vkTimerGetTicks();
 
-	while(vkTimerGetTicks() <= (tick_start + (uint32_t)(msec*1000)/TIMER_US_PER_TICK))
+	while(vkTimerGetTicks() <= (tick_start + (uint32_t)(msec*1000)/TIMER_US_PER_TICK));
 
 	return;
 }
@@ -378,7 +379,7 @@ static void TimerCallbacks (void)
  */
 void* timer_mem_malloc(uint32_t size)
 {	
-	int i;
+	uint8_t i;
 	uint8_t *ptr = NULL;
 
 	/* 数据块大小错误 */
@@ -394,16 +395,25 @@ void* timer_mem_malloc(uint32_t size)
 	}
 
 	/* 查表可用数据块 */
-	for(i=0; i<TIMER_STATCK_SIZE/TIMER_STRUCT_SIZE; i++)
+	for(i=stack_index; i<TIMER_STATCK_SIZE/TIMER_STRUCT_SIZE; i++)
 	{
 		if(STACK_FLAGS[i] == 0)
-		{		
-			break;
+		{			
+			goto FIND_MEMORY;
 		}
 	}	
+	for(i=0; i<stack_index; i++)
+	{
+		if(STACK_FLAGS[i] == 0)
+		{			
+			goto FIND_MEMORY;
+		}
+	}
 
+FIND_MEMORY:
 	STACK_FLAGS[i] = 1;
 	stack_count--;
+	stack_index = (i+1)%(TIMER_STATCK_SIZE/TIMER_STRUCT_SIZE);
 	
 	ptr = STACK_TIMER+i*TIMER_STRUCT_SIZE;
 

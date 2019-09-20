@@ -111,7 +111,7 @@ void vkTimeTick_Init(vkTIME TIM)
 		/* Enable TIM4 */
 		TIM4_Cmd(ENABLE);		
 	}
-	/* 定时器5: 10ms/tick    */
+	/* 定时器5: 40us/tick    */
 	else if(TIM == 5)
 	{
 		/* Enable TIM5 CLK*/
@@ -121,10 +121,10 @@ void vkTimeTick_Init(vkTIME TIM)
 	    TIM5_DeInit();
 
 		/* Configure a 10ms tick, 16MHz/(16)=1MHz, 1s/MHz=1us */
-		TIM5_TimeBaseInit(TIM5_Prescaler_16, TIM5_CounterMode_Up, 9999);
+		TIM5_TimeBaseInit(TIM5_Prescaler_16, TIM5_CounterMode_Up, 39);
 		TIM5_SetCounter(0); 				/* 将计数器初值设为0 */
 		TIM5_ARRPreloadConfig(ENABLE); 		/* 预装载使能 */
-		ITC_SetSoftwarePriority(USART1_TX_TIM5_UPD_OVF_TRG_BRK_IRQn, ITC_PriorityLevel_1);
+		ITC_SetSoftwarePriority(USART1_TX_TIM5_UPD_OVF_TRG_BRK_IRQn, ITC_PriorityLevel_3);
 
 		/* Generate an interrupt on timer count overflow 计数溢出*/
 		TIM5_ITConfig(TIM5_IT_Update, ENABLE);
