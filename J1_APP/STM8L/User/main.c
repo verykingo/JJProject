@@ -34,6 +34,8 @@
 #include "vkleds.h"
 #include "vkUsart.h"
 #include "vkAT.h"
+#include "vkADC.h"
+#include "vkPluse.h"
 
 #if USE_UCOS_II == 1u
 #include "ucos_ii.h"
@@ -58,11 +60,11 @@
 vkQUEUE Queue;
 
 /* 队列数据存储区 */
-uint8_t QueueBuffer[MAX_QUEUE_BUF_SIZE*MAX_QUEUE_BUF_NUMS] = {0};
+//uint8_t QueueBuffer[MAX_QUEUE_BUF_SIZE*MAX_QUEUE_BUF_NUMS] = {0};
 
 /* 串口3发送接收数据缓存 */
-uint8_t COM3_TxBuffer[64] = {0};
-uint8_t COM3_RxBuffer[64] = {0};
+//uint8_t COM3_TxBuffer[64] = {0};
+//uint8_t COM3_RxBuffer[64] = {0};
 
 
 #if USE_NO_RTOS == 1u
@@ -70,6 +72,9 @@ uint8_t COM3_RxBuffer[64] = {0};
 vkTIMER Timer_Callback0;
 vkTIMER Timer_Callback1;
 vkTIMER Timer_Callback2;
+vkTIMER Timer_Callback3;
+vkTIMER Timer_Callback4;
+vkTIMER Timer_Callback5;
 
 void Callback0(void * pdata)
 {
@@ -100,6 +105,33 @@ void Callback2(void * pdata)
 	Callback2++;
 
 	vkTimerInsert(&Timer_Callback2);
+}
+
+void Callback3(void * pdata)
+{
+	static uint32_t Callback3 = 0;
+
+	Callback3++;
+
+	vkTimerInsert(&Timer_Callback3);
+}
+
+void Callback4(void * pdata)
+{
+	static uint32_t Callback4 = 0;
+
+	Callback4++;
+
+	vkTimerInsert(&Timer_Callback4);
+}
+
+void Callback5(void * pdata)
+{
+	static uint32_t Callback5 = 0;
+
+	Callback5++;
+
+	vkTimerInsert(&Timer_Callback5);
 }
 
 #elif USE_UCOS_II == 1u
@@ -309,51 +341,82 @@ void main(void)
 	/* Leds Init */
 	vkLeds_Init();
 
-	if(-1 == vkUsart_Init(COM3,115200,COM3_TxBuffer,(sizeof(COM3_TxBuffer)/sizeof(COM3_TxBuffer[0])),COM3_RxBuffer,(sizeof(COM3_RxBuffer)/sizeof(COM3_RxBuffer[0]))))
+	/* ADC Init */
+	vkADC_Init();
+	
+	//if(-1 == vkUsart_Init(COM3,115200,COM3_TxBuffer,(sizeof(COM3_TxBuffer)/sizeof(COM3_TxBuffer[0])),COM3_RxBuffer,(sizeof(COM3_RxBuffer)/sizeof(COM3_RxBuffer[0]))))
 	{
 		printf("failed!\r\n");
 	}
-
-	/* TimeTick Init for RTOS tick*/
+	
+	/* TimeTick Init for softtimer tick*/
 	vkTimeTick_Init(TIME1);
 
-	/* TimeTick Init for softtimer tick*/
-	vkTimeTick_Init(TIME2);
+	/* TimeTick Init for RTOS 1ms/tick */
+	vkTimeTick_Init(TIME4);
 
-	/* TimeTick Init for pluse tick*/
+	/* TimeTick Init for pluse tick 优先级最高=3 */
 	vkTimeTick_Init(TIME5);
 
+	/* 电极脉冲初始化 */
+	vkPluse_Init();
+
 	/* Create a queue buffer */
-	vkQueueCreate(&Queue,QueueBuffer,MAX_QUEUE_BUF_SIZE,MAX_QUEUE_BUF_NUMS);
+	//vkQueueCreate(&Queue,QueueBuffer,MAX_QUEUE_BUF_SIZE,MAX_QUEUE_BUF_NUMS);
 
 	/* After Finish All Init, Enable Interrupt */
-	enableInterrupts();	
+	enableInterrupts();
 
-	vkUsart_Send(COM3 ,"Hello STM8L!\r\n", 14);
-	vkTimerDelayMS(100);
+	/* 测试，循环模式，持续1秒间隔1秒 */
+	//vkPluseSetMode(PLUSE0, PLUSE_MODE_CONTINUE);
+	//vkPluseSetExpt(PLUSE0, 10);
+	//vkPluseSetTime(PLUSE0, 2, 3);
+	//vkPluseStart(PLUSE0);
+
+	//vkUsart_Send(COM3 ,"Hello STM8L!\r\n", 14);
+	//vkTimerDelayMS(100);
 	
-	vkAT_TerminalStart(COM3);
+	//vkAT_TerminalStart(COM3);
 	//vkAT_CommunicationStart(COM3);
 	
 #if USE_NO_RTOS == 1u
+#if 0
 	Timer_Callback0.timer_name 	= (void *)&Timer_Callback0;
 	Timer_Callback0.cb_func		= Callback0;
 	Timer_Callback0.cb_data		= NULL;
-	Timer_Callback0.cb_ticks 	= vkSS_TO_TICKS(2);
+	Timer_Callback0.cb_ticks 	= vkMS_TO_TICKS(100);
 	vkTimerInsert(&Timer_Callback0);
 
 	Timer_Callback1.timer_name	= (void *)&Timer_Callback1;
 	Timer_Callback1.cb_func 	= Callback1;
 	Timer_Callback1.cb_data 	= NULL;
-	Timer_Callback1.cb_ticks	= vkSS_TO_TICKS(3);
+	Timer_Callback1.cb_ticks	= vkMS_TO_TICKS(200);
 	vkTimerInsert(&Timer_Callback1);
 
 	Timer_Callback2.timer_name	= (void *)&Timer_Callback2;
 	Timer_Callback2.cb_func 	= Callback2;
 	Timer_Callback2.cb_data 	= NULL;
-	Timer_Callback2.cb_ticks	= vkSS_TO_TICKS(5);
+	Timer_Callback2.cb_ticks	= vkMS_TO_TICKS(300);
 	vkTimerInsert(&Timer_Callback2);
 
+	Timer_Callback3.timer_name	= (void *)&Timer_Callback3;
+	Timer_Callback3.cb_func 	= Callback3;
+	Timer_Callback3.cb_data 	= NULL;
+	Timer_Callback3.cb_ticks	= vkMS_TO_TICKS(400);
+	vkTimerInsert(&Timer_Callback3);
+
+	Timer_Callback4.timer_name	= (void *)&Timer_Callback4;
+	Timer_Callback4.cb_func 	= Callback4;
+	Timer_Callback4.cb_data 	= NULL;
+	Timer_Callback4.cb_ticks	= vkMS_TO_TICKS(500);
+	vkTimerInsert(&Timer_Callback4);
+
+	Timer_Callback5.timer_name	= (void *)&Timer_Callback5;
+	Timer_Callback5.cb_func 	= Callback5;
+	Timer_Callback5.cb_data 	= NULL;
+	Timer_Callback5.cb_ticks	= vkMS_TO_TICKS(600);
+	vkTimerInsert(&Timer_Callback5);
+#endif
 	while(1)
 	{};
 	

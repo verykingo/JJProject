@@ -27,7 +27,7 @@
  ******************************************************************************/
 void vkTimeTick_Init(vkTIME TIM)
 {
-	/* 定时器1: 1ms/tick */
+	/* 定时器1: 10ms/tick */
 	if(TIM == 1)	
 	{
 		/* Enable TIM1 CLK*/
@@ -36,8 +36,8 @@ void vkTimeTick_Init(vkTIME TIM)
 	    /* Reset TIM1 */
 	    TIM1_DeInit();
 
-	    /* Configure a 1ms tick, 16MHz/(15+1)=1MHz, 1s/MHz=1us */
-		TIM1_TimeBaseInit(15, TIM1_CounterMode_Up, 999, 0);
+	    /* Configure a 10ms tick, 16MHz/(15+1)=1MHz, 1s/MHz=1us */
+		TIM1_TimeBaseInit(15, TIM1_CounterMode_Up, 9999, 0);
 		TIM1_SetCounter(0);					/* 将计数器初值设为0 */
 		TIM1_ARRPreloadConfig(ENABLE);		/* 预装载使能 */
 		ITC_SetSoftwarePriority(TIM1_UPD_OVF_TRG_IRQn, ITC_PriorityLevel_1);
@@ -90,7 +90,7 @@ void vkTimeTick_Init(vkTIME TIM)
 		/* Enable TIM3 */
 		TIM3_Cmd(ENABLE);		
 	}
-	/* 定时器4: 100ms/tick    */
+	/* 定时器4: 1ms/tick    */
 	else if(TIM == 4)
 	{
 		/* Enable TIM4 CLK*/
@@ -100,7 +100,8 @@ void vkTimeTick_Init(vkTIME TIM)
 	    TIM4_DeInit();
 
 		/* Configure a 100ms tick, 16MHz/(32768)=2048us, 2048us*49~=100ms */
-		TIM4_TimeBaseInit(TIM4_Prescaler_32768, 49);
+		/* Configure a 1ms tick, 16MHz/(4)=4us, 4us*250=1ms */
+		TIM4_TimeBaseInit(TIM4_Prescaler_4, 249);
 		TIM4_SetCounter(0); 				/* 将计数器初值设为0 */
 		TIM4_ARRPreloadConfig(ENABLE); 		/* 预装载使能 */
 		ITC_SetSoftwarePriority(TIM4_UPD_OVF_TRG_IRQn, ITC_PriorityLevel_1);
@@ -120,7 +121,7 @@ void vkTimeTick_Init(vkTIME TIM)
 		/* Reset TIM5 */
 	    TIM5_DeInit();
 
-		/* Configure a 10ms tick, 16MHz/(16)=1MHz, 1s/MHz=1us */
+		/* Configure a 40us tick, 16MHz/(16)=1MHz, 1s/MHz=1us */
 		TIM5_TimeBaseInit(TIM5_Prescaler_16, TIM5_CounterMode_Up, 39);
 		TIM5_SetCounter(0); 				/* 将计数器初值设为0 */
 		TIM5_ARRPreloadConfig(ENABLE); 		/* 预装载使能 */

@@ -235,7 +235,7 @@ void archThreadContextInit (ATOM_TCB *tcb_ptr, void *stack_top, void (*entry_poi
 void archInitSystemTickTimer ( void )
 {
 	/* TimeTick Init */
-	vkTimeTick_Init(TIME1);
+	vkTimeTick_Init(TIME4);
 }
 
 
@@ -275,7 +275,7 @@ void archInitSystemTickTimer ( void )
  *
  * @return None
  */
-INTERRUPT_HANDLER(TIM1_UPD_OVF_TRG_COM_IRQHandler,23)
+INTERRUPT_HANDLER(TIM4_UPD_OVF_TRG_IRQHandler,25)
 {
     /* Call the interrupt entry routine */
     atomIntEnter();
@@ -284,7 +284,7 @@ INTERRUPT_HANDLER(TIM1_UPD_OVF_TRG_COM_IRQHandler,23)
     atomTimerTick();
 
     /* Ack the interrupt (Clear TIM1:SR1 register bit 0) */
-    TIM1->SR1 = (uint8_t)(~(uint8_t)0x01);
+    TIM4_ClearITPendingBit(TIM4_IT_Update);
 
     /* Call the interrupt exit routine */
    	atomIntExit(TRUE);

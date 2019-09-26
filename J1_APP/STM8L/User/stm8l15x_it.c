@@ -310,13 +310,6 @@ INTERRUPT_HANDLER(TIM2_UPD_OVF_TRG_BRK_USART2_TX_IRQHandler,19)
     /* In order to detect unexpected events during development,
        it is recommended to set a breakpoint on the following instruction.
     */
-    /* 软件定时器Tick */
-	if(TIM2_GetITStatus(TIM2_IT_Update) != RESET)
-	{
-		vkTimerTick();
-		TIM2_ClearITPendingBit(TIM2_IT_Update);		
-	}
-	
     /* 串口发送一个字节数据完成 */
     if(USART_GetITStatus(USART2, USART_IT_TC) != RESET)
 	{
@@ -396,23 +389,18 @@ INTERRUPT_HANDLER(TIM3_CC_USART3_RX_IRQHandler,22)
   * @param  None
   * @retval None
   */
-#if USE_UCOS_II == 1u
-/*
-  TIM1中断服务程序_interrupt_25()，在RTOS/uCOS-II-2.9/Port/os_cpu_a.s汇编语言实现。
-*/
-#elif USE_ATOMTHREAD == 1u
-/*
-  TIM1中断服务程序_interrupt_25()，在RTOS/atomthreads-1.3/ports/stm8/atomport.c实现。
-*/
-#else
 INTERRUPT_HANDLER(TIM1_UPD_OVF_TRG_COM_IRQHandler,23)
 {
     /* In order to detect unexpected events during development,
        it is recommended to set a breakpoint on the following instruction.
     */
-    TIM1_ClearITPendingBit(TIM1_IT_Update);
+	/* 软件定时器Tick */
+	if(TIM1_GetITStatus(TIM1_IT_Update) != RESET)
+	{
+		vkTimerTick();
+		TIM1_ClearITPendingBit(TIM1_IT_Update); 	
+	}
 }
-#endif
 
 /**
   * @brief TIM1 Capture/Compare Interrupt routine.
@@ -431,12 +419,28 @@ INTERRUPT_HANDLER(TIM1_CC_IRQHandler,24)
   * @param  None
   * @retval None
   */
+#if USE_UCOS_II == 1u
+	/*
+	  TIM1中断服务程序_interrupt_27()，在RTOS/uCOS-II-2.9/Port/os_cpu_a.s汇编语言实现。
+	*/
+#elif USE_ATOMTHREAD == 1u
+	/*
+	  TIM1中断服务程序_interrupt_27()，在RTOS/atomthreads-1.3/ports/stm8/atomport.c实现。
+	*/
+#else
 INTERRUPT_HANDLER(TIM4_UPD_OVF_TRG_IRQHandler,25)
 {
     /* In order to detect unexpected events during development,
        it is recommended to set a breakpoint on the following instruction.
     */
+    /* 实时操作系统Tick */
+	if(TIM4_GetITStatus(TIM4_IT_Update) != RESET)
+	{		
+		TIM4_ClearITPendingBit(TIM4_IT_Update);
+	}
 }
+#endif
+
 /**
   * @brief SPI1 Interrupt routine.
   * @param  None

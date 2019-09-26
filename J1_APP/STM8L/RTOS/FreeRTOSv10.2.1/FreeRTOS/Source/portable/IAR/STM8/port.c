@@ -80,6 +80,7 @@ StackType_t *pxPortInitialiseStack( StackType_t *pxTopOfStack, TaskFunction_t px
 {
 	/* Simulate the stack frame as it would be created by a context switch
 	interrupt. */
+	#if 0
 	pxTopOfStack--; /* Offset added to account for the way the MCU uses the stack on entry/exit of interrupts. */
 	*pxTopOfStack = portINITIAL_XPSR;	/* xPSR */
 	pxTopOfStack--;
@@ -89,7 +90,43 @@ StackType_t *pxPortInitialiseStack( StackType_t *pxTopOfStack, TaskFunction_t px
 	pxTopOfStack -= 5;	/* R12, R3, R2 and R1. */
 	*pxTopOfStack = ( StackType_t ) pvParameters;	/* R0 */
 	pxTopOfStack -= 8; /* R11..R4. */
+	#endif
+	*--pxTopOfStack = (uint8_t)((uint16_t)portINITIAL_XPSR & 0xFF);
+	*--pxTopOfStack = (uint8_t)(((uint16_t)portINITIAL_XPSR >> 8) & 0xFF);
 
+	*--pxTopOfStack = (uint8_t)((uint16_t)pxCode & 0xFF);
+	*--pxTopOfStack = (uint8_t)(((uint16_t)pxCode >> 8) & 0xFF);
+
+	*--pxTopOfStack = (uint8_t)((uint16_t)prvTaskExitError & 0xFF);
+	*--pxTopOfStack = (uint8_t)(((uint16_t)prvTaskExitError >> 8) & 0xFF);	
+
+	*--pxTopOfStack = (uint8_t)((uint16_t)prvTaskExitError & 0xFF);
+	*--pxTopOfStack = (uint8_t)(((uint16_t)prvTaskExitError >> 8) & 0xFF);
+	
+	*--pxTopOfStack = (uint8_t)((uint16_t)pvParameters & 0xFF);
+	*--pxTopOfStack = (uint8_t)(((uint16_t)pvParameters >> 8) & 0xFF);
+
+    /**
+     * (IAR) Set up initial values for ?b0 to ?b15.
+     */
+    *--pxTopOfStack = 0;    // ?b0
+    *--pxTopOfStack = 0;    // ?b1
+    *--pxTopOfStack = 0;    // ?b2
+    *--pxTopOfStack = 0;    // ?b3
+    *--pxTopOfStack = 0;    // ?b4
+    *--pxTopOfStack = 0;    // ?b5
+    *--pxTopOfStack = 0;    // ?b6
+    *--pxTopOfStack = 0;    // ?b7
+
+    *--pxTopOfStack = 0;    // ?b8
+    *--pxTopOfStack = 0;    // ?b9
+    *--pxTopOfStack = 0;    // ?b10
+    *--pxTopOfStack = 0;    // ?b11
+    *--pxTopOfStack = 0;    // ?b12
+    *--pxTopOfStack = 0;    // ?b13
+    *--pxTopOfStack = 0;    // ?b14
+    *--pxTopOfStack = 0;    // ?b15
+    
 	return pxTopOfStack;
 }
 /*-----------------------------------------------------------*/

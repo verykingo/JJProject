@@ -64,13 +64,15 @@ typedef struct soft_timer
     uint32_t	    cb_ticks;   		/* Ticks until callback 定时时间 */
 
 	/* Internal data */
+	struct soft_timer *prev_timer;		/* Next timer in doubly-linked list 下一定时器指针 */
     struct soft_timer *next_timer;		/* Next timer in doubly-linked list 下一定时器指针 */
 
 } vkTIMER;
 
-#define TIMER_STRUCT_SIZE	20			/* 软定时器大小			*/
-#define TIMER_STATCK_SIZE 	400			/* 软定时器堆栈大小 */
-#define TIMER_US_PER_TICK	10000		/* 定时器每个tick是10000us */
+#define TIMER_STRUCT_NUMS 	16ul						/* 软定时器最大数目	*/
+#define TIMER_STRUCT_SIZE	sizeof(vkTIMER)				/* 软定时器大小	*/
+#define TIMER_STATCK_SIZE 	(TIMER_STRUCT_NUMS*TIMER_STRUCT_SIZE)		/* 软定时器堆栈大小 */
+#define TIMER_US_PER_TICK	100000ul						/* 定时器每个tick是100000us */
 
 /* Function prototypes */
 extern int8_t 	vkTimerInsert(vkTIMER *timer_ptr);

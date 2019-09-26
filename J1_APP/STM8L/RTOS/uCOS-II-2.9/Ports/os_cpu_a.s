@@ -296,21 +296,20 @@ OSIntCtxSw:
 	
 ;********************************************************************************************************
 ;                             			系统时钟节拍中断函数
-;			由STM8L的TIM1的定时器溢出中断提供uCOS运行的时钟节拍中断，10ms一次中断，
+;			由STM8L的TIM4的定时器溢出中断提供uCOS运行的时钟节拍中断，1ms一次中断，
 ;			在该中断函数中调用OSTimeTick
-;			TIME1 <=> INTERRUPT_HANDLER(TIM1_UPD_OVF_TRG_COM_IRQHandler,23) <=> _interrupt_25
+;			TIME4 <=> INTERRUPT_HANDLER(TIM4_UPD_OVF_TRG_IRQHandler,25) <=> _interrupt_27
 ;
 ;******************************************************************************************************** 
-	PUBLIC _interrupt_25
+	PUBLIC _interrupt_27
 	SECTION `.far_func.text`:CODE:NOROOT(0)
-_interrupt_25:    
+_interrupt_27:    
 	SIM					;禁止中断
 	
 	INT_SAVE_REGS	
 	SAVE_OLD_STK_PTR
 	
-	BRES	0x52B6, #0	;清除中断标志位
-	BRES	0x52B7, #0	;清除中断标志位
+	BRES	0x52E5, #0	;清除中断标志位
 	
 	CALL	OSIntEnter
 	CALL	OSTimeTick

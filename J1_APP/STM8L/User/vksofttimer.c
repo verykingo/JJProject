@@ -15,8 +15,8 @@
 
 /* Local data */
 static uint8_t STACK_TIMER[TIMER_STATCK_SIZE]={0};
-static uint8_t STACK_FLAGS[TIMER_STATCK_SIZE/TIMER_STRUCT_SIZE]={0};
-static uint8_t stack_count=TIMER_STATCK_SIZE/TIMER_STRUCT_SIZE;
+static uint8_t STACK_FLAGS[TIMER_STRUCT_NUMS]={0};
+static uint8_t stack_count=TIMER_STRUCT_NUMS;
 static uint8_t stack_index=0;
 
 /* 定时器链表表头指针 */
@@ -49,24 +49,21 @@ int8_t vkTimerInsert (vkTIMER *timer_ptr)
         status = vkTIMER_ERR_PARAM;
     }
     else
-    {    
-		/* Copy a new timer callback from timer_ptr */
+    {
+		/* Create a new timer callback from timer_ptr */
 		vkTIMER *new = (vkTIMER *)timer_mem_malloc(TIMER_STRUCT_SIZE);
 		if(new == NULL)
-		{
+		{			
 			return vkTIMER_ERR_PARAM;
 		}
-		
-		new->timer_name = timer_ptr->timer_name;
-		new->cb_func	= timer_ptr->cb_func;
-		new->cb_data	= timer_ptr->cb_data;
-		new->cb_ticks	= timer_ptr->cb_ticks;
-		new->next_timer	= timer_ptr->next_timer;
+		memcpy(new, timer_ptr, TIMER_STRUCT_SIZE);
+		new->prev_timer = NULL;
+		new->next_timer = NULL;
 
-		/* Protect the list */
-        CRITICAL_START ();
 		
-        /*
+    	/* Protect the list */
+        CRITICAL_START ();
+	     /*
          * Enqueue in the list of timers.
          *
          * The list is not ordered, all timers are inserted at the start
@@ -77,16 +74,14 @@ int8_t vkTimerInsert (vkTIMER *timer_ptr)
          */
         if (timer_list == NULL)
         {
-            /* List is empty, insert new head */
-            new->next_timer = NULL;
-
 			/* Update the list head with the new timer */
             timer_list = new;
         }
         else
         {
             /* List has at least one entry, enqueue new timer before */
-            new->next_timer = timer_list;
+			new->next_timer = timer_list;
+			timer_list->prev_timer = new;          
 
 			/* Update the list head with the new timer */
             timer_list = new;
@@ -112,7 +107,8 @@ int8_t vkTimerInsert (vkTIMER *timer_ptr)
 int8_t vkTimerCancel (vkTIMER *timer_ptr)
 {
     int8_t status = vkTIMER_ERR_NOT_FOUND;
-    vkTIMER *prev_ptr, *next_ptr;
+    vkTIMER *next_ptr, *temp_ptr;
+	
     CRITICAL_STORE;
 
     /* Parameter check */
@@ -127,7 +123,7 @@ int8_t vkTimerCancel (vkTIMER *timer_ptr)
         CRITICAL_START ();
 
         /* Walk the list to find the relevant timer */
-        prev_ptr = next_ptr = timer_list;
+        next_ptr = timer_list;
         while (next_ptr)
         {
             /* Is this entry the one we're looking for? */
@@ -137,23 +133,28 @@ int8_t vkTimerCancel (vkTIMER *timer_ptr)
                 {
                     /* We're removing the list head */
                     timer_list = next_ptr->next_timer;
+					timer_list->prev_timer = NULL;
 
 					/* Free the timer callback memory space*/
 					timer_mem_free(next_ptr);
-
-					/* Update prev_ptr and next_ptr with the list head */
-					prev_ptr = next_ptr = timer_list;
+					
+					/* Update next_ptr with the list head */
+					next_ptr = timer_list;
                 }
                 else
                 {
-                    /* We're removing a mid or tail TCB */
-                    prev_ptr->next_timer = next_ptr->next_timer;
+                    /* We're removing a mid or tail timer callback */
+                    next_ptr->prev_timer->next_timer = next_ptr->next_timer;
+					next_ptr->next_timer->prev_timer = next_ptr->prev_timer;
 
-					/* Free the timer callback memory space*/
-					timer_mem_free(next_ptr);
-
+					/* Copy a temp ptr for free */
+					temp_ptr = next_ptr;
+					
 					/* Update next_ptr with the next of prev_ptr */
-					next_ptr = prev_ptr->next_timer;
+					next_ptr = next_ptr->next_timer;
+							
+					/* Free the timer callback memory space*/
+					timer_mem_free(temp_ptr);
                 }
 				
                 /* Successful */
@@ -162,8 +163,7 @@ int8_t vkTimerCancel (vkTIMER *timer_ptr)
 			else
 			{
             	/* Move on to the next in the list */
-           		prev_ptr = next_ptr;
-           		next_ptr = next_ptr->next_timer;
+          		next_ptr = next_ptr->next_timer;
 			}
         }
 
@@ -198,7 +198,7 @@ int8_t vkTimerClear (void)
 	
 		/* Free the timer callback memory space*/
 		timer_mem_free(next_ptr);	
-
+		
 		/* Update next_ptr with the list head */
 		next_ptr = timer_list;
 	}
@@ -301,14 +301,15 @@ void vkTimerTick (void)
  */
 static void TimerCallbacks (void)
 {
-    vkTIMER *prev_ptr, *next_ptr, *expire_ptr;
-
+    vkTIMER *next_ptr, *temp_ptr;
+	vkTIMER expire;
+		
     /*
      * Walk the list decrementing each timer's remaining ticks count and
      * looking for due callbacks.
      */
-    prev_ptr = next_ptr = timer_list;
-    while (next_ptr)
+    next_ptr = timer_list;
+    while (next_ptr && next_ptr->cb_ticks!=0)
     {
         /* 定时时间到 Is this entry due? */
         if (--(next_ptr->cb_ticks) == 0)
@@ -318,50 +319,51 @@ static void TimerCallbacks (void)
             {
                 /* We're removing the list head */
                 timer_list = next_ptr->next_timer;
+				timer_list->prev_timer = NULL;	
 
-                expire_ptr = next_ptr;
-                 
-                /* Update prev_ptr and next_ptr with the list head*/
-				prev_ptr = next_ptr = timer_list;
-                 
-				/* Call the registered callback */
-				if (expire_ptr->cb_func)
-				{
-					expire_ptr->cb_func (expire_ptr->cb_data);
-				}
+				/* Copy timer for callback */
+				memcpy(&expire, next_ptr, TIMER_STRUCT_SIZE);
 
 				/* Free the timer callback memory space*/
-				timer_mem_free(expire_ptr);			
+				timer_mem_free(next_ptr);	
+                
+                /* Update next_ptr with the list head*/
+				next_ptr = timer_list;
+                 
+				/* Call the registered callback */
+				if (expire.cb_func)
+				{
+					expire.cb_func (expire.cb_data);
+				}		
             }
             else
             {
-                /* We're removing a mid or tail timer */
-                prev_ptr->next_timer = next_ptr->next_timer;
+                /* We're removing a mid or tail timer callback */
+                next_ptr->prev_timer->next_timer = next_ptr->next_timer;
+				next_ptr->next_timer->prev_timer = next_ptr->prev_timer;
                 
-                expire_ptr = next_ptr;
-                
-                /* Update next_ptr with the next of prev_ptr */
-				next_ptr = prev_ptr->next_timer;
+				/* Copy timer for callback */
+				memcpy(&expire, next_ptr, TIMER_STRUCT_SIZE);
 
-				/* Call the registered callback */
-				if (expire_ptr->cb_func)
-				{
-					expire_ptr->cb_func (expire_ptr->cb_data);
-				}
+				/* Copy temp ptr for free */
+				temp_ptr = next_ptr;
 
+				/* Update next_ptr with the next of next_timer */
+				next_ptr = next_ptr->next_timer;
+				
 				/* Free the timer callback memory space*/
-				timer_mem_free(expire_ptr);
+				timer_mem_free(temp_ptr);
+	
+				/* Call the registered callback */
+				if (expire.cb_func)
+				{
+					expire.cb_func (expire.cb_data);
+				}
             }	
         }
         /* Entry is not due, leave it in there with its count decremented */
         else
         {
-            /*
-             * Update prev_ptr to this entry. We will need it if we want
-             * to remove a mid or tail timer.
-             */
-            prev_ptr = next_ptr;
-
 			/* Move on to the next in the list */
         	next_ptr = next_ptr->next_timer;
         }
@@ -377,7 +379,7 @@ static void TimerCallbacks (void)
  *
  * @return menory pointer
  */
-void* timer_mem_malloc(uint32_t size)
+static inline void* timer_mem_malloc(uint32_t size)
 {	
 	uint8_t i;
 	uint8_t *ptr = NULL;
@@ -394,11 +396,17 @@ void* timer_mem_malloc(uint32_t size)
 		return NULL;
 	}
 
+	CRITICAL_STORE;
+
+	/* Protect the list */
+	CRITICAL_START ();
+	
+#if 1
 	/* 查表可用数据块 */
-	for(i=stack_index; i<TIMER_STATCK_SIZE/TIMER_STRUCT_SIZE; i++)
+	for(i=stack_index; i<TIMER_STRUCT_NUMS; i++)
 	{
 		if(STACK_FLAGS[i] == 0)
-		{			
+		{		
 			goto FIND_MEMORY;
 		}
 	}	
@@ -413,10 +421,29 @@ void* timer_mem_malloc(uint32_t size)
 FIND_MEMORY:
 	STACK_FLAGS[i] = 1;
 	stack_count--;
-	stack_index = (i+1)%(TIMER_STATCK_SIZE/TIMER_STRUCT_SIZE);
+	stack_index = (i+1)%(TIMER_STRUCT_NUMS);
 	
 	ptr = STACK_TIMER+i*TIMER_STRUCT_SIZE;
 
+#else
+
+	/* 查表可用数据块 */
+	for(i=0; i<TIMER_STRUCT_NUMS; i++)
+	{
+		if(STACK_FLAGS[i] == 0)
+		{	
+			STACK_FLAGS[i] = 1;
+			stack_count--;
+			ptr = STACK_TIMER+i*TIMER_STRUCT_SIZE;	
+			
+			break;
+		}
+	}
+#endif
+
+	/* End of list protection */
+	CRITICAL_END();
+	
 	return ptr;	
 }
 
@@ -429,7 +456,7 @@ FIND_MEMORY:
  *
  * @return none
  */
-void timer_mem_free(void *ptr)
+static inline void timer_mem_free(void *ptr)
 {
 	/* 指针是空     */
 	if(ptr == NULL)
@@ -449,9 +476,17 @@ void timer_mem_free(void *ptr)
 		return;
 	}
 
+	CRITICAL_STORE;
+
+	/* Protect the list */
+	CRITICAL_START ();
+
 	STACK_FLAGS[((uint8_t *)ptr-STACK_TIMER)/TIMER_STRUCT_SIZE] = 0;
 	stack_count++;		
 	memset(ptr, 0, TIMER_STRUCT_SIZE);
+
+	/* End of list protection */
+	CRITICAL_END();
 
 	return;
 }
