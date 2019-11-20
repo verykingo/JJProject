@@ -32,10 +32,11 @@
 #include "vksofttimer.h"
 #include "vkprotocol.h"
 #include "vkleds.h"
-#include "vkUsart.h"
+#include "vkusart.h"
 #include "vkAT.h"
 #include "vkADC.h"
-#include "vkPluse.h"
+#include "vkpluse.h"
+#include "vkpower.h"
 
 #if USE_UCOS_II == 1u
 #include "ucos_ii.h"
@@ -357,30 +358,37 @@ void main(void)
 
 	/* TimeTick Init for pluse tick 优先级最高=3 */
 	vkTimeTick_Init(TIME5);
-
+	
 	/* 电极脉冲初始化 */
-	vkPluse_Init();
+	//vkPluse_Init();
 
+	/* 模块电源初始化 */
+	//vkPower_Init();
+	//vkPowerBleSet(1);
+	//vkPowerTlySet(1);
+	//vkPowerDJASet(1);
+	//vkPowerDJBSet(1);
+	
 	/* Create a queue buffer */
 	//vkQueueCreate(&Queue,QueueBuffer,MAX_QUEUE_BUF_SIZE,MAX_QUEUE_BUF_NUMS);
 
 	/* After Finish All Init, Enable Interrupt */
 	enableInterrupts();
 
-	/* 测试，循环模式，持续1秒间隔1秒 */
+	/* 测试，循环模式，持续1秒间隔1.5秒 */
 	//vkPluseSetMode(PLUSE0, PLUSE_MODE_CONTINUE);
-	//vkPluseSetExpt(PLUSE0, 10);
+	//vkPluseSetExpt(PLUSE0, 20);
 	//vkPluseSetTime(PLUSE0, 2, 3);
 	//vkPluseStart(PLUSE0);
 
-	//vkUsart_Send(COM3 ,"Hello STM8L!\r\n", 14);
-	//vkTimerDelayMS(100);
+	vkUsart_Send(COM3 ,"Hello STM8L!\r\n", 14);
+	vkTimerDelayMS(100);
 	
-	//vkAT_TerminalStart(COM3);
-	//vkAT_CommunicationStart(COM3);
+	vkAT_TerminalStart(COM3);
+	vkAT_CommunicationStart(COM3);
 	
 #if USE_NO_RTOS == 1u
-#if 0
+#if 1
 	Timer_Callback0.timer_name 	= (void *)&Timer_Callback0;
 	Timer_Callback0.cb_func		= Callback0;
 	Timer_Callback0.cb_data		= NULL;

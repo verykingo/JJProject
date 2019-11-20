@@ -233,7 +233,7 @@ static int trim_spaces(const char * string, int * start, int * end)
 	return 0;
 }
 
-void Terminal_Callback(void * pdata)
+void Terminal_Callback(void *pdata)
 {
 	uint8_t data[TERMINAL_BUFFER_SIZE];
 
@@ -327,7 +327,10 @@ int vkAT_TerminalStart(vkCOM com)
 	vkUsart_Send(ATTerminal.term_com ,"\r\n#", 3);
 
 	/* 启动软定时器 */
-	vkTimerInsert(&ATTerminal.term_timer);
+	if(vkTIMER_OK != vkTimerInsert(&ATTerminal.term_timer))
+	{
+		return -1;
+	}
 	
 	return 0;
 }
@@ -363,7 +366,7 @@ int vkAT_TerminalPrint(uint8_t *buf, int size)
 	return ret;
 }
 
-void Communication_Callback(void * pdata)
+void Communication_Callback(void *pdata)
 {
 	/* 清零 */
 	memset(ATCommunication.comm_buffer, 0, COMMUNICATION_BUFFER_SIZE);
@@ -402,7 +405,10 @@ int vkAT_CommunicationStart(vkCOM com)
 	ATCommunication.comm_timer.cb_ticks	= vkMS_TO_TICKS(10);
 
 	/* 启动软定时器 */
-	vkTimerInsert(&ATCommunication.comm_timer);	
+	if(vkTIMER_OK != vkTimerInsert(&ATCommunication.comm_timer))
+	{
+		return -1;
+	}
 
 	return 0;
 }

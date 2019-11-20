@@ -19,6 +19,10 @@
 
 int vkADC_Init(void);
 int vkADC_Deinit(void);
-uint16_t vkADC_Read(ADC_Channel_TypeDef channel);
+
+int vkADCStart(void);
+int vkADCStop(void);
+
+uint16_t vkADCRead(ADC_Channel_TypeDef channel);
 
 #endif

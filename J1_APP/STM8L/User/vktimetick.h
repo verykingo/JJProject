@@ -26,7 +26,7 @@ typedef enum TIME
 
 
 /* 每一个Tick等于1毫秒(最大定时时间2^32*10ms=42949000s)时间 */
-#define US_PER_TICKS	((uint32_t)(10000ul))
+#define US_PER_TICKS	((uint32_t)(1000ul))
 
 /* 微秒转换 */
 #define vkTICKS_TO_US(x) 	((uint32_t)(x*US_PER_TICKS))
@@ -40,7 +40,10 @@ typedef enum TIME
 #define vkTICKS_TO_SS(x) 	((uint32_t)((x*US_PER_TICKS)/1000ul*1000ul))
 #define vkSS_TO_TICKS(x) 	((uint32_t)((x*1000ul*1000ul)/US_PER_TICKS))
 
-void vkTimeTick_Init(vkTIME TIM);
+int vkTimeTick_Init(vkTIME TIM);
+int vkTimeTick_Deinit(vkTIME TIM);
+int vkTimeTickStart(vkTIME TIM);
+int vkTimeTickStop(vkTIME TIM);
 
 #endif
 

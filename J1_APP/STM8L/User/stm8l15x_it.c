@@ -31,6 +31,10 @@
 #include "vkusart.h"
 #include "vksofttimer.h"
 #include "vkpluse.h"
+#include "vkpower.h"
+#include "vkbattery.h"
+#include "vktly.h"
+#include "vkleds.h"
 
 /** @addtogroup STM8L15x_StdPeriph_Template
   * @{
@@ -101,15 +105,20 @@ INTERRUPT_HANDLER(DMA1_CHANNEL0_1_IRQHandler,2)
        it is recommended to set a breakpoint on the following instruction.
     */
 	if(DMA_GetITStatus(DMA1_IT_TC1) != RESET)
-	{
-		vkUsart_Send_Over(COM3);
+	{	
+		#if UART1_DMA_ENABLE == 1u
+		vkUsart_DMA_Send_Line_Over_Handler(COM1);
+		#elif UART3_DMA_ENABLE == 1u
+		vkUsart_DMA_Send_Line_Over_Handler(COM3);
+		#endif 
+		
 		DMA_ClearITPendingBit(DMA1_IT_TC1);
 	}
 	
-	if(DMA_GetITStatus(DMA1_IT_TC0) != RESET)
+    if(DMA_GetITStatus(DMA1_IT_TC0) != RESET)
 	{
-		vkUsart_Send_Over(COM2);
-		DMA_ClearITPendingBit(DMA1_IT_TC2);
+		vkUsart_DMA_Send_Line_Over_Handler(COM2);
+		DMA_ClearITPendingBit(DMA1_IT_TC0);
 	}
 }
 /**
@@ -192,6 +201,17 @@ INTERRUPT_HANDLER(EXTI1_IRQHandler,9)
     /* In order to detect unexpected events during development,
        it is recommended to set a breakpoint on the following instruction.
     */
+#if TLY_INT_ENABLE == 1u
+	if(EXTI_GetITStatus(EXTI_IT_Pin1) != RESET)
+	{
+		/* 陀螺仪中断，每5m秒进入一次中断 */
+		vkTly_Interrupt_Update_Callback((void *)0);
+		
+		/* 清除中断标志 */
+		EXTI_ClearITPendingBit(EXTI_IT_Pin1);
+	}
+#endif
+
 }
 
 /**
@@ -204,6 +224,15 @@ INTERRUPT_HANDLER(EXTI2_IRQHandler,10)
     /* In order to detect unexpected events during development,
        it is recommended to set a breakpoint on the following instruction.
     */
+    
+	if(EXTI_GetITStatus(EXTI_IT_Pin2) != RESET)
+	{
+ 		/* 开机按键中断回调函数 */
+		vkPower_Interrupt_Callback();
+
+		/* 清除中断标志 */
+		EXTI_ClearITPendingBit(EXTI_IT_Pin2);
+	}
 }
 
 /**
@@ -228,6 +257,15 @@ INTERRUPT_HANDLER(EXTI4_IRQHandler,12)
     /* In order to detect unexpected events during development,
        it is recommended to set a breakpoint on the following instruction.
     */
+
+	if(EXTI_GetITStatus(EXTI_IT_Pin4) != RESET)
+	{
+		/* 电池充电头插拔回调函数 */
+		vkBattery_Charge_Callback();
+
+		/* 清除中断标志 */
+		EXTI_ClearITPendingBit(EXTI_IT_Pin4);
+	}
 }
 
 /**
@@ -313,7 +351,7 @@ INTERRUPT_HANDLER(TIM2_UPD_OVF_TRG_BRK_USART2_TX_IRQHandler,19)
     /* 串口发送一个字节数据完成 */
     if(USART_GetITStatus(USART2, USART_IT_TC) != RESET)
 	{
-		vkUsart_Send_Byte(COM2);
+		vkUsart_INT_Send_Byte_Over_Handler(COM2);
 		USART_ClearITPendingBit(USART2, USART_IT_TC);
     }
 }
@@ -331,14 +369,14 @@ INTERRUPT_HANDLER(TIM2_CC_USART2_RX_IRQHandler,20)
 	/* 串口收到一个字节数据 */
 	if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
 	{		
-		vkUsart_Recv_Byte(COM2);
+		vkUsart_INT_Recv_Byte_Over_Handler(COM2);
 	}
 	
 	/* 串口空闲，收到一行最后一个字节数据 */
 	if(USART_GetITStatus(USART2, USART_IT_IDLE) != RESET)
 	{
 		USART_ReceiveData8(USART2);
-		vkUsart_Recv_Line(COM2);		
+		vkUsart_Recv_Line_Handler(COM2);		
 	}
 }
 
@@ -355,7 +393,7 @@ INTERRUPT_HANDLER(TIM3_UPD_OVF_TRG_BRK_USART3_TX_IRQHandler,21)
 	/* 串口发送一个字节数据完成 */
     if(USART_GetITStatus(USART3, USART_IT_TC) != RESET)
 	{
-		vkUsart_Send_Byte(COM3);
+		vkUsart_INT_Send_Byte_Over_Handler(COM3);
 		USART_ClearITPendingBit(USART3, USART_IT_TC);
 	}
 }
@@ -373,14 +411,14 @@ INTERRUPT_HANDLER(TIM3_CC_USART3_RX_IRQHandler,22)
 	/* 串口收到一个字节数据 */
     if(USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
     {    	
-		vkUsart_Recv_Byte(COM3);
+		vkUsart_INT_Recv_Byte_Over_Handler(COM3);
     }
 
 	/* 串口空闲，收到一行最后一个字节数据 */
 	if(USART_GetITStatus(USART3, USART_IT_IDLE) != RESET)
 	{
 		USART_ReceiveData8(USART3);
-		vkUsart_Recv_Line(COM3);		
+		vkUsart_Recv_Line_Handler(COM3);		
 	}
 }
 
@@ -421,11 +459,11 @@ INTERRUPT_HANDLER(TIM1_CC_IRQHandler,24)
   */
 #if USE_UCOS_II == 1u
 	/*
-	  TIM1中断服务程序_interrupt_27()，在RTOS/uCOS-II-2.9/Port/os_cpu_a.s汇编语言实现。
+	  TIM4中断服务程序_interrupt_27()，在RTOS/uCOS-II-2.9/Port/os_cpu_a.s汇编语言实现。
 	*/
 #elif USE_ATOMTHREAD == 1u
 	/*
-	  TIM1中断服务程序_interrupt_27()，在RTOS/atomthreads-1.3/ports/stm8/atomport.c实现。
+	  TIM4中断服务程序_interrupt_27()，在RTOS/atomthreads-1.3/ports/stm8/atomport.c实现。
 	*/
 #else
 INTERRUPT_HANDLER(TIM4_UPD_OVF_TRG_IRQHandler,25)
@@ -466,7 +504,7 @@ INTERRUPT_HANDLER(USART1_TX_TIM5_UPD_OVF_TRG_BRK_IRQHandler,27)
    	/* 串口发送一个字节数据完成 */
     if(USART_GetITStatus(USART1, USART_IT_TC) != RESET)
     {
-    	vkUsart_Send_Byte(COM1);
+    	vkUsart_INT_Send_Byte_Over_Handler(COM1);
 
 		USART_ClearITPendingBit(USART1, USART_IT_TC);
     }
@@ -493,14 +531,14 @@ INTERRUPT_HANDLER(USART1_RX_TIM5_CC_IRQHandler,28)
 	/* 串口收到一个字节数据 */
     if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
     {    	
-		vkUsart_Recv_Byte(COM1);
+		vkUsart_INT_Recv_Byte_Over_Handler(COM1);
     }
 
 	/* 串口空闲，收到一行最后一个字节数据 */
 	if(USART_GetITStatus(USART1, USART_IT_IDLE) != RESET)
 	{
 		USART_ReceiveData8(USART1);
-		vkUsart_Recv_Line(COM1);		
+		vkUsart_Recv_Line_Handler(COM1);		
 	}
 }
 

@@ -72,14 +72,14 @@ typedef struct soft_timer
 #define TIMER_STRUCT_NUMS 	16ul						/* 软定时器最大数目	*/
 #define TIMER_STRUCT_SIZE	sizeof(vkTIMER)				/* 软定时器大小	*/
 #define TIMER_STATCK_SIZE 	(TIMER_STRUCT_NUMS*TIMER_STRUCT_SIZE)		/* 软定时器堆栈大小 */
-#define TIMER_US_PER_TICK	100000ul						/* 定时器每个tick是100000us */
+#define TIMER_US_PER_TICK	1000ul						/* 定时器每个tick是1000us */
 
 /* Function prototypes */
 extern int8_t 	vkTimerInsert(vkTIMER *timer_ptr);
 extern int8_t 	vkTimerCancel(vkTIMER *timer_ptr);
 extern int8_t 	vkTimerClear (void);
-extern uint32_t vkTimerGetTicks (void);
 extern int8_t 	vkTimerSetTicks (uint32_t new_time);
+extern uint32_t vkTimerGetTicks (void);
 extern void vkTimerDelayMS(uint32_t msec);
 extern void vkTimerDelaySS(uint32_t s);
 

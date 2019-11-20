@@ -38,8 +38,7 @@ int vkPWM_Init(vkPWM pwm)
 		/* TIM2 Channel1, PWM Mode 2,  16MHz/(16*(0+1)) = 1MHz = 1us */
     	TIM2_DeInit();
     	TIM2_TimeBaseInit(TIM2_Prescaler_16,TIM2_CounterMode_Up,0);
-		//TIM2_SetCounter(0); 				/* 将计数器初值设为0 */
-		//TIM2_ARRPreloadConfig(ENABLE);		/* 预装载使能 */
+		TIM2_SetCounter(0); 				/* 将计数器初值设为0 */
 		TIM2_OC1Init(TIM2_OCMode_PWM2,TIM2_OutputState_Enable,0,TIM2_OCPolarity_High,TIM2_OCIdleState_Reset);		
 	}
 	else if(pwm == PWM2)
@@ -53,8 +52,7 @@ int vkPWM_Init(vkPWM pwm)
 		/* TIM2 Channel2, PWM Mode 2,  16MHz/(16*(0+1)) = 1MHz = 1us */
     	TIM3_DeInit();
     	TIM3_TimeBaseInit(TIM3_Prescaler_16,TIM3_CounterMode_Up,0);
-		//TIM3_SetCounter(0); 				/* 将计数器初值设为0 */
-		//TIM3_ARRPreloadConfig(ENABLE);		/* 预装载使能 */
+		TIM3_SetCounter(0); 				/* 将计数器初值设为0 */
     	TIM3_OC2Init(TIM3_OCMode_PWM2,TIM3_OutputState_Enable,0,TIM3_OCPolarity_High,TIM3_OCIdleState_Reset);
 	}
 	else
@@ -66,13 +64,45 @@ int vkPWM_Init(vkPWM pwm)
 }
 
 /*******************************************************************************
+ * 名称: vkPWM_Deinit
+ * 功能: PWM销毁
+ * 形参: 
+ * 返回: 成功0，失败-1
+ * 说明: 无 
+ ******************************************************************************/
+int vkPWM_Deinit(vkPWM pwm)
+{	
+	if(pwm == PWM1)
+	{
+		/* Disable TIM2 clock */
+		CLK_PeripheralClockConfig(CLK_Peripheral_TIM2, DISABLE);
+
+		/* Reset TIM2 */
+    	TIM2_DeInit();
+	}
+	else if(pwm == PWM2)
+	{
+		/* Disable TIM3 clock */
+		CLK_PeripheralClockConfig(CLK_Peripheral_TIM3, ENABLE);
+
+		/* Reset TIM3 */
+    	TIM3_DeInit();
+	}
+	else
+	{
+		return -1;
+	}
+	
+	return 0;	
+}
+
+/*******************************************************************************
  * 名称: vkPWMStart
  * 功能: PWM启动
  * 形参: 
  * 返回: 成功0，失败-1
  * 说明: 无 
  ******************************************************************************/
-
 inline int vkPWMStart(vkPWM pwm, uint32_t period, uint8_t ration)
 {
 	if(pwm!=PWM1 && pwm!=PWM2)
@@ -83,8 +113,9 @@ inline int vkPWMStart(vkPWM pwm, uint32_t period, uint8_t ration)
 	if(pwm == PWM1)
 	{
 		/* Disable TME2 PWM */
-		TIM2_CtrlPWMOutputs(DISABLE);
-		TIM2_Cmd(DISABLE);	
+		TIM2->BKR &= (uint8_t)(~TIM_BKR_MOE);//TIM2_CtrlPWMOutputs(DISABLE);		
+		TIM2->CR1 &= (uint8_t)(~TIM_CR1_CEN);//TIM2_Cmd(DISABLE);
+
 
 		/* 将计数器初值设为0 */
 		TIM2_SetCounter(0);
@@ -95,17 +126,18 @@ inline int vkPWMStart(vkPWM pwm, uint32_t period, uint8_t ration)
 		TIM2_SetCompare1(compare);
 		
 		/* Enable PWM output and timer */
-		TIM2_CtrlPWMOutputs(ENABLE);
-		TIM2_Cmd(ENABLE);
+		TIM2->BKR |= TIM_BKR_MOE;//TIM2_CtrlPWMOutputs(ENABLE);
+		TIM2->CR1 |= TIM_CR1_CEN;//TIM2_Cmd(ENABLE);
 	}
 	else if(pwm == PWM2)
 	{
 		/* Disable TME3 PWM */
-		TIM3_CtrlPWMOutputs(DISABLE);
-		TIM3_Cmd(DISABLE);
+		TIM3->BKR &= (uint8_t)(~TIM_BKR_MOE);//TIM3_CtrlPWMOutputs(DISABLE);
+		TIM3->CR1 &= (uint8_t)(~TIM_CR1_CEN);//TIM3_Cmd(DISABLE);
+
 
 		/* 将计数器初值设为0 */
-		TIM2_SetCounter(0);
+		TIM3_SetCounter(0);
 		TIM3_SetAutoreload(period);
 
 		/* Set Compare */
@@ -113,8 +145,8 @@ inline int vkPWMStart(vkPWM pwm, uint32_t period, uint8_t ration)
 		TIM3_SetCompare2(compare);
 		
 		/* Enable PWM output and timer */
-		TIM3_CtrlPWMOutputs(ENABLE);
-		TIM3_Cmd(ENABLE);
+		TIM3->BKR |= TIM_BKR_MOE;//TIM3_CtrlPWMOutputs(ENABLE);
+		TIM3->CR1 |= TIM_CR1_CEN;//TIM3_Cmd(ENABLE);
 	}
 
 	return 0;
@@ -137,15 +169,17 @@ inline int vkPWMStop(vkPWM pwm)
 	if(pwm == PWM1)
 	{
 		/* Disable PWM output and timer */
-		TIM2_CtrlPWMOutputs(ENABLE);
-		TIM2_Cmd(ENABLE);
+		TIM2->BKR &= (uint8_t)(~TIM_BKR_MOE);//TIM2_CtrlPWMOutputs(DISABLE);		
+		TIM2->CR1 &= (uint8_t)(~TIM_CR1_CEN);//TIM2_Cmd(DISABLE);
+		
 		GPIO_ResetBits(GPIOB, GPIO_Pin_0);
 	}
 	else if(pwm == PWM2)
 	{
 		/* Disable PWM output and timer */
-		TIM3_CtrlPWMOutputs(ENABLE);
-		TIM3_Cmd(ENABLE);
+		TIM3->BKR &= (uint8_t)(~TIM_BKR_MOE);//TIM3_CtrlPWMOutputs(DISABLE);
+		TIM3->CR1 &= (uint8_t)(~TIM_CR1_CEN);//TIM3_Cmd(DISABLE);
+		
 		GPIO_ResetBits(GPIOD, GPIO_Pin_0);
 	}
 

@@ -25,10 +25,10 @@
  * 返回: 无
  * 说明: 无 
  ******************************************************************************/
-void vkTimeTick_Init(vkTIME TIM)
+int vkTimeTick_Init(vkTIME TIM)
 {
-	/* 定时器1: 10ms/tick */
-	if(TIM == 1)	
+	/* 定时器1: 1ms/tick */
+	if(TIM == TIME1)	
 	{
 		/* Enable TIM1 CLK*/
 		CLK_PeripheralClockConfig(CLK_Peripheral_TIM1, ENABLE); 
@@ -36,8 +36,8 @@ void vkTimeTick_Init(vkTIME TIM)
 	    /* Reset TIM1 */
 	    TIM1_DeInit();
 
-	    /* Configure a 10ms tick, 16MHz/(15+1)=1MHz, 1s/MHz=1us */
-		TIM1_TimeBaseInit(15, TIM1_CounterMode_Up, 9999, 0);
+	    /* Configure a 1ms tick, 16MHz/(15+1)=1MHz, 1s/MHz=1us */
+		TIM1_TimeBaseInit(15, TIM1_CounterMode_Up, 999, 0);
 		TIM1_SetCounter(0);					/* 将计数器初值设为0 */
 		TIM1_ARRPreloadConfig(ENABLE);		/* 预装载使能 */
 		ITC_SetSoftwarePriority(TIM1_UPD_OVF_TRG_IRQn, ITC_PriorityLevel_1);
@@ -46,10 +46,10 @@ void vkTimeTick_Init(vkTIME TIM)
 	    TIM1_ITConfig(TIM1_IT_Update, ENABLE);
 
 	    /* Enable TIM1 */
-	    TIM1_Cmd(ENABLE);
+	    //TIM1_Cmd(ENABLE);
 	}
 	/* 定时器2: 10ms/tick    */
-	else if(TIM == 2)
+	else if(TIM == TIME2)
 	{
 		/* Enable TIM2 CLK*/
 		CLK_PeripheralClockConfig(CLK_Peripheral_TIM2, ENABLE); 
@@ -67,10 +67,10 @@ void vkTimeTick_Init(vkTIME TIM)
 		TIM2_ITConfig(TIM2_IT_Update, ENABLE);
 		
 		/* Enable TIM2 */
-		TIM2_Cmd(ENABLE);		
+		//TIM2_Cmd(ENABLE);		
 	}
 	/* 定时器3: 10ms/tick    */
-	else if(TIM == 3)
+	else if(TIM == TIME3)
 	{
 		/* Enable TIM3 CLK*/
 		CLK_PeripheralClockConfig(CLK_Peripheral_TIM3, ENABLE); 
@@ -88,10 +88,10 @@ void vkTimeTick_Init(vkTIME TIM)
 		TIM3_ITConfig(TIM3_IT_Update, ENABLE);
 		
 		/* Enable TIM3 */
-		TIM3_Cmd(ENABLE);		
+		//TIM3_Cmd(ENABLE);		
 	}
 	/* 定时器4: 1ms/tick    */
-	else if(TIM == 4)
+	else if(TIM == TIME4)
 	{
 		/* Enable TIM4 CLK*/
 		CLK_PeripheralClockConfig(CLK_Peripheral_TIM4, ENABLE); 
@@ -110,10 +110,10 @@ void vkTimeTick_Init(vkTIME TIM)
 		TIM4_ITConfig(TIM4_IT_Update, ENABLE);
 		
 		/* Enable TIM4 */
-		TIM4_Cmd(ENABLE);		
+		//TIM4_Cmd(ENABLE);		
 	}
-	/* 定时器5: 40us/tick    */
-	else if(TIM == 5)
+	/* 定时器5: 50us/tick    */
+	else if(TIM == TIME5)
 	{
 		/* Enable TIM5 CLK*/
 		CLK_PeripheralClockConfig(CLK_Peripheral_TIM5, ENABLE); 
@@ -121,8 +121,8 @@ void vkTimeTick_Init(vkTIME TIM)
 		/* Reset TIM5 */
 	    TIM5_DeInit();
 
-		/* Configure a 40us tick, 16MHz/(16)=1MHz, 1s/MHz=1us */
-		TIM5_TimeBaseInit(TIM5_Prescaler_16, TIM5_CounterMode_Up, 39);
+		/* Configure a 50us tick, 16MHz/(16)=1MHz, 1s/MHz=1us */
+		TIM5_TimeBaseInit(TIM5_Prescaler_16, TIM5_CounterMode_Up, 49);
 		TIM5_SetCounter(0); 				/* 将计数器初值设为0 */
 		TIM5_ARRPreloadConfig(ENABLE); 		/* 预装载使能 */
 		ITC_SetSoftwarePriority(USART1_TX_TIM5_UPD_OVF_TRG_BRK_IRQn, ITC_PriorityLevel_3);
@@ -131,8 +131,169 @@ void vkTimeTick_Init(vkTIME TIM)
 		TIM5_ITConfig(TIM5_IT_Update, ENABLE);
 		
 		/* Enable TIM5 */
-		TIM5_Cmd(ENABLE);		
+		//TIM5_Cmd(ENABLE);		
 	}
+	else
+	{
+		return -1;
+	}
+
+	return 0;
 }
 
+/*******************************************************************************
+ * 名称: vkTimeTick_Deinit
+ * 功能: TIM销毁操作
+ * 形参: TIM定时器
+ * 返回: 无
+ * 说明: 无 
+ ******************************************************************************/
+int vkTimeTick_Deinit(vkTIME TIM)
+{
+	if(TIM == TIME1)
+	{
+		/* Disable TIM1 */
+		TIM1_Cmd(DISABLE);
+
+		/* Reset TIM1 */
+	    TIM1_DeInit();	
+		
+		/* Disable TIM1 CLK*/
+		CLK_PeripheralClockConfig(CLK_Peripheral_TIM1, DISABLE); 	
+	}
+	else if(TIM == TIME2)
+	{
+		/* Disable TIM2 */
+		TIM2_Cmd(DISABLE);
+
+		/* Reset TIM2 */
+	    TIM2_DeInit();	
+		
+		/* Disable TIM2 CLK*/
+		CLK_PeripheralClockConfig(CLK_Peripheral_TIM2, DISABLE); 
+	}
+	else if(TIM == TIME3)
+	{
+		/* Disable TIM3 */
+		TIM3_Cmd(DISABLE);	
+
+		/* Reset TIM3 */
+	    TIM3_DeInit();	
+		
+		/* Disable TIM3 CLK*/
+		CLK_PeripheralClockConfig(CLK_Peripheral_TIM3, DISABLE); 
+	}
+	else if(TIM == TIME4)
+	{
+		/* Disable TIM4 */
+		TIM4_Cmd(ENABLE);
+
+		/* Reset TIM4 */
+	    TIM4_DeInit();	
+		
+		/* Disable TIM4 CLK*/
+		CLK_PeripheralClockConfig(CLK_Peripheral_TIM4, DISABLE); 
+	}
+	else if(TIM == TIME5)
+	{
+		/* Disable TIM5 */
+		TIM5_Cmd(DISABLE);	
+
+		/* Reset TIM5 */
+	    TIM5_DeInit();	
+		
+		/* Disable TIM5 CLK*/
+		CLK_PeripheralClockConfig(CLK_Peripheral_TIM5, DISABLE); 
+	}
+	else
+	{
+		return -1;
+	}
+
+	return 0;
+}
+
+/*******************************************************************************
+ * 名称: vkTimeTickStart
+ * 功能: TIM启动
+ * 形参: TIM定时器
+ * 返回: 无
+ * 说明: 无 
+ ******************************************************************************/
+int vkTimeTickStart(vkTIME TIM)
+{
+	if(TIM == TIME1)
+	{
+	    /* Enable TIM1 */
+	    TIM1_Cmd(ENABLE);		
+	}
+	else if(TIM == TIME2)
+	{
+	    /* Enable TIM2 */
+	    TIM2_Cmd(ENABLE);		
+	}
+	else if(TIM == TIME3)
+	{
+	    /* Enable TIM3 */
+	    TIM3_Cmd(ENABLE);		
+	}
+	else if(TIM == TIME4)
+	{
+	    /* Enable TIM4 */
+	    TIM4_Cmd(ENABLE);		
+	}
+	else if(TIM == TIME5)
+	{
+	    /* Enable TIM5 */
+	    TIM5_Cmd(ENABLE);		
+	}
+	else
+	{
+		return -1;
+	}
+
+	return 0;
+}
+
+/*******************************************************************************
+ * 名称: vkTimeTickStop
+ * 功能: TIM停止
+ * 形参: TIM定时器
+ * 返回: 无
+ * 说明: 无 
+ ******************************************************************************/
+int vkTimeTickStop(vkTIME TIM)
+{
+	if(TIM == TIME1)
+	{
+	    /* Disable TIM1 */
+	    TIM1_Cmd(DISABLE);		
+	}
+	else if(TIM == TIME2)
+	{
+	    /* Disable TIM2 */
+	    TIM2_Cmd(DISABLE);		
+	}
+	else if(TIM == TIME3)
+	{
+	    /* Disable TIM3 */
+	    TIM3_Cmd(DISABLE);		
+	}
+	else if(TIM == TIME4)
+	{
+	    /* Disable TIM4 */
+	    TIM4_Cmd(ENABLE);		
+	}
+	else if(TIM == TIME5)
+	{
+	    /* Disable TIM5 */
+	    TIM5_Cmd(DISABLE);		
+	}
+	else
+	{
+		return -1;
+	}
+
+	return 0;
+}
 

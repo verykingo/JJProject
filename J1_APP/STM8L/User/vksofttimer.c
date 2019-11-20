@@ -246,7 +246,7 @@ void vkTimerDelayMS(uint32_t msec)
 {
 	uint32_t tick_start = vkTimerGetTicks();
 
-	while(vkTimerGetTicks() <= (tick_start + (uint32_t)(msec*1000)/TIMER_US_PER_TICK));
+	while(vkTimerGetTicks() <= (tick_start + (uint32_t)(msec*1000)/TIMER_US_PER_TICK)) {nop();};
 
 	return;
 }

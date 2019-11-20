@@ -12,8 +12,8 @@
 #include "vkqueue.h"
 
 /* Forward declarations */
-static int8_t queue_remove (vkQUEUE *qptr, uint8_t* msgptr);
-static int8_t queue_insert (vkQUEUE *qptr, uint8_t* msgptr);
+inline int8_t queue_remove (vkQUEUE *qptr, uint8_t* msgptr);
+inline int8_t queue_insert (vkQUEUE *qptr, uint8_t* msgptr);
 
 /*******************************************************************************
  * Ãû³Æ: vkQueueCreate
@@ -314,13 +314,9 @@ static int8_t queue_remove (vkQUEUE *qptr, uint8_t* msgptr)
     else
     {
         /* ¿½±´Êý¾Ý */
-        memcpy(msgptr, (qptr->buff_ptr + qptr->remove_index), qptr->unit_size);
-        qptr->remove_index += qptr->unit_size;
+        memcpy(msgptr, (qptr->buff_ptr + qptr->remove_index*qptr->unit_size), qptr->unit_size);
+        qptr->remove_index = (qptr->remove_index+1)%(qptr->max_num_msgs);
         qptr->num_msgs_stored--;
-
-        /* Check if the remove index should now wrap to the beginning */
-        if (qptr->remove_index >= (qptr->unit_size * qptr->max_num_msgs))
-            qptr->remove_index = 0;
 
 		/* Successful */
         status = vkQUEUE_OK;
@@ -346,13 +342,9 @@ static int8_t queue_insert (vkQUEUE *qptr, uint8_t* msgptr)
     else
     {
         /* There is space in the queue, copy it in */
-        memcpy ((qptr->buff_ptr + qptr->insert_index), msgptr, qptr->unit_size);
-        qptr->insert_index += qptr->unit_size;
+        memcpy ((qptr->buff_ptr + qptr->insert_index*qptr->unit_size), msgptr, qptr->unit_size);
+        qptr->insert_index = (qptr->insert_index+1)%(qptr->max_num_msgs);
         qptr->num_msgs_stored++;
-
-        /* Check if the insert index should now wrap to the beginning */
-        if (qptr->insert_index >= (qptr->unit_size * qptr->max_num_msgs))
-            qptr->insert_index = 0;
 
 		/* Successful */
 		status = vkQUEUE_OK;
