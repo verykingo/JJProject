@@ -90,6 +90,7 @@ void protocol_repeat(void* ptr)
 					
 					//定时(rep_cout*1)秒执行重传
 					rpt_timer->timer_name 	= (void *)rpt_timer;
+					rpt_timer->cb_type		= CB_FUNC_TYPE_TIMER;
 					rpt_timer->cb_func	 	= protocol_repeat;
 					rpt_timer->cb_data		= Pptr;
 					rpt_timer->cb_ticks		= vkSS_TO_TICKS(1)*rep_cout;
@@ -116,6 +117,7 @@ void protocol_repeat(void* ptr)
 					
 					//定时(rep_cout*1)秒执行重传
 					rpt_timer->timer_name 	= (void *)rpt_timer;
+					rpt_timer->cb_type		= CB_FUNC_TYPE_TIMER;
 					rpt_timer->cb_func	 	= protocol_repeat;
 					rpt_timer->cb_data		= Pptr;
 					rpt_timer->cb_ticks		= vkSS_TO_TICKS(1)*(2^rep_cout);
@@ -142,6 +144,7 @@ void protocol_repeat(void* ptr)
 					
 					//定时(rep_cout*1)秒执行重传
 					rpt_timer->timer_name 	= (void *)rpt_timer;
+					rpt_timer->cb_type		= CB_FUNC_TYPE_TIMER;
 					rpt_timer->cb_func	 	= protocol_repeat;
 					rpt_timer->cb_data		= Pptr;
 					rpt_timer->cb_ticks		= vkSS_TO_TICKS(1);
@@ -203,6 +206,7 @@ void protocol_command(void* ptr)
 
 	/* 启动应答定时器 */
 	rep_timer->timer_name	= (void*)rep_timer;
+	rep_timer->cb_type		= CB_FUNC_TYPE_TIMER;
 	rep_timer->cb_func		= protocol_reply;
 	rep_timer->cb_data		= Pptr;
 	rep_timer->cb_ticks 	= vkMS_TO_TICKS(rep_time);

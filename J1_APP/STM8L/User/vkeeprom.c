@@ -19,12 +19,14 @@ int vkEepromWrite(uint32_t addr, uint8_t *data, uint16_t len)
 	/* 参数检查 */
 	if((addr == NULL) || (data == NULL) || (len == 0))
 	{
+		printf("%s Param Error!!!\r\n", __FUNCTION__);
 		return -1;
 	}
 
 	/* 地址空间检查　*/
 	if((addr < FLASH_DATA_EEPROM_START_PHYSICAL_ADDRESS) || (addr+len > FLASH_DATA_EEPROM_END_PHYSICAL_ADDRESS))
 	{	
+		printf("%s Addr Error!!!\r\n", __FUNCTION__);
 		return -1;
 	}
 
@@ -33,7 +35,7 @@ int vkEepromWrite(uint32_t addr, uint8_t *data, uint16_t len)
 
 	/* 等待解锁结果 */
     while(FLASH_GetFlagStatus(FLASH_FLAG_DUL) == RESET)
-	{nop();}
+	{nop(); /* 防止被编译优化掉 */}
 
 	/* 擦除数据 */
 	for(int i=0; i<len; i++)
@@ -62,12 +64,14 @@ int vkEepromRead(uint32_t addr, uint8_t *data, uint16_t len)
 	/* 参数检查 */
 	if((addr == NULL) || (data == NULL) || (len == 0))
 	{
+		printf("%s Param Error!!!\r\n", __FUNCTION__);
 		return -1;
 	}
 
 	/* 地址空间检查　*/
 	if((addr < FLASH_DATA_EEPROM_START_PHYSICAL_ADDRESS) || (addr+len > FLASH_DATA_EEPROM_END_PHYSICAL_ADDRESS))
 	{	
+		printf("%s Addr Error!!!\r\n", __FUNCTION__);
 		return -1;
 	}
 
@@ -89,7 +93,7 @@ int vkEepromClean(void)
 
 	/* 等待解锁结果 */
     while(FLASH_GetFlagStatus(FLASH_FLAG_DUL) == RESET)
-	{nop();}
+	{nop(); /* 防止被编译优化掉 */}
 
 	/* 擦除数据 */
 	for(uint32_t i=FLASH_DATA_EEPROM_START_PHYSICAL_ADDRESS; i<FLASH_DATA_EEPROM_END_PHYSICAL_ADDRESS; i++)

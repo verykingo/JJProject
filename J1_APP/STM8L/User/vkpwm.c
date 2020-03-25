@@ -1,12 +1,13 @@
 /******************************************************************************
  * 文件  ：vkpwm.c
- * 描述    ：STM8L PWM
+ * 描述    ：PWM1使用TIM2-CH1，PWM2使用TIM-CH2
  * 平台    ：STM8L
  * 时间  ：2019-04-01
 
 *******************************************************************************/
 
 /* 包含系统头文件 */
+#include <stdio.h>
 #include "stm8l15x.h"
 
 /* 包含自定义头文件 */
@@ -29,6 +30,8 @@ int vkPWM_Init(vkPWM pwm)
 {
 	if(pwm == PWM1)
 	{
+		printf("%s PWM1:TIM2 Channel1(PB0).\r\n", __FUNCTION__);
+			
 		/* Enable TIM2 clock */
 		CLK_PeripheralClockConfig(CLK_Peripheral_TIM2, ENABLE);
 		
@@ -43,6 +46,8 @@ int vkPWM_Init(vkPWM pwm)
 	}
 	else if(pwm == PWM2)
 	{
+		printf("%s PWM2:TIM3 Channel2(PD0).\r\n", __FUNCTION__);
+		
 		/* Enable TIM3 clock */
 		CLK_PeripheralClockConfig(CLK_Peripheral_TIM3, ENABLE);
 
@@ -57,6 +62,7 @@ int vkPWM_Init(vkPWM pwm)
 	}
 	else
 	{
+		printf("%s Failed!\r\n", __FUNCTION__);
 		return -1;
 	}
 	
@@ -73,7 +79,9 @@ int vkPWM_Init(vkPWM pwm)
 int vkPWM_Deinit(vkPWM pwm)
 {	
 	if(pwm == PWM1)
-	{
+	{		
+		printf("%s PWM1\r\n", __FUNCTION__);
+		
 		/* Disable TIM2 clock */
 		CLK_PeripheralClockConfig(CLK_Peripheral_TIM2, DISABLE);
 
@@ -82,6 +90,8 @@ int vkPWM_Deinit(vkPWM pwm)
 	}
 	else if(pwm == PWM2)
 	{
+		printf("%s PWM1\r\n", __FUNCTION__);
+		
 		/* Disable TIM3 clock */
 		CLK_PeripheralClockConfig(CLK_Peripheral_TIM3, ENABLE);
 
@@ -90,6 +100,7 @@ int vkPWM_Deinit(vkPWM pwm)
 	}
 	else
 	{
+		printf("%s Failed!\r\n", __FUNCTION__);
 		return -1;
 	}
 	
@@ -105,17 +116,17 @@ int vkPWM_Deinit(vkPWM pwm)
  ******************************************************************************/
 inline int vkPWMStart(vkPWM pwm, uint32_t period, uint8_t ration)
 {
-	if(pwm!=PWM1 && pwm!=PWM2)
+	if(pwm>PWMMAX)
 	{
+		printf("%s Failed\r\n", __FUNCTION__);
 		return -1;
 	}
 
 	if(pwm == PWM1)
-	{
+	{		
 		/* Disable TME2 PWM */
 		TIM2->BKR &= (uint8_t)(~TIM_BKR_MOE);//TIM2_CtrlPWMOutputs(DISABLE);		
 		TIM2->CR1 &= (uint8_t)(~TIM_CR1_CEN);//TIM2_Cmd(DISABLE);
-
 
 		/* 将计数器初值设为0 */
 		TIM2_SetCounter(0);
@@ -148,6 +159,11 @@ inline int vkPWMStart(vkPWM pwm, uint32_t period, uint8_t ration)
 		TIM3->BKR |= TIM_BKR_MOE;//TIM3_CtrlPWMOutputs(ENABLE);
 		TIM3->CR1 |= TIM_CR1_CEN;//TIM3_Cmd(ENABLE);
 	}
+	else
+	{
+		printf("%s Failed\r\n", __FUNCTION__);
+		return -1;
+	}
 
 	return 0;
 }
@@ -161,13 +177,14 @@ inline int vkPWMStart(vkPWM pwm, uint32_t period, uint8_t ration)
  ******************************************************************************/
 inline int vkPWMStop(vkPWM pwm)
 {
-	if(pwm!=PWM1 && pwm!=PWM2)
+	if(pwm>PWMMAX)
 	{
+		printf("%s Failed\r\n", __FUNCTION__);
 		return -1;
 	}
 
 	if(pwm == PWM1)
-	{
+	{	
 		/* Disable PWM output and timer */
 		TIM2->BKR &= (uint8_t)(~TIM_BKR_MOE);//TIM2_CtrlPWMOutputs(DISABLE);		
 		TIM2->CR1 &= (uint8_t)(~TIM_CR1_CEN);//TIM2_Cmd(DISABLE);
@@ -181,6 +198,11 @@ inline int vkPWMStop(vkPWM pwm)
 		TIM3->CR1 &= (uint8_t)(~TIM_CR1_CEN);//TIM3_Cmd(DISABLE);
 		
 		GPIO_ResetBits(GPIOD, GPIO_Pin_0);
+	}
+	else
+	{
+		printf("%s Failed\r\n", __FUNCTION__);
+		return -1;
 	}
 
 	return 0;

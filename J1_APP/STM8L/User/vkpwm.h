@@ -20,6 +20,7 @@ typedef enum pwm
 {
 	PWM1 = 0,	//PWM1
 	PWM2 = 1,	//PWM2
+	PWMMAX = 2,
 } vkPWM;
 
 int vkPWM_Init(vkPWM pwm);

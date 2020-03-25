@@ -54,10 +54,10 @@ typedef struct
 
 enum LEDMODE
 {
-	LED_MODE_CONNECTED = 0,	//已连接：绿灯常亮
-	LED_MODE_UNCONNECT,		//未连接：绿灯闪烁，1s
-	LED_MODE_CHARGING,		//正充电：红灯闪烁，1s
-	LED_MODE_LOWBATT,		//低电量：红灯闪烁，0.5s
+	LED_MODE_CONNECTED = 0,	//蓝牙已连接：绿灯常亮
+	LED_MODE_UNCONNECT,		//蓝牙未连接：绿灯闪烁，1s
+	LED_MODE_CHARGING,		//电池正充电：红灯闪烁，1s
+	LED_MODE_LOWBATT,		//电池低电量：红灯闪烁，0.5s
 	LED_MODE_POWERON,		//开机:	红绿灯常量	
 	LED_MODE_SHUTDOWN,		//关机：红绿灯灭
 	LED_MODE_RUNERROR,		//运行出错：红绿灯交替闪烁，0.5s
@@ -96,6 +96,8 @@ int vkLeds_Init();
 int vkLedsSet(uint8_t led, uint8_t state);
 
 int vkLedsStart();
+int vkLedsStop();
+
 int vkLedsSetMode(uint8_t mode, int16_t duration);
 int vkLedsGetMode(uint8_t mode);
 

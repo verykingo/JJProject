@@ -45,6 +45,8 @@ int vkSPI_Init(vkSPI spi)
 {
 	if(spi == SPI1)
 	{
+		printf("%s SPI1\r\n", __FUNCTION__);
+		
 	  	/* Enable SPI1 clock */
 	  	CLK_PeripheralClockConfig(CLK_Peripheral_SPI1, ENABLE);
 
@@ -66,11 +68,14 @@ int vkSPI_Init(vkSPI spi)
 		SPI_Cmd(SPI1, ENABLE);		   
 	}
 	else if(spi == SPI2)
-	{
+	{		
+		printf("%s SPI2\r\n", __FUNCTION__);
 		return -1;
 	}
 	else
 	{
+		printf("%s Failed!\r\n", __FUNCTION__);
+		
 		return -1;
 	}
 	
@@ -87,17 +92,22 @@ int vkSPI_Init(vkSPI spi)
 int vkSPI_Deinit(vkSPI spi)
 {
 	if(spi == SPI1)
-	{
+	{		
+		printf("%s SPI1\r\n", __FUNCTION__);
+		
 	  	/* Disable SPI1 clock */
 	  	CLK_PeripheralClockConfig(CLK_Peripheral_SPI1, DISABLE);		
 	}
 	else if(spi == SPI2)
 	{
+		printf("%s SPI2\r\n", __FUNCTION__);
+		
 	  	/* Disable SPI2 clock */
 	  	CLK_PeripheralClockConfig(CLK_Peripheral_SPI2, DISABLE);	
 	}
 	else
 	{
+		printf("%s Failed!\r\n", __FUNCTION__);
 		return -1;
 	}
 
@@ -149,7 +159,7 @@ inline uint8_t vkSPISendByte(vkSPI spi, uint8_t byte)
 
 	/* Loop while DR register in not emplty */
 	while ((SPI_GetFlagStatus(spi, SPI_FLAG_TXE) == RESET) && (--send_timeout))
-	{nop();}
+	{nop(); /* 防止被编译优化掉 */}
 
 	/* Send time out, Return 0x00 */
 	if(send_timeout == 0)
@@ -162,7 +172,7 @@ inline uint8_t vkSPISendByte(vkSPI spi, uint8_t byte)
 
 	/* Wait to receive a byte */
 	while ((SPI_GetFlagStatus(spi, SPI_FLAG_RXNE) == RESET) && (--recv_timeout))
-	{nop();}
+	{nop(); /* 防止被编译优化掉 */}
 
 	/* Recv time out, Return 0x00 */
 	if(recv_timeout == 0)
@@ -193,7 +203,7 @@ inline uint8_t vkSPIRecvByte(vkSPI spi)
 * 返回: 成功返回0，失败返回-1
 * 说明: 
 ******************************************************************************/
-inline int vkSPISend(vkSPI spi, uint8_t reg_addr, uint8_t length, uint8_t *data)
+int vkSPISend(vkSPI spi, uint8_t reg_addr, uint8_t length, uint8_t *data)
 {
 	 if(data == NULL || length == 0)
 	 {
@@ -233,7 +243,7 @@ inline int vkSPISend(vkSPI spi, uint8_t reg_addr, uint8_t length, uint8_t *data)
 * 返回: 成功返回0，失败返回-1
 * 说明: 
 ******************************************************************************/
-inline int vkSPIRecv(vkSPI spi, uint8_t reg_addr, uint8_t length, uint8_t *data)
+int vkSPIRecv(vkSPI spi, uint8_t reg_addr, uint8_t length, uint8_t *data)
 {
 	 if(data == NULL || length == 0)
 	 {

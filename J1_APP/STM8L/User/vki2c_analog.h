@@ -61,6 +61,7 @@ gpio_t 		rtl_gpio_i2c_sda;
 
 #elif USING_STM8L15X == 1u
 #include "stm8l15x.h"
+#include "vkrtclock.h"
 
 /* SCL&SDA引脚 */
 #define I2C_SCL_GPIO GPIOE
@@ -87,7 +88,7 @@ gpio_t 		rtl_gpio_i2c_sda;
 
 /* I2C微秒/毫秒延时 */
 #define I2C_DELAYUS(x)	nop();nop();nop();nop()
-#define I2C_DELAYMS(x)	vkTimerDelayMS(x)
+#define I2C_DELAYMS(x)	vkRtclockDlyHMSM(0,0,0,x)
 
 /* I2C临界区保护 */
 #define I2C_ENTER_CRITICAL()  __istate_t _istate = __get_interrupt_state(); __disable_interrupt()

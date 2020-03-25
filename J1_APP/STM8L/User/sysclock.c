@@ -20,7 +20,7 @@
  * 说明: 系统复位后，默认选择HSI=16/2=8MHz，所有外设时钟关闭
  ******************************************************************************/
 int SystemClock_Init(void)
-{
+{	
 	/* Deinitializes the CLK peripheral */
 	CLK_DeInit();
 
@@ -35,7 +35,7 @@ int SystemClock_Init(void)
 
 	/* Check the system clock source is HSI */
 	while (CLK_GetSYSCLKSource() != CLK_SYSCLKSource_HSI)
-	{nop();}
+	{nop(); /* 防止被编译优化掉 */}
 
 	/* 关闭时钟切换操作 */
 	CLK_SYSCLKSourceSwitchCmd(DISABLE);

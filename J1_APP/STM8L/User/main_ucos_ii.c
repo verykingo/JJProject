@@ -36,7 +36,7 @@
 #include "vkAT.h"
 #include "vkADC.h"
 #include "vkpluse.h"
-#include "vkRtclock.h"
+#include "vkpower.h"
 
 #if USE_UCOS_II == 1u
 #include "ucos_ii.h"
@@ -57,9 +57,15 @@
 #define MAX_QUEUE_BUF_SIZE		1		
 #define MAX_QUEUE_BUF_NUMS		1
 
+/* 循环队列 */
+vkQUEUE Queue;
+
+/* 队列数据存储区 */
+//uint8_t QueueBuffer[MAX_QUEUE_BUF_SIZE*MAX_QUEUE_BUF_NUMS] = {0};
+
 /* 串口3发送接收数据缓存 */
-//uint8_t COM3_TxBuffer[32] = {0};
-//uint8_t COM3_RxBuffer[32] = {0};
+//uint8_t COM3_TxBuffer[64] = {0};
+//uint8_t COM3_RxBuffer[64] = {0};
 
 
 #if USE_NO_RTOS == 1u
@@ -131,10 +137,10 @@ void Callback5(void * pdata)
 
 #elif USE_UCOS_II == 1u
 /* 定义任务堆栈大小 */
-#define  OS_IDLE_STK_SIZE                	40
-#define  OS_TASK_0_STK_SIZE                	40
-#define  OS_TASK_1_STK_SIZE                	40
-#define  OS_TASK_2_STK_SIZE                	40
+#define  OS_IDLE_STK_SIZE                	100
+#define  OS_TASK_0_STK_SIZE                	100
+#define  OS_TASK_1_STK_SIZE                	100
+#define  OS_TASK_2_STK_SIZE                	100
 
 /* 定义任务栈空间 */
 OS_STK	IdleStack[OS_IDLE_STK_SIZE];
@@ -195,10 +201,10 @@ void Task2(void * pdata)
 }
 #elif USE_ATOMTHREAD == 1u
 /* 定义任务堆栈大小 */
-#define  OS_IDLE_STK_SIZE                	100
-#define  OS_TASK_0_STK_SIZE                	100
-#define  OS_TASK_1_STK_SIZE                	100
-#define  OS_TASK_2_STK_SIZE                	100
+#define  OS_IDLE_STK_SIZE                	200
+#define  OS_TASK_0_STK_SIZE                	200
+#define  OS_TASK_1_STK_SIZE                	200
+#define  OS_TASK_2_STK_SIZE                	200
 
 /* 定义任务栈空间 */
 OS_STK	IdleStack[OS_IDLE_STK_SIZE];
@@ -333,30 +339,53 @@ void main(void)
 	/* System CLK Init */
 	SystemClock_Init();
 
-	/* RTC Init */
-	vkRtclock_Init();
-
 	/* Leds Init */
 	vkLeds_Init();
 
+	/* ADC Init */
+	vkADC_Init();
+	
 	//if(-1 == vkUsart_Init(COM3,115200,COM3_TxBuffer,(sizeof(COM3_TxBuffer)/sizeof(COM3_TxBuffer[0])),COM3_RxBuffer,(sizeof(COM3_RxBuffer)/sizeof(COM3_RxBuffer[0]))))
 	{
-	//	printf("failed!\r\n");
+		printf("failed!\r\n");
 	}
 	
+	/* TimeTick Init for softtimer tick*/
+	vkTimeTick_Init(TIME1);
+
 	/* TimeTick Init for RTOS 1ms/tick */
 	vkTimeTick_Init(TIME4);
+
+	/* TimeTick Init for pluse tick 优先级最高=3 */
+	vkTimeTick_Init(TIME5);
+	
+	/* 电极脉冲初始化 */
+	//vkPluse_Init();
+
+	/* 模块电源初始化 */
+	//vkPower_Init();
+	//vkPowerBleSet(1);
+	//vkPowerTlySet(1);
+	//vkPowerDJASet(1);
+	//vkPowerDJBSet(1);
+	
+	/* Create a queue buffer */
+	//vkQueueCreate(&Queue,QueueBuffer,MAX_QUEUE_BUF_SIZE,MAX_QUEUE_BUF_NUMS);
 
 	/* After Finish All Init, Enable Interrupt */
 	enableInterrupts();
 
-	//vkUsartSend(COM3 ,"Hello STM8L!\r\n", 14);
+	/* 测试，循环模式，持续1秒间隔1.5秒 */
+	//vkPluseSetMode(PLUSE0, PLUSE_MODE_CONTINUE);
+	//vkPluseSetExpt(PLUSE0, 20);
+	//vkPluseSetTime(PLUSE0, 2, 3);
+	//vkPluseStart(PLUSE0);
 
-	/* 延时10ms */
-	vkRtclockDlyHMSM(0,0,0,10);
+	vkUsartSend(COM3 ,"Hello STM8L!\r\n", 14);
+	vkTimerDelayMS(100);
 	
-	//vkAT_TerminalStart(COM3);
-	//vkAT_CommunicationStart(COM3);
+	vkAT_TerminalStart(COM3);
+	vkAT_CommunicationStart(COM3);
 	
 #if USE_NO_RTOS == 1u
 #if 1

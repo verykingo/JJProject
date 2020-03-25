@@ -14,6 +14,7 @@
 
 /* 包含自定义头文件 */
 #include "vkAT.h"
+#include "vkusart.h"
 
 /* 自定义新类型 */
 
@@ -238,7 +239,7 @@ void Terminal_Callback(void *pdata)
 	uint8_t data[TERMINAL_BUFFER_SIZE];
 
 	/* 获取串口终端数据 */
-	int ret = vkUsart_Recv(ATTerminal.term_com, data, TERMINAL_BUFFER_SIZE);	
+	int ret = vkUsartRecv(ATTerminal.term_com, data, TERMINAL_BUFFER_SIZE);	
 
 	if(ret > 0)
 	{
@@ -253,7 +254,7 @@ void Terminal_Callback(void *pdata)
 				ATTerminal.term_count += 2;
 
 				/* 打印提示符 */
-				vkUsart_Send(ATTerminal.term_com ,"\r\n#", 3);
+				vkUsartSend(ATTerminal.term_com ,"\r\n#", 3);
 				
 				/* 解析AT命令 */
 				vkAT_Parser((const char *)ATTerminal.term_buffer, ATTerminal.term_cursor);
@@ -266,7 +267,7 @@ void Terminal_Callback(void *pdata)
 			{
 				if(ATTerminal.term_count > 0)
 				{
-				 	vkUsart_Send(ATTerminal.term_com ,data, ret);
+				 	vkUsartSend(ATTerminal.term_com ,data, ret);
 					ATTerminal.term_buffer[--ATTerminal.term_cursor]='\0';
 					ATTerminal.term_count -= 1;
 				}
@@ -275,7 +276,7 @@ void Terminal_Callback(void *pdata)
 			{				
 				if(ATTerminal.term_cursor+ret <= (TERMINAL_BUFFER_SIZE-2))
 				{
-					vkUsart_Send(ATTerminal.term_com ,data, ret);					
+					vkUsartSend(ATTerminal.term_com ,data, ret);					
 					memcpy(ATTerminal.term_buffer+ATTerminal.term_cursor, data, ret);
 					ATTerminal.term_count += ret;
 					ATTerminal.term_cursor += ret;					
@@ -289,7 +290,7 @@ void Terminal_Callback(void *pdata)
 			{
 				if(ATTerminal.term_cursor+ret<=(TERMINAL_BUFFER_SIZE-2))
 				{
-					vkUsart_Send(ATTerminal.term_com ,data, ret);
+					vkUsartSend(ATTerminal.term_com ,data, ret);
 					memcpy(ATTerminal.term_buffer+ATTerminal.term_cursor, data, ret);
 					ATTerminal.term_count += ret;
 					ATTerminal.term_cursor += ret;
@@ -324,7 +325,7 @@ int vkAT_TerminalStart(vkCOM com)
 	ATTerminal.term_timer.cb_ticks	= vkMS_TO_TICKS(10);
 
 	/* 显示提示符“#” */
-	vkUsart_Send(ATTerminal.term_com ,"\r\n#", 3);
+	vkUsartSend(ATTerminal.term_com ,"\r\n#", 3);
 
 	/* 启动软定时器 */
 	if(vkTIMER_OK != vkTimerInsert(&ATTerminal.term_timer))
@@ -361,7 +362,7 @@ int vkAT_TerminalPrint(uint8_t *buf, int size)
 	memcpy(data, buf, len);
 	memcpy(data+len, "\r\n#", 3);
 	len += 3;
-	ret = vkUsart_Send(ATTerminal.term_com , data, len);
+	ret = vkUsartSend(ATTerminal.term_com , data, len);
 
 	return ret;
 }
@@ -372,7 +373,7 @@ void Communication_Callback(void *pdata)
 	memset(ATCommunication.comm_buffer, 0, COMMUNICATION_BUFFER_SIZE);
 	
 	/* 获取串口终端数据 */
-	int ret = vkUsart_Recv(ATCommunication.comm_com, ATCommunication.comm_buffer, COMMUNICATION_BUFFER_SIZE);
+	int ret = vkUsartRecv(ATCommunication.comm_com, ATCommunication.comm_buffer, COMMUNICATION_BUFFER_SIZE);
 
 	if(ret > 0)
 	{
@@ -448,7 +449,7 @@ void AT_Test(void *data, int len)
 
 	if(ATCommunication.comm_enable == 1)
 	{
-		vkUsart_Send(ATCommunication.comm_com ,"OK\r\n", 4);
+		vkUsartSend(ATCommunication.comm_com ,"OK\r\n", 4);
 	}
 	
 	return;
@@ -462,7 +463,7 @@ void AT_Reset(void *data, int len)
 	}
 	if(ATCommunication.comm_enable == 1)
 	{
-		vkUsart_Send(ATCommunication.comm_com ,"OK\r\n", 4);
+		vkUsartSend(ATCommunication.comm_com ,"OK\r\n", 4);
 	}	
 	
 	return;

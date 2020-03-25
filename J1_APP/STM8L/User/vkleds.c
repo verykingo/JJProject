@@ -60,8 +60,11 @@ static vkLEDS gLeds = {
 		{LED_MODE_CONNECTED,0},
 		{LED_MODE_POWERON,	0}
 	},
-	.led_mode = 0
+	.led_mode = 0,
+	.led_index = 0,
 };
+
+void vkLeds_Timer_Callback(void *pdata);
 
 /*******************************************************************************
  * 名称: vkLeds_Init
@@ -72,6 +75,8 @@ static vkLEDS gLeds = {
  ******************************************************************************/
 int vkLeds_Init()
 {
+	printf("%s LED0(PE0), LED1(PE1)\r\n", __FUNCTION__);
+
 	/* GPIO引脚初始化 */
 	for(int i=0; i<LEDMAX; i++)
 	{
@@ -91,7 +96,8 @@ int vkLeds_Init()
 int vkLedsSet(uint8_t led, uint8_t state)
 {
 	if(led >=LEDMAX)
-	{
+	{		
+		printf("%s Failed!!!\r\n", __FUNCTION__);
 		return -1;
 	}
 	
@@ -161,8 +167,7 @@ int vkLedsSetMode(uint8_t mode, int16_t duration)
 	if(duration < -1)
 	{
 		return -1;
-	}
-	
+	}	
 
 	/* 优先级表 */
 	for(i=0; i<LED_MODE_COUNT; i++)
@@ -274,7 +279,11 @@ int vkLedsSetMode(uint8_t mode, int16_t duration)
 	vkLedsSetState(led_stat);
 
 	/* 重启定时器 */
-	gLeds.led_timer.cb_ticks = vkMS_TO_TICKS(led_time);
+	gLeds.led_timer.timer_name 	= (void *)&gLeds.led_timer;
+	gLeds.led_timer.cb_type		= CB_FUNC_TYPE_TIMER;
+	gLeds.led_timer.cb_func 	= vkLeds_Timer_Callback;
+	gLeds.led_timer.cb_data 	= NULL;
+	gLeds.led_timer.cb_ticks 	= vkMS_TO_TICKS(led_time);
 	vkTimerInsert(&gLeds.led_timer);
 	
 	return ret;
@@ -366,6 +375,7 @@ int vkLedsStart()
 
 	/* 设置定时器回调，1000ms执行一次回调函数 */
 	gLeds.led_timer.timer_name = (void *)&gLeds.led_timer;
+	gLeds.led_timer.cb_type		= CB_FUNC_TYPE_TIMER;
 	gLeds.led_timer.cb_func 	= vkLeds_Timer_Callback;
 	gLeds.led_timer.cb_data 	= NULL;
 	gLeds.led_timer.cb_ticks	= vkMS_TO_TICKS(led_time);
@@ -373,10 +383,27 @@ int vkLedsStart()
 	/* 启动软定时器 */	
 	if(vkTIMER_OK != vkTimerInsert(&gLeds.led_timer))
 	{
+		printf("%s Failed!!!, Error=led_timer\r\n", __FUNCTION__);
 		return -1;
 	}
+	
+	printf("Start Task: LedsManger\r\n");
 
 	return 0;	
+}
+
+int vkLedsStop()
+{
+	/* 停止软定时器 */
+	vkTimerCancel(&gLeds.led_timer);
+
+	/* LED灭灯 */
+	vkLedsSet(LED0, 0);
+	vkLedsSet(LED1, 0);
+
+	printf("Stop Task: LedsManger\r\n");
+
+	return 0;
 }
 
 /* 检查获取最高优先级模式 */

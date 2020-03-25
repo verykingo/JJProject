@@ -1,3 +1,4 @@
+
 /******************************************************************************
  * 文件  ：vktimetick.c
  * 描述    ：STM8L节拍定时器
@@ -8,6 +9,7 @@
 
 /* 包含系统头文件 */
 #include "stm8l15x.h"
+#include <stdio.h>
 
 /* 包含自定义头文件 */
 #include "vktimetick.h"
@@ -27,17 +29,19 @@
  ******************************************************************************/
 int vkTimeTick_Init(vkTIME TIM)
 {
-	/* 定时器1: 1ms/tick */
+	/* 软定时器-定时器1: 10ms/tick */
 	if(TIM == TIME1)	
 	{
+		printf("%s Set TIM1 [10ms]\r\n", __FUNCTION__);
+		
 		/* Enable TIM1 CLK*/
 		CLK_PeripheralClockConfig(CLK_Peripheral_TIM1, ENABLE); 
 
 	    /* Reset TIM1 */
 	    TIM1_DeInit();
 
-	    /* Configure a 1ms tick, 16MHz/(15+1)=1MHz, 1s/MHz=1us */
-		TIM1_TimeBaseInit(15, TIM1_CounterMode_Up, 999, 0);
+	    /* Configure a 10ms tick, 16MHz/(15+1)=1MHz, 1s/MHz=1us */
+		TIM1_TimeBaseInit(15, TIM1_CounterMode_Up, 9999, 0);
 		TIM1_SetCounter(0);					/* 将计数器初值设为0 */
 		TIM1_ARRPreloadConfig(ENABLE);		/* 预装载使能 */
 		ITC_SetSoftwarePriority(TIM1_UPD_OVF_TRG_IRQn, ITC_PriorityLevel_1);
@@ -51,6 +55,8 @@ int vkTimeTick_Init(vkTIME TIM)
 	/* 定时器2: 10ms/tick    */
 	else if(TIM == TIME2)
 	{
+		printf("%s Set TIM2 [10ms]\r\n", __FUNCTION__);
+		
 		/* Enable TIM2 CLK*/
 		CLK_PeripheralClockConfig(CLK_Peripheral_TIM2, ENABLE); 
 
@@ -72,6 +78,8 @@ int vkTimeTick_Init(vkTIME TIM)
 	/* 定时器3: 10ms/tick    */
 	else if(TIM == TIME3)
 	{
+		printf("%s Set TIM3 [10ms]\r\n", __FUNCTION__);
+		
 		/* Enable TIM3 CLK*/
 		CLK_PeripheralClockConfig(CLK_Peripheral_TIM3, ENABLE); 
 
@@ -93,6 +101,7 @@ int vkTimeTick_Init(vkTIME TIM)
 	/* 定时器4: 1ms/tick    */
 	else if(TIM == TIME4)
 	{
+	#if 0
 		/* Enable TIM4 CLK*/
 		CLK_PeripheralClockConfig(CLK_Peripheral_TIM4, ENABLE); 
 
@@ -110,11 +119,14 @@ int vkTimeTick_Init(vkTIME TIM)
 		TIM4_ITConfig(TIM4_IT_Update, ENABLE);
 		
 		/* Enable TIM4 */
-		//TIM4_Cmd(ENABLE);		
+		//TIM4_Cmd(ENABLE);	
+	#endif
 	}
 	/* 定时器5: 50us/tick    */
 	else if(TIM == TIME5)
 	{
+		printf("%s Set TIM5 [50us]\r\n", __FUNCTION__);
+		
 		/* Enable TIM5 CLK*/
 		CLK_PeripheralClockConfig(CLK_Peripheral_TIM5, ENABLE); 
 
@@ -134,7 +146,9 @@ int vkTimeTick_Init(vkTIME TIM)
 		//TIM5_Cmd(ENABLE);		
 	}
 	else
-	{
+	{		
+		printf("%s Failed!\r\n", __FUNCTION__);
+				
 		return -1;
 	}
 
@@ -206,7 +220,8 @@ int vkTimeTick_Deinit(vkTIME TIM)
 		CLK_PeripheralClockConfig(CLK_Peripheral_TIM5, DISABLE); 
 	}
 	else
-	{
+	{		
+		printf("%s Failed!\r\n", __FUNCTION__);
 		return -1;
 	}
 
@@ -249,6 +264,7 @@ int vkTimeTickStart(vkTIME TIM)
 	}
 	else
 	{
+		printf("%s Failed!\r\n", __FUNCTION__);
 		return -1;
 	}
 
@@ -291,6 +307,7 @@ int vkTimeTickStop(vkTIME TIM)
 	}
 	else
 	{
+		printf("%s Failed!\r\n", __FUNCTION__);
 		return -1;
 	}
 

@@ -8,6 +8,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "vkqueue.h"
 
@@ -34,11 +35,15 @@ int8_t vkQueueCreate (vkQUEUE *qptr, uint8_t *buff_ptr, uint8_t unit_size, uint8
     {
         /* Bad pointers */
         status = vkQUEUE_ERR_PARAM;
+
+		printf("%s param error.\r\n", __FUNCTION__);
     }
     else if ((unit_size == 0) || (max_num_msgs == 0))
     {
         /* Bad values */
         status = vkQUEUE_ERR_PARAM;
+
+		printf("%s param error.\r\n", __FUNCTION__);
     }	
    	else
     {
@@ -76,6 +81,8 @@ int8_t vkQueueDestory(vkQUEUE *qptr)
 	{
 		/* Bad pointer */
 		status = vkQUEUE_ERR_PARAM;
+
+		printf("%s param error.\r\n", __FUNCTION__);
 	}
 	else
 	{
@@ -121,13 +128,16 @@ int8_t vkQueueGet (vkQUEUE *qptr, uint32_t timeout, uint8_t *msgptr)
     {
         /* Bad pointer */
         status = vkQUEUE_ERR_PARAM;
+
+		printf("%s param error.\r\n", __FUNCTION__);
     }
     else
     {
     	if(timeout)	//超时时间非0
     	{
     		/* 等待队列有数据或超时时间到 */
-		    while((!qptr->num_msgs_stored) && (--timeout));
+		    while((!qptr->num_msgs_stored) && (--timeout))
+			{nop(); /* 防止被编译优化掉 */}
 			
 			/* Protect access to the queue object and OS queues */
 			CRITICAL_START ();
@@ -188,13 +198,16 @@ int8_t vkQueuePut(vkQUEUE *qptr, uint32_t timeout, uint8_t *msgptr)
 	{
 		/* Bad pointer */
 		status = vkQUEUE_ERR_PARAM;
+
+		printf("%s param error.\r\n", __FUNCTION__);
 	}
 	else
 	{
 		if(timeout)	//超时时间非0
 		{
 			/* 等待队列有空间或超时时间到 */
-			while((qptr->num_msgs_stored == qptr->max_num_msgs) && (--timeout));
+			while((qptr->num_msgs_stored == qptr->max_num_msgs) && (--timeout))
+			{nop(); /* 防止被编译优化掉 */}
 
 			/* Protect access to the queue object and OS queues */
 			CRITICAL_START ();
@@ -254,6 +267,8 @@ int8_t vkQueueClear (vkQUEUE *qptr)
 	{
 		/* Bad pointer */
 		status = vkQUEUE_ERR_PARAM;
+
+		printf("%s param error.\r\n", __FUNCTION__);
 	}
 	else
 	{
@@ -301,7 +316,7 @@ int8_t vkQueueEmpty (vkQUEUE *qptr)
 /**
  *  queue_remove 将数据移出队列
  */
-static int8_t queue_remove (vkQUEUE *qptr, uint8_t* msgptr)
+inline int8_t queue_remove (vkQUEUE *qptr, uint8_t* msgptr)
 {
     int8_t status = vkQUEUE_OK;
 	
@@ -310,6 +325,8 @@ static int8_t queue_remove (vkQUEUE *qptr, uint8_t* msgptr)
     {
         /* Bad pointer */
         status = vkQUEUE_ERR_PARAM;
+
+		printf("%s param error.\r\n", __FUNCTION__);
     }
     else
     {
@@ -329,7 +346,7 @@ static int8_t queue_remove (vkQUEUE *qptr, uint8_t* msgptr)
 /**
  *  queue_insert 将数据插入队列 
  */
-static int8_t queue_insert (vkQUEUE *qptr, uint8_t* msgptr)
+inline int8_t queue_insert (vkQUEUE *qptr, uint8_t* msgptr)
 {
     int8_t status = vkQUEUE_OK;
 
@@ -338,6 +355,8 @@ static int8_t queue_insert (vkQUEUE *qptr, uint8_t* msgptr)
     {
         /* Bad pointer */
         status = vkQUEUE_ERR_PARAM;
+
+		printf("%s param error.\r\n", __FUNCTION__);
     }
     else
     {

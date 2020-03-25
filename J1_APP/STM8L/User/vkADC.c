@@ -7,6 +7,7 @@
 *******************************************************************************/
 
 /* 包含系统头文件 */
+#include <stdio.h>
 
 /* 包含自定义头文件 */
 #include "vkADC.h"
@@ -26,6 +27,8 @@
  ******************************************************************************/
 int vkADC_Init(void)
 {
+	printf("%s Set ADC1 96Cycles\r\n", __FUNCTION__);
+	
 	/* Enable ADC CLK */
 	CLK_PeripheralClockConfig(CLK_Peripheral_ADC1, ENABLE);
 
@@ -117,27 +120,27 @@ inline uint16_t vkADCRead(ADC_Channel_TypeDef channel)
 	uint16_t value;
 	
 #if 1/* 减少函数调用花费的时间 */
-	/* Enable ADC1 Channel used for IDD measurement */
+	/* 1us = Enable ADC1 Channel used for IDD measurement */
 	/* ADC_ChannelCmd(ADC1, ADC_Channel, ENABLE) */
 	ADC1->SQR[(uint8_t)((uint16_t)channel >> 8)] |= (uint8_t)(channel);
 
-	/* Start ADC1 Conversion using Software trigger*/
+	/* 240ns = Start ADC1 Conversion using Software trigger*/
 	/* ADC_SoftwareStartConv(ADC1); */
 	ADC1->CR1 |= ADC_CR1_START;
 
-	/* Wait until ADC Channel 1 end of conversion */
+	/* 7us = Wait until ADC Channel end of conversion */
 	/* while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET) */
-	while (!(ADC1->SR & ADC_FLAG_EOC));
-	
-	/* Read ADC Convertion Result */
+	while (!(ADC1->SR & ADC_FLAG_EOC))
+	{nop(); /* 防止被编译优化掉 */}
+
+	/* 400ns = Read ADC Convertion Result */
 	/* ADC_GetConversionValue(ADC1) */
 	value = (uint16_t)(ADC1->DRH);
 	value = (uint16_t)((value << 8) | (uint16_t)(ADC1->DRL));
-	
-	/* Disable ADC1 Channel used for IDD measurement */
+
+	/* 1.2us = Disable ADC1 Channel used for IDD measurement */
 	/* ADC_ChannelCmd(ADC1, ADC_Channel, DISABLE) */
 	ADC1->SQR[(uint8_t)((uint16_t)channel >> 8)] &= (uint8_t)(~(uint8_t)(channel));
-	
 #else
 	/* Enable ADC1 Channel used for IDD measurement */
 	ADC_ChannelCmd(ADC1, channel, ENABLE);
@@ -146,7 +149,8 @@ inline uint16_t vkADCRead(ADC_Channel_TypeDef channel)
 	ADC_SoftwareStartConv(ADC1);	//clear by hardware
 
 	/* Wait until ADC Channel 1 end of conversion */
-	while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
+	while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET)
+	{nop(); /* 防止被编译优化掉 */}
 	
 	/* Read ADC Convertion Result */
 	value = ADC_GetConversionValue(ADC1);

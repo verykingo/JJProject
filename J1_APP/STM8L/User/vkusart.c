@@ -1,6 +1,7 @@
 /******************************************************************************
  * 文件  ：vkusart.c
- * 描述    ：STM8L串口，支持可配置缓存
+ * 描述    ：STM8L串口，支持发送接收缓存，支持查询方式、中断方式、DMA方式发送接收
+           数据。支持系统printf函数。
  * 平台    ：STM8L
  * 时间  ：2019-04-01
 
@@ -24,8 +25,8 @@
 static uint8_t Usart1_TxBuffer[USART1_BUFFER_TX_SIZE] = {0};
 static uint8_t Usart1_RxBuffer[USART1_BUFFER_RX_SIZE] = {0};
 
-static uint8_t Usart2_TxBuffer[USART2_BUFFER_SIZE] = {0};
-static uint8_t Usart2_RxBuffer[USART2_BUFFER_SIZE] = {0};
+//static uint8_t Usart2_TxBuffer[USART2_BUFFER_SIZE] = {0};
+//static uint8_t Usart2_RxBuffer[USART2_BUFFER_SIZE] = {0};
 
 static uint8_t Usart3_TxBuffer[USART3_BUFFER_SIZE] = {0};
 static uint8_t Usart3_RxBuffer[USART3_BUFFER_SIZE] = {0};
@@ -33,17 +34,17 @@ static uint8_t Usart3_RxBuffer[USART3_BUFFER_SIZE] = {0};
 static vkUSART gUsart[3] = {0x00};
 
 /* 标准库printf串口，调用putchar/getchar函数，串口无中断和DMA，使用查询方式 */
-static USART_TypeDef* Usart_Printf = NULL;
+static USART_TypeDef* Usart_Printf = USART3;
 
 /*******************************************************************************
  * 名称: vkUsart_Init
  * 功能: USART初始化操作
- * 形参: 串口USARTx, 波特率BaudRate
+ * 形参: 串口com, 波特率baudrate
  * 返回: 成功0，失败-1
  * 说明: 1.支持波特率9600/115200/38400；
          2.支持中断方式和DMA方式发送和接收数据；
  ******************************************************************************/
-int vkUsart_Init(vkCOM com, uint32_t baudrate, uint8_t* tx_buffer, uint8_t tx_bufsize, uint8_t* rx_buffer, uint8_t rx_bufsize)
+int vkUsart_Init(vkCOM com, uint32_t baudrate, uint8_t* tx_fbuf, uint8_t tx_fsize, uint8_t* rx_fbuf, uint8_t rx_fsize)
 {
 	/* USART configured as follow:
 	- BaudRate = 115200 baud  
@@ -55,36 +56,46 @@ int vkUsart_Init(vkCOM com, uint32_t baudrate, uint8_t* tx_buffer, uint8_t tx_bu
 	*/
 
 	/* USART check */
-	if(com!=COM1 && com!=COM2 && com!=COM3)
+	if(com>=COMMAX)
 	{
-		return -1;
+		printf("%s Param Error.\r\n", __FUNCTION__);
+		
+		return -1;		
 	}	
 	
 	/* BaudRate check */
 	if(baudrate!=9600 && baudrate!=115200 && baudrate!=230400)
-	{
+	{	
+		printf("%s Baudrate Error.\r\n", __FUNCTION__);
+		
 		return -1;
 	}
 
-	/* TX/RX Buffer Check */
-	if(tx_buffer==NULL || rx_buffer==NULL || tx_bufsize==0 || rx_bufsize==0)
-	{
+	/* TX/RX frame Check */
+	if(tx_fbuf==NULL || rx_fbuf==NULL || tx_fsize==0 || rx_fsize==0)
+	{	
+		printf("%s Frame Error.\r\n", __FUNCTION__);
+		
 		return -1;
 	}
-	if(tx_bufsize > USART_BUFFER_BLOCK_MAX_SIZE || rx_bufsize > USART_BUFFER_BLOCK_MAX_SIZE)
+	if(tx_fsize > USARTX_UFRAME_SIZE || rx_fsize > USARTX_UFRAME_SIZE)
 	{
+		printf("%s Framesize Error.\r\n", __FUNCTION__);
+		
 		return -1;
 	}
 
 	if(com == COM1)
-	{
+	{		
+		printf("%s COM%d Using Tx[PC3] Rx[PC2]\r\n", __FUNCTION__,(int)com);
+		
 		gUsart[com].usart = USART1;
 		
 		/* Enable USART clock */
 		CLK_PeripheralClockConfig(CLK_Peripheral_USART1, ENABLE);
 
-		/* USART1 Tx- Rx (PC3- PC2) remapping to (PA2- PA3) */
-		#if 1
+		/* 48引脚 USART1 Tx- Rx (PC3- PC2) remapping to (PA2- PA3) */
+		#if 0
 		/* GPIO重映射 */
 		//SYSCFG_REMAPDeInit();
 		SYSCFG_REMAPPinConfig(REMAP_Pin_USART1TxRxPortA, ENABLE);
@@ -98,8 +109,8 @@ int vkUsart_Init(vkCOM com, uint32_t baudrate, uint8_t* tx_buffer, uint8_t tx_bu
 		GPIO_ExternalPullUpConfig(GPIOA, GPIO_Pin_3, ENABLE);
 		#endif
 
-		/* USART1 Tx- Rx (PC3- PC2) */
-		#if 0
+		/* 64引脚 USART1 Tx- Rx (PC3- PC2) */
+		#if 1
 		/* Configure USART Tx pin output*/
 		GPIO_Init(GPIOC, GPIO_Pin_3, GPIO_Mode_Out_PP_High_Fast);
 		/* Configure USART Rx pin input*/
@@ -136,14 +147,14 @@ int vkUsart_Init(vkCOM com, uint32_t baudrate, uint8_t* tx_buffer, uint8_t tx_bu
 		gUsart[com].tx_buffer.buffer = Usart1_TxBuffer;
 		gUsart[com].rx_buffer.buffer = Usart1_RxBuffer;
 
-		gUsart[com].tx_buffer.block_size = tx_bufsize;
-		gUsart[com].rx_buffer.block_size = rx_bufsize;
+		gUsart[com].tx_buffer.frame_size = tx_fsize;
+		gUsart[com].rx_buffer.frame_size = rx_fsize;
 
-		gUsart[com].tx_buffer.block_nums = (USART1_BUFFER_TX_SIZE/tx_bufsize<255)?(USART1_BUFFER_TX_SIZE/tx_bufsize):255;
-		gUsart[com].rx_buffer.block_nums = (USART1_BUFFER_RX_SIZE/rx_bufsize<255)?(USART1_BUFFER_RX_SIZE/rx_bufsize):255;
+		gUsart[com].tx_buffer.frame_nums = (USART1_BUFFER_TX_SIZE/tx_fsize<255)?(USART1_BUFFER_TX_SIZE/tx_fsize):255;
+		gUsart[com].rx_buffer.frame_nums = (USART1_BUFFER_RX_SIZE/rx_fsize<255)?(USART1_BUFFER_RX_SIZE/rx_fsize):255;
 
-		gUsart[com].tx_buffer.block_stored = 0;
-		gUsart[com].rx_buffer.block_stored = 0;
+		gUsart[com].tx_buffer.frame_stored = 0;
+		gUsart[com].rx_buffer.frame_stored = 0;
 
 		gUsart[com].tx_buffer.index_insert = 0;
 		gUsart[com].rx_buffer.index_insert = 0;
@@ -153,6 +164,9 @@ int vkUsart_Init(vkCOM com, uint32_t baudrate, uint8_t* tx_buffer, uint8_t tx_bu
 	}
 	else if(com == COM2)
 	{
+	#if 0		
+		printf("%s COM%d Using Tx[PE4] Rx[PE3]\r\n", __FUNCTION__,(int)com);
+
 		gUsart[com].usart = USART2;
 		
 		/* Enable USART clock */
@@ -179,27 +193,31 @@ int vkUsart_Init(vkCOM com, uint32_t baudrate, uint8_t* tx_buffer, uint8_t tx_bu
 		gUsart[com].tx_buffer.buffer = Usart2_TxBuffer;
 		gUsart[com].rx_buffer.buffer = Usart2_RxBuffer;
 
-		gUsart[com].tx_buffer.block_size = tx_bufsize;
-		gUsart[com].rx_buffer.block_size = rx_bufsize;
+		gUsart[com].tx_buffer.frame_size = tx_bufsize;
+		gUsart[com].rx_buffer.frame_size = rx_bufsize;
 
-		gUsart[com].tx_buffer.block_nums = (USART2_BUFFER_SIZE/tx_bufsize<255)?(USART2_BUFFER_SIZE/tx_bufsize):255;
-		gUsart[com].rx_buffer.block_nums = (USART2_BUFFER_SIZE/rx_bufsize<255)?(USART2_BUFFER_SIZE/rx_bufsize):255;
+		gUsart[com].tx_buffer.frame_nums = (USART2_BUFFER_SIZE/tx_bufsize<255)?(USART2_BUFFER_SIZE/tx_bufsize):255;
+		gUsart[com].rx_buffer.frame_nums = (USART2_BUFFER_SIZE/rx_bufsize<255)?(USART2_BUFFER_SIZE/rx_bufsize):255;
 
-		gUsart[com].tx_buffer.block_stored = 0;
-		gUsart[com].rx_buffer.block_stored = 0;
+		gUsart[com].tx_buffer.frame_stored = 0;
+		gUsart[com].rx_buffer.frame_stored = 0;
 
 		gUsart[com].tx_buffer.index_insert = 0;
 		gUsart[com].rx_buffer.index_insert = 0;
 		
 		gUsart[com].tx_buffer.index_delete = 0;
 		gUsart[com].rx_buffer.index_delete = 0;
+
+	#endif
 	}
 	else if(com == COM3)
 	{
+		printf("%s COM%d Using Tx[PG1] Rx[PG0]\r\n", __FUNCTION__,(int)com);
+	
 		gUsart[com].usart = USART3;
 
-		/* USART3 Tx- Rx (PE6- PE7) */
-		
+		/* 48引脚 USART3 Tx- Rx (PE6- PE7) */
+		#if 0
 		/* Enable USART clock */
 		CLK_PeripheralClockConfig(CLK_Peripheral_USART3, ENABLE);
 
@@ -212,10 +230,26 @@ int vkUsart_Init(vkCOM com, uint32_t baudrate, uint8_t* tx_buffer, uint8_t tx_bu
 		/* 是否使用内部上拉电阻 */
 		GPIO_ExternalPullUpConfig(GPIOE, GPIO_Pin_6, ENABLE);
 		GPIO_ExternalPullUpConfig(GPIOE, GPIO_Pin_7, ENABLE);
+		#endif
 
+		/* 64引脚 USART3 Tx- Rx (PG1- PG0) */
+		#if 1
+		/* Enable USART clock */
+		CLK_PeripheralClockConfig(CLK_Peripheral_USART3, ENABLE);
+
+		/* Configure USART Tx pin output*/
+		GPIO_Init(GPIOG, GPIO_Pin_1, GPIO_Mode_Out_PP_High_Fast);
+
+		/* Configure USART Rx pin input*/
+		GPIO_Init(GPIOG, GPIO_Pin_0, GPIO_Mode_In_PU_No_IT);	
+
+		/* 是否使用内部上拉电阻 */
+		GPIO_ExternalPullUpConfig(GPIOG, GPIO_Pin_1, ENABLE);
+		GPIO_ExternalPullUpConfig(GPIOG, GPIO_Pin_0, ENABLE);
+		#endif		
 		/* Configure Interupt Software Priority */
-		ITC_SetSoftwarePriority(TIM3_UPD_OVF_TRG_BRK_USART3_TX_IRQn, ITC_PriorityLevel_2);
-		ITC_SetSoftwarePriority(TIM3_CC_USART3_RX_IRQn, ITC_PriorityLevel_2);
+		//ITC_SetSoftwarePriority(TIM3_UPD_OVF_TRG_BRK_USART3_TX_IRQn, ITC_PriorityLevel_2);
+		//ITC_SetSoftwarePriority(TIM3_CC_USART3_RX_IRQn, ITC_PriorityLevel_2);
 		
 		gUsart[com].tx_frame = 0;
 		gUsart[com].tx_buffer.locked = 0;
@@ -224,14 +258,14 @@ int vkUsart_Init(vkCOM com, uint32_t baudrate, uint8_t* tx_buffer, uint8_t tx_bu
 		gUsart[com].tx_buffer.buffer = Usart3_TxBuffer;
 		gUsart[com].rx_buffer.buffer = Usart3_RxBuffer;
 
-		gUsart[com].tx_buffer.block_size = tx_bufsize;
-		gUsart[com].rx_buffer.block_size = rx_bufsize;
+		gUsart[com].tx_buffer.frame_size = tx_fsize;
+		gUsart[com].rx_buffer.frame_size = rx_fsize;
 
-		gUsart[com].tx_buffer.block_nums = (USART3_BUFFER_SIZE/tx_bufsize<255)?(USART3_BUFFER_SIZE/tx_bufsize):255;
-		gUsart[com].rx_buffer.block_nums = (USART3_BUFFER_SIZE/rx_bufsize<255)?(USART3_BUFFER_SIZE/rx_bufsize):255;
+		gUsart[com].tx_buffer.frame_nums = (USART3_BUFFER_SIZE/tx_fsize<255)?(USART3_BUFFER_SIZE/tx_fsize):255;
+		gUsart[com].rx_buffer.frame_nums = (USART3_BUFFER_SIZE/rx_fsize<255)?(USART3_BUFFER_SIZE/rx_fsize):255;
 
-		gUsart[com].tx_buffer.block_stored = 0;
-		gUsart[com].rx_buffer.block_stored = 0;
+		gUsart[com].tx_buffer.frame_stored = 0;
+		gUsart[com].rx_buffer.frame_stored = 0;
 
 		gUsart[com].tx_buffer.index_insert = 0;
 		gUsart[com].rx_buffer.index_insert = 0;
@@ -240,7 +274,8 @@ int vkUsart_Init(vkCOM com, uint32_t baudrate, uint8_t* tx_buffer, uint8_t tx_bu
 		gUsart[com].rx_buffer.index_delete = 0;
 	}
 	else
-	{
+	{		
+		printf("%s COM%d Failed!\r\n", __FUNCTION__,(int)com);
 		return -1;
 	}
 
@@ -255,7 +290,9 @@ int vkUsart_Init(vkCOM com, uint32_t baudrate, uint8_t* tx_buffer, uint8_t tx_bu
 
 	/* 如果串口非标准库函数prinft串口，配置中断方式 */
 	if(gUsart[com].usart != Usart_Printf)
-	{
+	{		
+		printf("%s COM%d Using INT Mode\r\n", __FUNCTION__,(int)com);
+		
 	  	/* Enable the USART Receive interrupt: this interrupt is generated 
 	  	   when the USART receive data register is not empty */
 	 	USART_ITConfig(gUsart[com].usart, USART_IT_RXNE, ENABLE);
@@ -269,15 +306,19 @@ int vkUsart_Init(vkCOM com, uint32_t baudrate, uint8_t* tx_buffer, uint8_t tx_bu
 		//USART_ClearITPendingBit(gUsart[com].usart, USART_IT_IDLE);
 	  	USART_ITConfig(gUsart[com].usart, USART_IT_IDLE, ENABLE);	
 	}
+	else
+	{		
+		printf("%s COM%d Using BaudRate %d00, as Default printf()\r\n", __FUNCTION__,(int)com,(int)(baudrate/100));
+	}
 	
 	/* Enable USART */
 	USART_Cmd(gUsart[com].usart, ENABLE);
 
 	/* Set Zero */
-	gUsart[com].tx_data = tx_buffer;
-	gUsart[com].rx_data = rx_buffer;
-	gUsart[com].tx_size = tx_bufsize;
-	gUsart[com].rx_size = rx_bufsize;
+	gUsart[com].tx_data = tx_fbuf;
+	gUsart[com].rx_data = rx_fbuf;
+	gUsart[com].tx_size = tx_fsize;
+	gUsart[com].rx_size = rx_fsize;
 	gUsart[com].tx_index = 0;
 	gUsart[com].rx_index = 0;	
 	gUsart[com].tx_count = 0;
@@ -297,6 +338,8 @@ int vkUsart_Init(vkCOM com, uint32_t baudrate, uint8_t* tx_buffer, uint8_t tx_bu
 		if(gUsart[COM3].dma_enable == 0)
 		{
 		 	#if (UART1_DMA_ENABLE == 1u)
+			
+			printf("%s COM%d Using DMA Mode\r\n", __FUNCTION__,(int)com);
 
 			/* Disable RXNE and TC  */
 			USART_ITConfig(gUsart[com].usart, USART_IT_RXNE, DISABLE);
@@ -344,6 +387,8 @@ int vkUsart_Init(vkCOM com, uint32_t baudrate, uint8_t* tx_buffer, uint8_t tx_bu
 		if(gUsart[COM1].dma_enable == 0)
 		{
 		 	#if (UART3_DMA_ENABLE == 1u)
+			
+			printf("%s COM%d Using DMA Mode\r\n", __FUNCTION__,(int)com);
 
 			/* Disable RXNE and TC  */
 			USART_ITConfig(gUsart[com].usart, USART_IT_RXNE, DISABLE);
@@ -388,7 +433,11 @@ int vkUsart_Init(vkCOM com, uint32_t baudrate, uint8_t* tx_buffer, uint8_t tx_bu
 	}
 	else if(com == COM2 && gUsart[com].usart != Usart_Printf)
 	{
+	#if 0	
 		#if (UART2_DMA_ENABLE==1u)
+		
+		printf("%s COM%d Using DMA Mode\r\n", __FUNCTION__,(int)com);
+		
 		/* Disable RXNE and TC  */
 		USART_ITConfig(gUsart[com].usart, USART_IT_RXNE, DISABLE);
 		USART_ITConfig(gUsart[com].usart, USART_IT_TC, DISABLE);			
@@ -427,7 +476,8 @@ int vkUsart_Init(vkCOM com, uint32_t baudrate, uint8_t* tx_buffer, uint8_t tx_bu
 
 		/* Global DMA Enable */
 		DMA_GlobalCmd(ENABLE);			
-		#endif		
+		#endif	
+	#endif
 	}
 	
 	return 0;
@@ -436,14 +486,14 @@ int vkUsart_Init(vkCOM com, uint32_t baudrate, uint8_t* tx_buffer, uint8_t tx_bu
 /*******************************************************************************
  * 名称: vkUsart_Deinit
  * 功能: USART初始化操作
- * 形参: 串口USARTx, 波特率BaudRate
+ * 形参: 串口com
  * 返回: 成功0，失败-1
  * 说明: 无 
  ******************************************************************************/
 int vkUsart_Deinit(vkCOM com)
 {
 	/* USART check */
-	if(com!=COM1 && com!=COM2 && com!=COM3)
+	if(com>=COMMAX)
 	{
 		return -1;
 	}	
@@ -453,7 +503,7 @@ int vkUsart_Deinit(vkCOM com)
 		/* Disable USART clock */
 		CLK_PeripheralClockConfig(CLK_Peripheral_USART1, DISABLE);
 
-		#if 1
+		#if 0
 		/* Disable USART1 Tx- Rx remapping to PA2- PA3 */
 		SYSCFG_REMAPPinConfig(REMAP_Pin_USART1TxRxPortA, DISABLE);
 		/* 是否使用内部上拉电阻 */
@@ -461,7 +511,7 @@ int vkUsart_Deinit(vkCOM com)
 		GPIO_ExternalPullUpConfig(GPIOA, GPIO_Pin_3, DISABLE);
 		#endif
 		
-		#if 0
+		#if 1
 		/* 是否使用内部上拉电阻 */
 		GPIO_ExternalPullUpConfig(GPIOC, GPIO_Pin_3, DISABLE);
 		GPIO_ExternalPullUpConfig(GPIOC, GPIO_Pin_2, DISABLE);
@@ -489,9 +539,17 @@ int vkUsart_Deinit(vkCOM com)
 		/* Disable USART clock */
 		CLK_PeripheralClockConfig(CLK_Peripheral_USART3, DISABLE);
 
-		/* 是否使用内部上拉电阻 */
+		/* 48引脚 是否使用内部上拉电阻 */
+		#if 0
 		GPIO_ExternalPullUpConfig(GPIOE, GPIO_Pin_6, DISABLE);
-		GPIO_ExternalPullUpConfig(GPIOE, GPIO_Pin_7, DISABLE);		
+		GPIO_ExternalPullUpConfig(GPIOE, GPIO_Pin_7, DISABLE);	
+		#endif 
+
+		/* 64引脚 是否使用内部上拉电阻 */
+		#if 1
+		GPIO_ExternalPullUpConfig(GPIOG, GPIO_Pin_1, DISABLE);
+		GPIO_ExternalPullUpConfig(GPIOG, GPIO_Pin_0, DISABLE);	
+		#endif 
 	}
 	else
 	{
@@ -565,7 +623,8 @@ int putchar(int c)
   	USART_SendData8(Usart_Printf, (uint8_t)c);
 
 	/* Loop until the end of transmission or timeout */ 
-  	while (USART_GetFlagStatus(Usart_Printf, USART_FLAG_TC) == RESET && --send_timeout);
+  	while (USART_GetFlagStatus(Usart_Printf, USART_FLAG_TC) == RESET && --send_timeout)
+	{nop(); /* 防止被编译优化掉 */}
 
 	/* timeout return -1 */
 	if(send_timeout == 0)
@@ -594,7 +653,8 @@ int getchar(void)
 	}
 
 	/* Loop until the Read data register flag is SET or timeout */  
-  	while (USART_GetFlagStatus(Usart_Printf, USART_FLAG_RXNE) == RESET && --recv_timeout);
+  	while (USART_GetFlagStatus(Usart_Printf, USART_FLAG_RXNE) == RESET && --recv_timeout)
+	{nop(); /* 防止被编译优化掉 */}
 
 	/* timeout return -1 */
 	if(recv_timeout == 0)
@@ -607,9 +667,13 @@ int getchar(void)
 	return c;
 }
 
-/*
- * 接收一个字节数据完成中断处理函数
- */
+/*******************************************************************************
+ * 名称: vkUsart_INT_Recv_Byte_Over_Handler
+ * 功能: USART中断方式接收一个字节数据处理函数
+ * 形参: 串口com
+ * 返回: 成功0，失败-1
+ * 说明: 无 
+ ******************************************************************************/
 int vkUsart_INT_Recv_Byte_Over_Handler(vkCOM com)
 {
 	int ret = 0;
@@ -628,26 +692,30 @@ int vkUsart_INT_Recv_Byte_Over_Handler(vkCOM com)
 	return ret;
 }
 
-/*
- * DMA和中断接收一帧数据完成中断处理函数
- */
+/*******************************************************************************
+ * 名称: vkUsart_Recv_Line_Handler
+ * 功能: USART接收一帧数据处理函数
+ * 形参: 串口com
+ * 返回: 成功0，失败-1
+ * 说明: 无 
+ ******************************************************************************/
 int vkUsart_Recv_Line_Handler(vkCOM com)
 {	
 	int ret = -1;
 	int size = 0;
 	int full = 0;
-	uint8_t data[USART_BUFFER_BLOCK_MAX_SIZE] = {0};
+	uint8_t data[USARTX_UFRAME_SIZE] = {0};
 
 	if(gUsart[com].dma_enable == 1)
 	{
 		/* 接收数据 */
-		size = vkUsart_DMA_Recv(com, data+1, USART_BUFFER_BLOCK_MAX_SIZE-1);
+		size = vkUsart_DMA_Recv(com, data+1, USARTX_UFRAME_SIZE-1);
 		data[0] = size;
 	}
 	else
 	{
 		/* 接收数据 */
-		size = vkUsart_INT_Recv(com, data+1, USART_BUFFER_BLOCK_MAX_SIZE-1);
+		size = vkUsart_INT_Recv(com, data+1, USARTX_UFRAME_SIZE-1);
 		data[0] = size;
 	}
 
@@ -689,9 +757,13 @@ int vkUsart_Recv_Line_Handler(vkCOM com)
 	return 0;
 }
 
-/*
- * 发送一个字节完成中断处理函数
- */
+/*******************************************************************************
+ * 名称: vkUsart_INT_Send_Byte_Over_Handler
+ * 功能: USART中断方式发送一个字节数据处理函数
+ * 形参: 串口com
+ * 返回: 成功0，失败-1
+ * 说明: 无 
+ ******************************************************************************/
 int vkUsart_INT_Send_Byte_Over_Handler(vkCOM com)
 {
 	/* 逐字节发送数据 */
@@ -715,6 +787,13 @@ int vkUsart_INT_Send_Byte_Over_Handler(vkCOM com)
 	return 0;
 }
 
+/*******************************************************************************
+ * 名称: vkUsart_INT_Send
+ * 功能: USART中断方式发送一帧节数据
+ * 形参: 串口com
+ * 返回: 成功0，失败-1
+ * 说明: 无 
+ ******************************************************************************/
 int vkUsart_INT_Send(vkCOM com, uint8_t *buf, int size)
 {
 	int ret = -1;	
@@ -736,6 +815,13 @@ int vkUsart_INT_Send(vkCOM com, uint8_t *buf, int size)
 	return ret;
 }
 
+/*******************************************************************************
+ * 名称: vkUsart_INT_Recv
+ * 功能: USART中断方式接收一帧节数据
+ * 形参: 串口com
+ * 返回: 成功0，失败-1
+ * 说明: 无 
+ ******************************************************************************/
 int vkUsart_INT_Recv(vkCOM com, uint8_t *buf, int size)
 {
 	int ret = -1;
@@ -810,10 +896,10 @@ int vkUsart_DMA_Recv(vkCOM com, uint8_t *buf, int size)
 int vkUsart_DMA_Send_Line_Over_Handler(vkCOM com)
 {
 	int ret = -1;
-	uint8_t data[USART_BUFFER_BLOCK_MAX_SIZE] = {0};
+	uint8_t data[USARTX_UFRAME_SIZE] = {0};
 
 	/* 删除一帧缓存数据 */
-	ret = vkUsart_Buffer_Delete(&gUsart[com].tx_buffer, data, USART_BUFFER_BLOCK_MAX_SIZE);
+	ret = vkUsart_Buffer_Delete(&gUsart[com].tx_buffer, data, USARTX_UFRAME_SIZE);
 
 	if(ret == 0)
 	{
@@ -834,10 +920,10 @@ int vkUsart_DMA_Send_Line_Over_Handler(vkCOM com)
 int vkUsart_INT_Send_Line_Over_Handler(vkCOM com)
 {
 	int ret = -1;
-	uint8_t data[USART_BUFFER_BLOCK_MAX_SIZE] = {0};
+	uint8_t data[USARTX_UFRAME_SIZE] = {0};
 
 	/* 删除一帧缓存数据 */
-	ret = vkUsart_Buffer_Delete(&gUsart[com].tx_buffer, data, USART_BUFFER_BLOCK_MAX_SIZE);
+	ret = vkUsart_Buffer_Delete(&gUsart[com].tx_buffer, data, USARTX_UFRAME_SIZE);
 
 	if(ret == 0)
 	{
@@ -856,13 +942,13 @@ int vkUsart_INT_Send_Line_Over_Handler(vkCOM com)
 }
 
 /*******************************************************************************
- * 名称: vkUsart_Send
+ * 名称: vkUsartSend
  * 功能: 发送字符串
  * 形参: 字符串指针buf,字符串大小size
  * 返回: 成功发送字符串大小
  * 说明: 无 
  ******************************************************************************/
-int vkUsart_Send(vkCOM com, uint8_t *buf, int size)
+int vkUsartSend(vkCOM com, uint8_t *buf, int size)
 {
 	/* 参数检查 */
 	if(com != COM1 && com != COM2 && com != COM3)
@@ -876,9 +962,9 @@ int vkUsart_Send(vkCOM com, uint8_t *buf, int size)
 	}
 
 	int ret = -1;
-	uint8_t data[USART_BUFFER_BLOCK_MAX_SIZE] = {0};
+	uint8_t data[USARTX_UFRAME_SIZE] = {0};
 
-	memcpy(data+1, buf, (size<USART_BUFFER_BLOCK_MAX_SIZE-1)?size:USART_BUFFER_BLOCK_MAX_SIZE-1);
+	memcpy(data+1, buf, (size<USARTX_UFRAME_SIZE-1)?size:USARTX_UFRAME_SIZE-1);
 	data[0] = size;
 
 	/* 插入数据到发送缓存 */
@@ -908,13 +994,13 @@ int vkUsart_Send(vkCOM com, uint8_t *buf, int size)
 }
 
 /*******************************************************************************
- * 名称: vkUsart_Recv
+ * 名称: vkUsartRecv
  * 功能: 接收字符串
  * 形参: 字符串指针buf,字符串大小size
  * 返回: 成功接收字符串大小/成功返回0
  * 说明: 无 
  ******************************************************************************/
-int vkUsart_Recv(vkCOM com, uint8_t *buf, int size)
+int vkUsartRecv(vkCOM com, uint8_t *buf, int size)
 {
 	/* 参数检查 */
 	if(com != COM1 && com != COM2 && com != COM3)
@@ -929,13 +1015,13 @@ int vkUsart_Recv(vkCOM com, uint8_t *buf, int size)
 
 	int ret = -1;
 	int full = 0;
-	uint8_t data[USART_BUFFER_BLOCK_MAX_SIZE] = {0};
+	uint8_t data[USARTX_UFRAME_SIZE] = {0};
 
 	/* 接收队列是否满 */
 	full = vkUsart_Buffer_Full(&gUsart[com].rx_buffer);
 
 	/* 删除缓存数据，期间不允许进入IDLE中断插入数据 */
-	ret = vkUsart_Buffer_Delete(&gUsart[com].rx_buffer, data, USART_BUFFER_BLOCK_MAX_SIZE);
+	ret = vkUsart_Buffer_Delete(&gUsart[com].rx_buffer, data, USARTX_UFRAME_SIZE);
 			
 	if(ret == 0)
 	{
@@ -976,7 +1062,7 @@ int vkUsart_Recv(vkCOM com, uint8_t *buf, int size)
 }
 
 /* 数据缓存插入数据块 */
-inline int vkUsart_Buffer_Insert(vkUBuffer *ubuf, uint8_t *data, uint16_t len)
+int vkUsart_Buffer_Insert(vkUBuffer *ubuf, uint8_t *data, uint16_t len)
 {
 	if(ubuf->locked == 1)
 	{	
@@ -988,9 +1074,8 @@ inline int vkUsart_Buffer_Insert(vkUBuffer *ubuf, uint8_t *data, uint16_t len)
 	ubuf->locked = 1;
 
 	/* 缓存空间已满 */
-	if(ubuf->block_stored == ubuf->block_nums)
+	if(ubuf->frame_stored == ubuf->frame_nums)
 	{
-
 		/* 解锁缓存空间 */
 		ubuf->locked = 0;
 		
@@ -998,16 +1083,16 @@ inline int vkUsart_Buffer_Insert(vkUBuffer *ubuf, uint8_t *data, uint16_t len)
 	}
 	
 	/* 先清零 */
-	memset(ubuf->buffer + ubuf->index_insert*ubuf->block_size, 0, ubuf->block_size);
+	memset(ubuf->buffer + ubuf->index_insert*ubuf->frame_size, 0, ubuf->frame_size);
 	
 	/* 插入数据 */
-	memcpy(ubuf->buffer + ubuf->index_insert*ubuf->block_size, data, (len<ubuf->block_size)?len:ubuf->block_size);
+	memcpy(ubuf->buffer + ubuf->index_insert*ubuf->frame_size, data, (len<ubuf->frame_size)?len:ubuf->frame_size);
 
 	/* 插入索引加1 */
-	ubuf->index_insert = (ubuf->index_insert+1)%(ubuf->block_nums);
+	ubuf->index_insert = (ubuf->index_insert+1)%(ubuf->frame_nums);
 
 	/* 已存块数加1 */
-	ubuf->block_stored = ubuf->block_stored+1;
+	ubuf->frame_stored = ubuf->frame_stored+1;
 
 	/* 解锁缓存空间 */
 	ubuf->locked = 0;
@@ -1016,7 +1101,7 @@ inline int vkUsart_Buffer_Insert(vkUBuffer *ubuf, uint8_t *data, uint16_t len)
 }
 
 /* 数据缓存取出数据块 */
-inline int vkUsart_Buffer_Delete(vkUBuffer *ubuf, uint8_t *data, uint16_t len)
+int vkUsart_Buffer_Delete(vkUBuffer *ubuf, uint8_t *data, uint16_t len)
 {
 	if(ubuf->locked == 1)
 	{	
@@ -1028,7 +1113,7 @@ inline int vkUsart_Buffer_Delete(vkUBuffer *ubuf, uint8_t *data, uint16_t len)
 	ubuf->locked = 1;
 
 	/* 缓存空间无数据 */
-	if(ubuf->block_stored == 0)
+	if(ubuf->frame_stored == 0)
 	{
 		/* 解锁缓存空间 */
 		ubuf->locked = 0;
@@ -1037,13 +1122,13 @@ inline int vkUsart_Buffer_Delete(vkUBuffer *ubuf, uint8_t *data, uint16_t len)
 	}
 
 	/* 取出数据 */
-	memcpy(data, ubuf->buffer + ubuf->index_delete*ubuf->block_size, (len<ubuf->block_size)?len:ubuf->block_size);
+	memcpy(data, ubuf->buffer + ubuf->index_delete*ubuf->frame_size, (len<ubuf->frame_size)?len:ubuf->frame_size);
 
 	/* 删除索引加1 */
-	ubuf->index_delete = (ubuf->index_delete+1)%(ubuf->block_nums);
+	ubuf->index_delete = (ubuf->index_delete+1)%(ubuf->frame_nums);
 
 	/* 已存块数减1 */
-	ubuf->block_stored = ubuf->block_stored-1;
+	ubuf->frame_stored = ubuf->frame_stored-1;
 
 	/* 解锁缓存空间 */
 	ubuf->locked = 0;
@@ -1052,14 +1137,14 @@ inline int vkUsart_Buffer_Delete(vkUBuffer *ubuf, uint8_t *data, uint16_t len)
 }
 
 /* 是否空 */
-inline int vkUsart_Buffer_Null(vkUBuffer *ubuf)
+int vkUsart_Buffer_Null(vkUBuffer *ubuf)
 {
-	return (ubuf->block_stored==0)?1:0;
+	return (ubuf->frame_stored==0)?1:0;
 }
 
 /* 是否满 */
-inline int vkUsart_Buffer_Full(vkUBuffer *ubuf)
+int vkUsart_Buffer_Full(vkUBuffer *ubuf)
 {
-	return (ubuf->block_stored==ubuf->block_nums)?1:0;
+	return (ubuf->frame_stored==ubuf->frame_nums)?1:0;
 }
 
